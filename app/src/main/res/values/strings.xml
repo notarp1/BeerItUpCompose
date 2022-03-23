@@ -3,4 +3,5 @@
     <string name="menu_btn_one">Select desired beer</string>
     <string name="menu_btn_two">Add beer you have bought</string>
     <string name="menu_btn_three">Overview of payments</string>
+    <string name="menu_btn_four">Add a new user</string>
 </resources>

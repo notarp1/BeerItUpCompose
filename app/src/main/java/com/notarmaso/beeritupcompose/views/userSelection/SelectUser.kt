@@ -1,4 +1,4 @@
-package com.notarmaso.beeritupcompose.views
+package com.notarmaso.beeritupcompose.views.userSelection
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,10 +25,13 @@ import com.notarmaso.beeritupcompose.models.User
 
 @Composable
 fun SelectUser(viewModel: SelectUserViewModel){
+
     Column{
         TopBar("Select User!", Icons.Rounded.ArrowBack) {
             viewModel.navigateBack(MainActivity.MAIN_MENU)
         }
+
+        viewModel.users?.let { UserList(users = it, viewModel = viewModel ) }
 
        // UserList(users = SampleData.userListSample, viewModel)
     }
@@ -65,20 +68,23 @@ fun UserCard(user: User = SampleData.userListSample[0], viewModel: SelectUserVie
             .padding(5.dp)
             .height(60.dp)
     ) {
+
         Box(
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .padding(start = 20.dp)
-                .clickable {viewModel.navigate(MainActivity.SELECT_BEER)},
+                .clickable { viewModel.navigate(MainActivity.SELECT_BEER)
+                            viewModel.service.currentUser = user},
             contentAlignment = Alignment.CenterStart
-        ){
+        ) {
             Text(text = user.name,
                 fontWeight = FontWeight.Bold,
                 color = colorResource(id = R.color.topbarcolor),
-                fontSize = 20.sp
+                fontSize = 20.sp,
+                modifier = Modifier.padding(start = 20.dp)
             )
         }
+
 
     }
 }

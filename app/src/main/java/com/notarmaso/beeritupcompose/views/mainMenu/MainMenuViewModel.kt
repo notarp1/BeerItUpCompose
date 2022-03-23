@@ -1,13 +1,17 @@
-package com.notarmaso.beeritupcompose.views
+package com.notarmaso.beeritupcompose.views.mainMenu
 
 import androidx.lifecycle.ViewModel
 import com.notarmaso.beeritupcompose.Service
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 
-class BeerQuantityViewModel(serviceVm: Service): ViewModel() {
 
-    var service = serviceVm
+class MainMenuViewModel(val service: Service): ViewModel(), KoinComponent{
+
+
+
+    fun setPage(page: String){
+        service.currentPage = page
+    }
 
     fun navigate(location: String){
         service.navigate(location)
@@ -15,4 +19,5 @@ class BeerQuantityViewModel(serviceVm: Service): ViewModel() {
     fun navigateBack(location: String){
         service.navigateBack(location)
     }
+
 }

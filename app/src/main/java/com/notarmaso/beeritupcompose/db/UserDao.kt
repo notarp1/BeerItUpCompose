@@ -13,7 +13,7 @@ interface UserDao {
     fun insertUser(user: User)
 
     @Update
-    fun updateUser()
+    fun updateUser(user: User)
 
     @Delete
     fun deleteUser(user: User)

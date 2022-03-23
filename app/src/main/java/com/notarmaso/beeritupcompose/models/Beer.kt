@@ -6,8 +6,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Beer(
-    @PrimaryKey(autoGenerate = true) val beerId: Int,
-    @ColumnInfo(name = "Beer") val name: String,
-    @ColumnInfo(name = "Price")val price: Double,
-    @ColumnInfo(name = "Owner") val owner: User
+    @PrimaryKey(autoGenerate = true) val beerId: Int = 0,
+    @ColumnInfo(name = "Name") val name: String,
+    @ColumnInfo(name = "Price")val price: Float,
+    @ColumnInfo(name = "Owner") val owner: String
 )

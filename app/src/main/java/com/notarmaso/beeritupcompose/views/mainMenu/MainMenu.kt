@@ -1,4 +1,4 @@
-package com.notarmaso.beeritupcompose.views
+package com.notarmaso.beeritupcompose.views.mainMenu
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -8,8 +8,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.rounded.DonutLarge
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -18,23 +18,28 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.R
+import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.components.TopBar
+import org.koin.androidx.compose.get
 
 
 @Composable
-fun MainMenu(mainMenuViewModel:MainMenuViewModel){
+fun MainMenu(mainMenuViewModel: MainMenuViewModel){
+    var showDrawer by remember { mutableStateOf(false) }
     Column {
-        TopBar("Menu", Icons.Rounded.Menu) { }
+        TopBar("Menu", Icons.Rounded.DonutLarge) { showDrawer = !showDrawer }
         MainMenuContents(mainMenuViewModel)
     }
+
 
 }
 
 
 @Composable
 fun MainMenuContents(viewModel: MainMenuViewModel){
+    val service = get<Service>()
     Box(
         Modifier
             .background(colorResource(id = R.color.background))
@@ -58,36 +63,56 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
             Spacer(modifier = Modifier.height(50.dp))
 
             MenuRow(
-                buttonText = "Vælg Øl",
+                buttonText = "Drink beer!",
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_one),
                 goToPage = {
-                    viewModel.navigate("selectUser")
+                    //Update userlist
+                    service.userObs.notifySubscribers()
+                    //Update beers
+                    service.beerObs.notifySubscribers()
+                    viewModel.navigate(MainActivity.SELECT_USER)
                     viewModel.setPage("selectBeer")
                 })
 
             Spacer(modifier = Modifier.height(50.dp))
 
             MenuRow(
-                buttonText = "Tilføj Øl",
+                buttonText = "See payments",
+                buttonWidth = 0.35,
+                text = stringResource(id = R.string.menu_btn_three),
+                goToPage = {
+                    service.userObs.notifySubscribers()
+                    viewModel.navigate(MainActivity.SELECT_USER)
+                    viewModel.setPage("viewPayments")
+                })
+
+            Spacer(modifier = Modifier.height(50.dp))
+
+            MenuRow(
+                buttonText = "Add beers",
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_two),
                 goToPage = {
-                    viewModel.navigate("selectUser")
+                    service.userObs.notifySubscribers()
+                    service.beerObs.notifySubscribers()
+                    viewModel.navigate(MainActivity.SELECT_USER)
                     viewModel.setPage("addBeer")
                 })
+
 
 
             Spacer(modifier = Modifier.height(50.dp))
 
             MenuRow(
-                buttonText = "Se betalinger",
+                buttonText = "Create User",
                 buttonWidth = 0.35,
-                text = stringResource(id = R.string.menu_btn_three),
+                text = stringResource(id = R.string.menu_btn_four),
                 goToPage = {
-                    viewModel.navigate("selectUser")
-                    viewModel.setPage("viewPayments")
+                    viewModel.navigate(MainActivity.ADD_USER)
+                    viewModel.setPage("addUser")
                 })
+
         }
 
     }

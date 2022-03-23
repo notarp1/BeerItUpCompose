@@ -1,4 +1,4 @@
-package com.notarmaso.beeritupcompose.views
+package com.notarmaso.beeritupcompose.views.addSelectBeer
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -49,12 +49,13 @@ fun BeerList(globalBeers: List<GlobalBeer>, selectBeerViewModel: SelectBeerViewM
 @Composable
 fun BeerCard(globalBeer: GlobalBeer = SampleData.beerListSample[0], viewModel: SelectBeerViewModel) {
     Surface(
-        shape = RoundedCornerShape(4.dp),
+        shape = RoundedCornerShape(30.dp),
         elevation = 1.dp,
         color = colorResource(id = R.color.buttonColor),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp)
+            .padding(5.dp),
+
 
     ) {
         Row(
@@ -63,22 +64,23 @@ fun BeerCard(globalBeer: GlobalBeer = SampleData.beerListSample[0], viewModel: S
                 .clickable(onClick = {
                     viewModel.setBeer(globalBeer = globalBeer)
                     viewModel.navigate(MainActivity.SELECT_BEER_QUANTITY)
-                })
+                }
+                )
         ) {
             Image(
                 painter = painterResource(id = globalBeer.image),
                 contentDescription = "CurrentBeer",
                 modifier = Modifier
-                    .size(55.dp)
+                    .size(70.dp).padding(3.dp)
             )
 
             Spacer(modifier = Modifier.width(4.dp))
 
-            Column() {
+            Column(verticalArrangement = Arrangement.Top) {
                 Text(
                     text = globalBeer.name,
                     color = colorResource(id = R.color.topbarcolor),
-                    fontSize = 20.sp,
+                    fontSize = 25.sp,
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))
@@ -86,7 +88,7 @@ fun BeerCard(globalBeer: GlobalBeer = SampleData.beerListSample[0], viewModel: S
                 Text(
                     text = "Antal: ${globalBeer.count} stk.",
                     color = colorResource(id = R.color.topbarcolor),
-                    fontSize = 15.sp
+                    fontSize = 18.sp
                 )
             }
         }
