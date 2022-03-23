@@ -27,9 +27,10 @@ import org.koin.androidx.compose.get
 
 @Composable
 fun MainMenu(mainMenuViewModel: MainMenuViewModel){
-    var showDrawer by remember { mutableStateOf(false) }
+
+    val service = get<Service>()
     Column {
-        TopBar("Menu", Icons.Rounded.DonutLarge) { showDrawer = !showDrawer }
+        TopBar("Menu", Icons.Rounded.DonutLarge) { service.navigateBack(MainActivity.DEBUG_DRAWER) }
         MainMenuContents(mainMenuViewModel)
     }
 
@@ -67,12 +68,12 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_one),
                 goToPage = {
+                    viewModel.setPage("selectBeer")
                     //Update userlist
                     service.userObs.notifySubscribers()
                     //Update beers
                     service.beerObs.notifySubscribers()
                     viewModel.navigate(MainActivity.SELECT_USER)
-                    viewModel.setPage("selectBeer")
                 })
 
             Spacer(modifier = Modifier.height(50.dp))
@@ -94,10 +95,10 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_two),
                 goToPage = {
+                    viewModel.setPage(MainActivity.IS_ADDING_BEER)
                     service.userObs.notifySubscribers()
                     service.beerObs.notifySubscribers()
                     viewModel.navigate(MainActivity.SELECT_USER)
-                    viewModel.setPage("addBeer")
                 })
 
 

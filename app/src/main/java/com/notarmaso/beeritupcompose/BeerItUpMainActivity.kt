@@ -17,6 +17,7 @@ import com.notarmaso.beeritupcompose.views.addSelectBeer.SelectBeer
 import com.notarmaso.beeritupcompose.views.addSelectBeer.SelectBeerViewModel
 import com.notarmaso.beeritupcompose.views.addUser.AddUser
 import com.notarmaso.beeritupcompose.views.addUser.AddUserViewModel
+import com.notarmaso.beeritupcompose.views.debugDrawer.DebugDrawer
 import com.notarmaso.beeritupcompose.views.mainMenu.MainMenu
 import com.notarmaso.beeritupcompose.views.mainMenu.MainMenuViewModel
 import com.notarmaso.beeritupcompose.views.userSelection.SelectUser
@@ -34,6 +35,8 @@ class MainActivity : ComponentActivity() {
         const val SELECT_BEER = "selectBeer"
         const val SELECT_BEER_QUANTITY = "selectBeerQuantity"
         const val ADD_USER = "addUser"
+        const val DEBUG_DRAWER = "debugDrawer"
+        const val IS_ADDING_BEER = "addBeer"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,6 +90,9 @@ fun NavigationHost(service: Service){
         }
         composable(cpm.ADD_USER){
             AddUser(addUserViewModel)
+        }
+        composable(cpm.DEBUG_DRAWER){
+            DebugDrawer(service = service)
         }
     }
 }

@@ -35,7 +35,7 @@ fun BeerQuantityPage(viewModel: BeerQuantityViewModel) {
     val service = get<Service>()
     val selectedBeer = service.selectedGlobalBeer
 
-    if(service.currentPage == "addBeer") isAddingBeer = true
+    if(service.currentPage == MainActivity.IS_ADDING_BEER) isAddingBeer = true
 
     Column {
         TopBar(if(isAddingBeer)"Add qty. of ${selectedBeer?.name}" else "Select beers!", Icons.Rounded.ArrowBack) {

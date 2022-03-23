@@ -24,6 +24,7 @@ import com.notarmaso.beeritupcompose.components.TopBar
 import com.notarmaso.beeritupcompose.models.GlobalBeer
 import com.notarmaso.beeritupcompose.models.SampleData
 import org.koin.androidx.compose.get
+import kotlin.jvm.internal.MagicApiIntrinsics
 
 @Composable
 fun SelectBeer(viewModel: SelectBeerViewModel){
@@ -41,7 +42,7 @@ fun BeerList(globalBeers: List<GlobalBeer>, selectBeerViewModel: SelectBeerViewM
     var isAddingBeer by remember{ mutableStateOf(false) }
     val service = get<Service>()
 
-    if(service.currentPage == "addBeer") isAddingBeer =true
+    if(service.currentPage == MainActivity.IS_ADDING_BEER) isAddingBeer =true
     Box(modifier = Modifier.fillMaxSize().background(colorResource(id = R.color.background))) {
         LazyColumn(
         ) {

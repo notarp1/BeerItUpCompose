@@ -5,13 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import com.notarmaso.beeritupcompose.models.Beer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class BeerQuantityViewModel(val service: Service): ViewModel() {
+class BeerQuantityViewModel(val service: Service): ViewModel(), ViewModelFunction {
 
 
 
@@ -20,14 +22,20 @@ class BeerQuantityViewModel(val service: Service): ViewModel() {
     var pricePaid by mutableStateOf("120")
     var pricePerBeer: Float? = null
 
+    init {
+        service.beerObs.register(this)
+    }
 
-    fun navigate(location: String){
+    override fun navigate(location: String){
         service.navigate(location)
     }
-    fun navigateBack(location: String){
+    override fun navigateBack(location: String){
         service.navigateBack(location)
     }
 
+    override fun update() {
+        qtySelected = if(service.currentPage == MainActivity.IS_ADDING_BEER) 24 else 1
+    }
 
 
     fun incrementCounter(){
@@ -57,18 +65,21 @@ class BeerQuantityViewModel(val service: Service): ViewModel() {
 
     }
 
-    private fun onAccept(){
-        val selectedBeer = service.selectedGlobalBeer
-        val user = service.serializeUser(service.currentUser)
-        viewModelScope.launch(Dispatchers.IO) {
-            for (i in 0 until qtySelected) {
+    private fun onAccept() {
+        if (service.currentPage == MainActivity.IS_ADDING_BEER) {
+            val selectedBeer = service.selectedGlobalBeer
+            val user = service.serializeUser(service.currentUser)
+            viewModelScope.launch(Dispatchers.IO) {
+                for (i in 0 until qtySelected) {
 
-                if (selectedBeer?.name != null && pricePerBeer != null) {
-                    service.db.beerDao().insert(Beer(name = selectedBeer.name,
-                        price = pricePerBeer!!,
-                        owner = user))
+                    if (selectedBeer?.name != null && pricePerBeer != null) {
+                        service.db.beerDao().insert(Beer(name = selectedBeer.name,
+                            price = pricePerBeer!!,
+                            owner = user))
+                    }
                 }
             }
+
         }
     }
 

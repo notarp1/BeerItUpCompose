@@ -18,4 +18,7 @@ interface BeerDao {
 
     @Delete
     fun deleteBeer(beer: Beer)
+
+    @Query("DELETE FROM beer")
+    fun deleteAll()
 }
