@@ -4,8 +4,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.models.Beer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class BeerQuantityViewModel(val service: Service): ViewModel() {
@@ -41,9 +44,9 @@ class BeerQuantityViewModel(val service: Service): ViewModel() {
         else qtySelected--
     }
 
-    fun onConfirm(addBeer: Boolean = false){
+    fun onConfirm(isAddingBeer: Boolean = false){
 
-        if(addBeer) {
+        if(isAddingBeer) {
             val pricePerBeer = pricePaid.toFloat() / qtySelected.toFloat()
             this.pricePerBeer = pricePerBeer
             service.createAlertBoxAddBeer(pricePerBeer, ::onAccept)
@@ -57,11 +60,14 @@ class BeerQuantityViewModel(val service: Service): ViewModel() {
     private fun onAccept(){
         val selectedBeer = service.selectedGlobalBeer
         val user = service.serializeUser(service.currentUser)
+        viewModelScope.launch(Dispatchers.IO) {
+            for (i in 0 until qtySelected) {
 
-        for(i in 0..qtySelected){
-
-            if(selectedBeer?.name != null && pricePerBeer != null) {
-                service.db.beerDao().insert(Beer(name = selectedBeer.name, price = pricePerBeer!!, owner = user))
+                if (selectedBeer?.name != null && pricePerBeer != null) {
+                    service.db.beerDao().insert(Beer(name = selectedBeer.name,
+                        price = pricePerBeer!!,
+                        owner = user))
+                }
             }
         }
     }

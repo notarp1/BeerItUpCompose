@@ -36,7 +36,7 @@ object SampleData {
         ),
         GlobalBeer(
             R.drawable.guld,
-            "Guld Dame"
+            "Gylden Giz"
         ),
         GlobalBeer(
             R.drawable.heineken,

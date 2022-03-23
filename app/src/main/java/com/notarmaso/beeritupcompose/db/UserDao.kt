@@ -7,7 +7,7 @@ import com.notarmaso.beeritupcompose.models.User
 interface UserDao {
 
     @Query("SELECT * FROM user")
-    fun getAll(): List<User>
+    fun getAll(): MutableList<User>
 
     @Insert
     fun insertUser(user: User)

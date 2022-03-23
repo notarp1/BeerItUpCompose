@@ -8,13 +8,13 @@ import com.notarmaso.beeritupcompose.models.User
 interface BeerDao {
 
     @Query("SELECT * FROM beer")
-    fun getAll(): List<Beer>
+    fun getAll(): MutableList<Beer>
 
     @Insert
     fun insert(beer: Beer)
 
     @Update
-    fun updateBeer(beerList: List<Beer>)
+    fun updateBeer(beerList: MutableList<Beer>)
 
     @Delete
     fun deleteBeer(beer: Beer)

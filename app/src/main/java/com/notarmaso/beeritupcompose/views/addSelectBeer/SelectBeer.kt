@@ -11,7 +11,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -19,9 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.R
+import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.components.TopBar
 import com.notarmaso.beeritupcompose.models.GlobalBeer
 import com.notarmaso.beeritupcompose.models.SampleData
+import org.koin.androidx.compose.get
 
 @Composable
 fun SelectBeer(viewModel: SelectBeerViewModel){
@@ -36,18 +38,24 @@ fun SelectBeer(viewModel: SelectBeerViewModel){
 
 @Composable
 fun BeerList(globalBeers: List<GlobalBeer>, selectBeerViewModel: SelectBeerViewModel) {
-    LazyColumn(
-        modifier = Modifier.background(colorResource(id = R.color.background))
-    ) {
-        items(globalBeers) { beer ->
-            BeerCard(beer, selectBeerViewModel)
+    var isAddingBeer by remember{ mutableStateOf(false) }
+    val service = get<Service>()
+
+    if(service.currentPage == "addBeer") isAddingBeer =true
+    Box(modifier = Modifier.fillMaxSize().background(colorResource(id = R.color.background))) {
+        LazyColumn(
+        ) {
+            items(globalBeers) { beer ->
+                val beerStock = selectBeerViewModel.getStock(beer.name)
+                if (beerStock!! > 0 || isAddingBeer) BeerCard(beer, selectBeerViewModel, beerStock)
+            }
         }
     }
 }
 
 
 @Composable
-fun BeerCard(globalBeer: GlobalBeer = SampleData.beerListSample[0], viewModel: SelectBeerViewModel) {
+fun BeerCard(globalBeer: GlobalBeer = SampleData.beerListSample[0], viewModel: SelectBeerViewModel, beerStock: Int) {
     Surface(
         shape = RoundedCornerShape(30.dp),
         elevation = 1.dp,
@@ -71,7 +79,8 @@ fun BeerCard(globalBeer: GlobalBeer = SampleData.beerListSample[0], viewModel: S
                 painter = painterResource(id = globalBeer.image),
                 contentDescription = "CurrentBeer",
                 modifier = Modifier
-                    .size(70.dp).padding(3.dp)
+                    .size(70.dp)
+                    .padding(3.dp)
             )
 
             Spacer(modifier = Modifier.width(4.dp))
@@ -86,7 +95,7 @@ fun BeerCard(globalBeer: GlobalBeer = SampleData.beerListSample[0], viewModel: S
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = "Antal: ${globalBeer.count} stk.",
+                    text = "Antal: $beerStock stk.",
                     color = colorResource(id = R.color.topbarcolor),
                     fontSize = 18.sp
                 )

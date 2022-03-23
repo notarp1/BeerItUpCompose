@@ -30,18 +30,18 @@ import org.koin.androidx.compose.get
 
 @Composable
 fun BeerQuantityPage(viewModel: BeerQuantityViewModel) {
-    var addBeer by remember{ mutableStateOf(false)}
+    var isAddingBeer by remember{ mutableStateOf(false)}
 
     val service = get<Service>()
     val selectedBeer = service.selectedGlobalBeer
 
-    if(service.currentPage == "addBeer") addBeer = true
+    if(service.currentPage == "addBeer") isAddingBeer = true
 
     Column {
-        TopBar(if(addBeer)"Add qty. of ${selectedBeer?.name}" else "Select beers!", Icons.Rounded.ArrowBack) {
+        TopBar(if(isAddingBeer)"Add qty. of ${selectedBeer?.name}" else "Select beers!", Icons.Rounded.ArrowBack) {
             viewModel.navigateBack(MainActivity.SELECT_BEER)
         }
-        selectedBeer?.let { BeerQuantity(it, viewModel, addBeer) }
+        selectedBeer?.let { BeerQuantity(it, viewModel, isAddingBeer) }
     }
 
 }
@@ -147,7 +147,7 @@ fun ConfirmButton(vm: BeerQuantityViewModel, addBeer: Boolean) {
         Box(contentAlignment = Alignment.Center,
             modifier = Modifier.background(colorResource(id = R.color.topbarcolor)))
         {
-            Button(onClick = { vm.onConfirm(addBeer = addBeer) },
+            Button(onClick = { vm.onConfirm(isAddingBeer = addBeer) },
                 colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.topbarcolor)),
                 modifier = Modifier.fillMaxSize()) {
                 Text(text = "CONFIRM", color = colorResource(id = R.color.darkorange), fontWeight = FontWeight.ExtraBold)
