@@ -4,10 +4,16 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+
 data class Beer(
-    @PrimaryKey(autoGenerate = true) val beerId: Int = 0,
-    @ColumnInfo(name = "Name") val name: String,
-    @ColumnInfo(name = "Price")val price: Float,
-    @ColumnInfo(name = "Owner") val owner: String
+   val name: String,
+   val price: Float,
+   val owner: String
+)
+
+
+@Entity
+data class BeerGroup(
+    @PrimaryKey @ColumnInfo(name = "BeerGroupName") val groupName: String,
+    @ColumnInfo(name = "BeerList")val beers: String
 )

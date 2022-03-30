@@ -2,6 +2,7 @@ package com.notarmaso.beeritupcompose.interfaces
 
 
 import com.notarmaso.beeritupcompose.BeerObserverNotifier
+import com.notarmaso.beeritupcompose.BeerService
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.UserObserverNotifier
 import com.notarmaso.beeritupcompose.views.addSelectBeer.BeerQuantityViewModel
@@ -24,14 +25,15 @@ val serviceModule = module {
 
     single { UserObserverNotifier() }
     single { BeerObserverNotifier() }
-    single { params -> Service( ctx = params.get(), get(), get()) }
+    single { params -> Service( ctx = params.get(), get()) }
+    single { params -> BeerService(get(), get()) }
 }
 
 val vmModule = module {
     single { MainMenuViewModel(get()) }
-    single { SelectBeerViewModel(get()) }
+    single { SelectBeerViewModel(get(), get()) }
     single { SelectUserViewModel(get()) }
-    single { BeerQuantityViewModel(get()) }
+    single { BeerQuantityViewModel(get(), get()) }
     single { AddUserViewModel(get()) }
 }
 

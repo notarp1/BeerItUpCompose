@@ -16,7 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class Service(ctx: Context, val userObs: UserObserverNotifier, val beerObs: BeerObserverNotifier) {
+class Service(ctx: Context, val userObs: UserObserverNotifier) {
 
   var currentUser: User? = null
   var selectedGlobalBeer: GlobalBeer? = null
@@ -29,7 +29,7 @@ class Service(ctx: Context, val userObs: UserObserverNotifier, val beerObs: Beer
   val db = Room.databaseBuilder(
     ctx,
     AppDatabase::class.java, "BeerItUpDB"
-  ).build()
+  ).fallbackToDestructiveMigration().build()
 
   fun navigate(location: String){
     navHostController?.navigate(location)
@@ -73,10 +73,10 @@ class Service(ctx: Context, val userObs: UserObserverNotifier, val beerObs: Beer
 
   }
 
-  fun createAlertBoxAddBeer(price: Float, onAccept: () -> Unit){
+  fun createAlertBoxAddBeer(price: Float, onAccept: () -> Unit, qty: Int){
     val alertDialogBuilder = AlertDialog.Builder(context)
     alertDialogBuilder
-      .setTitle("${currentUser?.name} you are adding ${selectedGlobalBeer?.count} beers!")
+      .setTitle("${currentUser?.name} you are adding $qty beers!")
       .setMessage("For at price of $price DKK/pcs \nDo you really want to continue?")
 
     alertDialogBuilder.setPositiveButton(android.R.string.yes) { _, _ ->

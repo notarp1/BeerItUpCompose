@@ -117,7 +117,7 @@ fun BeerQuantity(
             if(!addBeer) {
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Text(text = "Beer in stock: ${globalBeer.count}",
+                Text(text = "Beer in stock: ${vm.beerService.getStock(globalBeer.name)}",
                     color = colorResource(id = R.color.topbarcolor),
                     modifier = Modifier.padding(start = 20.dp)
                 )

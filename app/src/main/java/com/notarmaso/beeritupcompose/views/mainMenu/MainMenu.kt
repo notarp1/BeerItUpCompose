@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.notarmaso.beeritupcompose.BeerService
 import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.R
 import com.notarmaso.beeritupcompose.Service
@@ -41,6 +42,7 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel){
 @Composable
 fun MainMenuContents(viewModel: MainMenuViewModel){
     val service = get<Service>()
+    val beerService = get<BeerService>()
     Box(
         Modifier
             .background(colorResource(id = R.color.background))
@@ -72,7 +74,7 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                     //Update userlist
                     service.userObs.notifySubscribers()
                     //Update beers
-                    service.beerObs.notifySubscribers()
+                    beerService.beerObs.notifySubscribers()
                     viewModel.navigate(MainActivity.SELECT_USER)
                 })
 
@@ -97,7 +99,7 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 goToPage = {
                     viewModel.setPage(MainActivity.IS_ADDING_BEER)
                     service.userObs.notifySubscribers()
-                    service.beerObs.notifySubscribers()
+                    beerService.beerObs.notifySubscribers()
                     viewModel.navigate(MainActivity.SELECT_USER)
                 })
 
