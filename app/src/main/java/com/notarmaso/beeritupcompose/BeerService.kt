@@ -56,16 +56,6 @@ class BeerService(val service: Service, val beerObs: BeerObserverNotifier) {
 
 
 
-    fun deserializeBeerGroup(beers: String): MutableList<Beer>?{
-
-        val itemType = object : TypeToken<MutableList<Beer>?>() {}.type
-
-        return gson.fromJson(beers, itemType)
-
-    }
-    fun serializeBeerGroup(it: MutableList<Beer>?): String{
-        return  gson.toJson(it)
-    }
 
 
     fun getStock(name: String): Int? {

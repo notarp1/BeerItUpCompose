@@ -9,7 +9,8 @@ interface UserDao {
     @Query("SELECT * FROM user")
     fun getAll(): MutableList<User>
 
-    @Insert    fun insertUser(user: User)
+    @Insert
+    fun insertUser(user: User)
 
     @Update
     fun updateUser(user: User)
@@ -17,6 +18,6 @@ interface UserDao {
     @Delete
     fun deleteUser(user: User)
 
-    @Query("DELETE FROM user")
+    @Query("DELETE FROM User")
     fun deleteAll()
 }

@@ -15,5 +15,5 @@ data class Beer(
 @Entity
 data class BeerGroup(
     @PrimaryKey @ColumnInfo(name = "BeerGroupName") val groupName: String,
-    @ColumnInfo(name = "BeerList")val beers: String
+    @ColumnInfo(name = "BeerList") var beers: String
 )

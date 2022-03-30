@@ -29,6 +29,10 @@ class AddUserViewModel(val service: Service): ViewModel() {
     fun onSubmit(){
         filterWhitespaces()
         if(phoneValidation()){
+           // val users = service.db.userDao().getAll()
+
+
+
             val user = User(name, phone, null, null)
 
             viewModelScope.launch(Dispatchers.IO){
@@ -73,3 +77,5 @@ class AddUserViewModel(val service: Service): ViewModel() {
 
 
 }
+
+

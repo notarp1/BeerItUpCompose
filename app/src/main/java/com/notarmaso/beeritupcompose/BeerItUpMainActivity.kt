@@ -18,6 +18,7 @@ import com.notarmaso.beeritupcompose.views.addSelectBeer.SelectBeerViewModel
 import com.notarmaso.beeritupcompose.views.addUser.AddUser
 import com.notarmaso.beeritupcompose.views.addUser.AddUserViewModel
 import com.notarmaso.beeritupcompose.views.debugDrawer.DebugDrawer
+import com.notarmaso.beeritupcompose.views.debugDrawer.DebugDrawerViewModel
 import com.notarmaso.beeritupcompose.views.mainMenu.MainMenu
 import com.notarmaso.beeritupcompose.views.mainMenu.MainMenuViewModel
 import com.notarmaso.beeritupcompose.views.userSelection.SelectUser
@@ -36,7 +37,7 @@ class MainActivity : ComponentActivity() {
         const val SELECT_BEER_QUANTITY = "selectBeerQuantity"
         const val ADD_USER = "addUser"
         const val DEBUG_DRAWER = "debugDrawer"
-        const val IS_ADDING_BEER = "addBeer"
+        const val ADD_BEER = "addBeer"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,6 +72,7 @@ fun NavigationHost(service: Service){
     val selectUserViewModel = get<SelectUserViewModel>()
     val beerQuantityViewModel = get<BeerQuantityViewModel>()
     val addUserViewModel = get<AddUserViewModel>()
+    val debugDrawerViewModel = get<DebugDrawerViewModel>()
 
     NavHost(navController = navController, startDestination = cpm.MAIN_MENU){
         composable(cpm.MAIN_MENU){
@@ -92,7 +94,7 @@ fun NavigationHost(service: Service){
             AddUser(addUserViewModel)
         }
         composable(cpm.DEBUG_DRAWER){
-            DebugDrawer(service = service)
+            DebugDrawer(debugDrawerViewModel)
         }
     }
 }

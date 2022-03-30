@@ -5,14 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.notarmaso.beeritupcompose.BeerService
-import com.notarmaso.beeritupcompose.MainActivity
-import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.*
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import com.notarmaso.beeritupcompose.models.Beer
 import com.notarmaso.beeritupcompose.models.BeerGroup
+import com.notarmaso.beeritupcompose.models.GlobalBeer
 import com.notarmaso.beeritupcompose.models.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,11 +19,11 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
 
 
-    val gson = Gson()
+
     var qtySelected by mutableStateOf(1)
     var pricePaid by mutableStateOf("120")
     var pricePerBeer: Float? = null
-
+    var beerCount by mutableStateOf(0)
     init {
         beerService.beerObs.register(this)
     }
@@ -39,14 +36,14 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
     }
 
     override fun update() {
-        qtySelected = if(service.currentPage == MainActivity.IS_ADDING_BEER) 24 else 1
+        qtySelected = if(service.currentPage == MainActivity.ADD_BEER) 24 else 1
+
     }
 
 
     fun incrementCounter(){
-        val beerCount = service.selectedGlobalBeer?.count
 
-        if(beerCount != null && service.currentPage != MainActivity.IS_ADDING_BEER){
+        if(service.currentPage == MainActivity.SELECT_BEER){
             if(qtySelected >= beerCount) qtySelected = beerCount
             else qtySelected++
         } else {
@@ -75,64 +72,111 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
     private fun onAccept() {
         val selectedBeer = service.selectedGlobalBeer
+        val mapOfBeer = beerService.mapOfBeer[selectedBeer?.name]
 
-        val mapOfBeer = beerService.mapOfBeer
-
-        /* Add beer */
-        if (service.currentPage == MainActivity.IS_ADDING_BEER) {
-            val user = service.serializeUser(service.currentUser)
-
-            viewModelScope.launch(Dispatchers.IO) {
-                for (i in 0 until qtySelected) {
-                    if (selectedBeer?.name != null && pricePerBeer != null) {
-                        val beer = Beer(name = selectedBeer.name,
-                        price = pricePerBeer!!,
-                        owner = user)
-                        mapOfBeer[selectedBeer.name]?.add(beer)
-                    }
-                }
-                /* Update BeerGroup  STRING STRING */
-                val beerGroup = selectedBeer?.name?.let { BeerGroup(it, beerService.serializeBeerGroup(mapOfBeer[selectedBeer.name])) }
-
-                if (beerGroup != null) {
-                    service.db.beerDao().updateBeerGroup(beerGroup)
-                }
-
-
+        if(selectedBeer != null) {
+            when(service.currentPage){
+                MainActivity.ADD_BEER -> handleAddBeer(selectedBeer, mapOfBeer)
+                MainActivity.SELECT_BEER -> handleSelectBeer(selectedBeer, mapOfBeer)
             }
         }
-        /*Selecting Beer*/
-        else {
 
-            val currentUser = service.currentUser
 
-            val owedToList: MutableMap<String, Float> = try {
-                getOwned(currentUser?.owesTo)
-            } catch (e: Exception) {
-                mutableMapOf()
+    }
+
+    private fun handleAddBeer(
+        selectedBeer: GlobalBeer,
+        mapOfBeer: MutableList<Beer>?,
+    ) {
+        val user = service.currentUser?.serializeUser()
+
+
+        viewModelScope.launch(Dispatchers.IO) {
+
+            for (i in 0 until qtySelected) {
+                if (pricePerBeer != null) {
+                    val beer = Beer(name = selectedBeer.name,
+                        price = pricePerBeer!!,
+                        owner = user!!)
+                    mapOfBeer?.add(beer)
+                }
             }
+
+            /* Update BeerGroup  STRING STRING */
+            val beerGroup = BeerGroup(selectedBeer.name, serializeBeerGroup(mapOfBeer))
+
+            service.db.beerDao().updateBeerGroup(beerGroup)
+        }
+    }
+
+
+    private fun handleSelectBeer(
+        selectedBeer: GlobalBeer,
+        mapOfBeer: MutableList<Beer>?
+
+    ) {
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val currentUser = service.currentUser
+            val list = currentUser?.owesTo
+
+            val owedToList: MutableMap<String, Float>? =
+                if (list != null) currentUser.owesTo?.fromJsonToList() else mutableMapOf()
+
 
             var beer: Beer?
             var beerOwner: User?
             var price: Float?
+            var prevBeerOwner: String? = mapOfBeer?.get(0)?.owner
 
-            for(i in 0 until qtySelected){
 
-                beer = mapOfBeer[selectedBeer?.name]?.removeFirstOrNull()
+            for (i in 0 until qtySelected) {
 
-                if(beer != null) {
-                    beerOwner = beer.owner.let { service.deserializeUser(it) }
+                beer = mapOfBeer?.removeFirstOrNull()
+
+                if (beer != null) {
+                    beerOwner = beer.owner.deserializeUser()
+
                     price = beer.price
 
+                    val owedFromList: MutableMap<String, Float>? =
+                        if (list != null) beerOwner.owedFrom?.fromJsonToList() else mutableMapOf()
 
-                    val owedFromList = getOwedTo(beerOwner.owedFrom)
+                    if (owedToList != null) setPayments(owedToList, beerOwner, price)
+                    if (owedFromList != null) setPayments(owedFromList, currentUser, price)
 
-                    setPayments(owedToList, beerOwner, price)
-                    setPayments(owedFromList, currentUser, price)
+                    beerOwner.owedFrom = owedFromList?.fromListToJson()
+
+
+                    if (i == qtySelected - 1 || prevBeerOwner != beer.owner) {
+
+                        if (prevBeerOwner != null) {
+                            service.db.userDao().updateUser(prevBeerOwner.deserializeUser())
+                        }
+
+                        prevBeerOwner = beer.owner
+                    }
+
                 }
             }
+            currentUser?.owesTo = owedToList?.fromListToJson()
+
+            if (currentUser != null) {
+                service.db.userDao().updateUser(currentUser)
+            }
+
+            val beerGroupToUpdate = BeerGroup(selectedBeer.name, serializeBeerGroup(mapOfBeer))
+
+           /* val beerToUpdate: BeerGroup =
+                selectedBeer.name.let { service.db.beerDao().getAllFromGroup(it) }
+            beerToUpdate.beers = serializeBeerGroup(mapOfBeer)*/
+
+            service.db.beerDao().updateBeerGroup(beerGroupToUpdate)
+
         }
+
     }
+
 
     private fun setPayments(
         paymentList: MutableMap<String, Float>,
@@ -151,26 +195,8 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
         }
     }
 
-
-    fun getOwned(it:String?): MutableMap<String, Float>{
-
-        val itemType = object : TypeToken<MutableMap<String, Float?>>() {}.type
-
-        return gson.fromJson(it, itemType)
-    }
-
-    fun getOwedTo(it:String?): MutableMap<String, Float>{
-
-        val itemType = object : TypeToken<MutableMap<String, Float?>>() {}.type
-
-        return gson.fromJson(it, itemType)
-    }
-
-    fun serializeBeer(it: Beer?): String{
-        return  gson.toJson(it)
-    }
-    fun deserializeBeer(it: String): Beer{
-        return gson.fromJson(it, Beer::class.java)
+    fun setTotalQty(selectedBeer: String) {
+        beerCount = beerService.getStock(selectedBeer)!!
     }
 
 

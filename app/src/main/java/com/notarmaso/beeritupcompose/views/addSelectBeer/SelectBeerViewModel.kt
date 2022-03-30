@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.BeerService
 import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.deserializeBeerGroup
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import com.notarmaso.beeritupcompose.models.Beer
 import com.notarmaso.beeritupcompose.models.BeerGroup
@@ -43,10 +44,10 @@ class SelectBeerViewModel(val service: Service, val beerService: BeerService) : 
 
         viewModelScope.launch(Dispatchers.IO) {
             val beerGroups: List<BeerGroup> = service.db.beerDao().getAllGroups()
+
             for (group in beerGroups) {
 
-                val beers: MutableList<Beer>? =
-                    beerService.deserializeBeerGroup(beers = group.beers)
+                val beers: MutableList<Beer>? = deserializeBeerGroup(beers = group.beers)
 
                 val list = beerService.mapOfBeer[group.groupName]
                 list?.clear()
@@ -56,6 +57,7 @@ class SelectBeerViewModel(val service: Service, val beerService: BeerService) : 
                     }
                 }
             }
+            if(beerGroups.isEmpty()) beerService.mapOfBeer.clear()
         }
     }
 }

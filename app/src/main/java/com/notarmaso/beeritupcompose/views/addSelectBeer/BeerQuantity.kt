@@ -34,14 +34,14 @@ fun BeerQuantityPage(viewModel: BeerQuantityViewModel) {
 
     val service = get<Service>()
     val selectedBeer = service.selectedGlobalBeer
-
-    if(service.currentPage == MainActivity.IS_ADDING_BEER) isAddingBeer = true
+    viewModel.setTotalQty(selectedBeer?.name!!)
+    if(service.currentPage == MainActivity.ADD_BEER) isAddingBeer = true
 
     Column {
-        TopBar(if(isAddingBeer)"Add qty. of ${selectedBeer?.name}" else "Select beers!", Icons.Rounded.ArrowBack) {
+        TopBar(if(isAddingBeer)"Add qty. of ${selectedBeer.name}" else "Select beers!", Icons.Rounded.ArrowBack) {
             viewModel.navigateBack(MainActivity.SELECT_BEER)
         }
-        selectedBeer?.let { BeerQuantity(it, viewModel, isAddingBeer) }
+        BeerQuantity(selectedBeer, viewModel, isAddingBeer)
     }
 
 }
@@ -117,7 +117,7 @@ fun BeerQuantity(
             if(!addBeer) {
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Text(text = "Beer in stock: ${vm.beerService.getStock(globalBeer.name)}",
+                Text(text = "Beer in stock: ${vm.beerCount}",
                     color = colorResource(id = R.color.topbarcolor),
                     modifier = Modifier.padding(start = 20.dp)
                 )

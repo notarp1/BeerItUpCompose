@@ -3,6 +3,7 @@ package com.notarmaso.beeritupcompose
 import android.app.AlertDialog
 import android.content.Context
 import android.widget.Toast
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import androidx.room.Room
@@ -22,9 +23,9 @@ class Service(ctx: Context, val userObs: UserObserverNotifier) {
   var selectedGlobalBeer: GlobalBeer? = null
   var currentPage: String? = null
   var navHostController: NavHostController? = null
-  val gson = Gson()
 
-  val context = ctx
+
+  private val context = ctx
 
   val db = Room.databaseBuilder(
     ctx,
@@ -39,20 +40,8 @@ class Service(ctx: Context, val userObs: UserObserverNotifier) {
     navHostController?.navigate(location){popUpTo(location)}
   }
 
-  fun serializeUser(it: User?): String{
-    return  gson.toJson(it)
-  }
 
-  fun deserializeUser(it: String): User{
-    return gson.fromJson(it, User::class.java)
-  }
 
-  fun serializeBeer(it: Beer?): String{
-    return  gson.toJson(it)
-  }
-  fun deserializeBeer(it: String): Beer{
-    return gson.fromJson(it, Beer::class.java)
-  }
   fun createAlertBoxSelectBeer(beerQty: Int, price: Float, onAccept: () -> Unit){
     val alertDialogBuilder = AlertDialog.Builder(context)
     alertDialogBuilder
@@ -96,6 +85,8 @@ class Service(ctx: Context, val userObs: UserObserverNotifier) {
   fun makeToast(msg: String){
     Toast.makeText(context,msg, Toast.LENGTH_SHORT).show()
   }
+
+
   /*TEMPORARY*/
 
   fun removeUsers(){

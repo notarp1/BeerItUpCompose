@@ -70,7 +70,7 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_one),
                 goToPage = {
-                    viewModel.setPage("selectBeer")
+                    viewModel.setPage(MainActivity.SELECT_BEER)
                     //Update userlist
                     service.userObs.notifySubscribers()
                     //Update beers
@@ -97,7 +97,7 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_two),
                 goToPage = {
-                    viewModel.setPage(MainActivity.IS_ADDING_BEER)
+                    viewModel.setPage(MainActivity.ADD_BEER)
                     service.userObs.notifySubscribers()
                     beerService.beerObs.notifySubscribers()
                     viewModel.navigate(MainActivity.SELECT_USER)
@@ -112,8 +112,8 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_four),
                 goToPage = {
+                    viewModel.setPage(MainActivity.ADD_USER)
                     viewModel.navigate(MainActivity.ADD_USER)
-                    viewModel.setPage("addUser")
                 })
 
         }

@@ -13,18 +13,18 @@ import com.notarmaso.beeritupcompose.components.TopBar
 import com.notarmaso.beeritupcompose.views.mainMenu.MainMenuContents
 
 @Composable
-fun DebugDrawer(service: Service){
+fun DebugDrawer(drawer: DebugDrawerViewModel){
 
     Column {
-        TopBar("Menu", Icons.Rounded.ArrowBack) { service.navigate(MainActivity.MAIN_MENU) }
+        TopBar("Menu", Icons.Rounded.ArrowBack) { drawer.navigate(MainActivity.MAIN_MENU) }
 
 
         Column() {
-            Button(onClick = { service.removeUsers()}) {
+            Button(onClick = { drawer.removeUsers()}) {
                 Text(text = "Delete Users")
             }
 
-            Button(onClick = {service.removeBeers() }) {
+            Button(onClick = {drawer.removeBeers() }) {
                 Text(text = "Delete Beers")
             }
         }
