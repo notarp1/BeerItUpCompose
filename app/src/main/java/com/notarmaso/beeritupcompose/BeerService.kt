@@ -76,45 +76,6 @@ class BeerService(val service: Service, val beerObs: BeerObserverNotifier) {
         }
     }
 
-    fun addBeers() {
-        if (beerList != null) {
-
-            for (beer in beerList!!) {
-                when (beer.name) {
-                    Brands.CARLSBERG.bName -> carlsberg?.add(beer)
-                    Brands.TUBORG.bName -> turborg?.add(beer)
-                    Brands.CLASSIC.bName -> classic?.add(beer)
-                    Brands.CARLS_SPECIAL.bName -> carlsSpecial?.add(beer)
-                    Brands.GULD_DAME.bName -> guld?.add(beer)
-                    Brands.HEINEKEN.bName -> heineken?.add(beer)
-                    Brands.JULEBRYG.bName -> julebryg?.add(beer)
-                    Brands.RAA.bName -> raa?.add(beer)
-                    Brands.R_CLASSIC.bName -> rClassic?.add(beer)
-                    Brands.R_EXPORT.bName -> rExport?.add(beer)
-                    Brands.R_PILSNER.bName -> rPilsner?.add(beer)
-                }
-            }
-
-        }
-    }
-
-    fun getBeerGroup(name: String): MutableList<Beer>? {
-
-        return when (name) {
-            Brands.CARLSBERG.name -> carlsberg
-            Brands.TUBORG.name -> turborg
-            Brands.CLASSIC.name -> classic
-            Brands.CARLS_SPECIAL.name -> carlsSpecial
-            Brands.GULD_DAME.name -> guld
-            Brands.HEINEKEN.name -> heineken
-            Brands.JULEBRYG.name -> julebryg
-            Brands.RAA.name -> raa
-            Brands.R_CLASSIC.name -> rClassic
-            Brands.R_EXPORT.name -> rExport
-            Brands.R_PILSNER.name -> rPilsner
-            else -> return null
-        }
-    }
 
 }
 

@@ -13,6 +13,8 @@ import com.notarmaso.beeritupcompose.models.GlobalBeer
 import com.notarmaso.beeritupcompose.models.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 
 class BeerQuantityViewModel(val service: Service, val beerService: BeerService): ViewModel(), ViewModelFunction {
@@ -57,16 +59,25 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
         else qtySelected--
     }
 
+    /*This section is a mess, fix it up later, it calculates the price of beer */
     fun onConfirm(isAddingBeer: Boolean = false){
 
         if(isAddingBeer) {
-            val pricePerBeer = pricePaid.toFloat() / qtySelected.toFloat()
-            this.pricePerBeer = pricePerBeer
-            service.createAlertBoxAddBeer(pricePerBeer, ::onAccept, qtySelected)
+            val calcPrice = pricePaid.toFloat() / qtySelected.toFloat()
+            val priceRounded = BigDecimal(calcPrice.toDouble()).setScale(2, RoundingMode.HALF_EVEN)
+            this.pricePerBeer = priceRounded.toFloat()
+
+            service.createAlertBoxAddBeer(pricePerBeer!!, ::onAccept, qtySelected)
             return
         }
 
-        service.createAlertBoxSelectBeer(qtySelected, 23f, ::onAccept)
+        val mapOfBeer = beerService.mapOfBeer[service.selectedGlobalBeer?.name]
+        var priceToPay = 0f
+        for (i in 0 until qtySelected) {
+            priceToPay += mapOfBeer?.get(i)!!.price
+        }
+
+        service.createAlertBoxSelectBeer(qtySelected, price =  priceToPay, ::onAccept)
 
     }
 
@@ -88,13 +99,14 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
         selectedBeer: GlobalBeer,
         mapOfBeer: MutableList<Beer>?,
     ) {
-        val user = service.currentUser?.serializeUser()
+        val user = service.currentUser?.name
 
 
         viewModelScope.launch(Dispatchers.IO) {
-
+            //val priceRounded = BigDecimal(pricePerBeer!!.toDouble()).setScale(1, RoundingMode.HALF_EVEN)
             for (i in 0 until qtySelected) {
                 if (pricePerBeer != null) {
+
                     val beer = Beer(name = selectedBeer.name,
                         price = pricePerBeer!!,
                         owner = user!!)
@@ -106,6 +118,7 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
             val beerGroup = BeerGroup(selectedBeer.name, serializeBeerGroup(mapOfBeer))
 
             service.db.beerDao().updateBeerGroup(beerGroup)
+            beerService.beerObs.notifySubscribers()
         }
     }
 
@@ -118,48 +131,48 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
         viewModelScope.launch(Dispatchers.IO) {
             val currentUser = service.currentUser
-            val list = currentUser?.owesTo
 
-            val owedToList: MutableMap<String, Float>? =
-                if (list != null) currentUser.owesTo?.fromJsonToList() else mutableMapOf()
+            val userOwesToList = currentUser?.owesTo?.fromJsonToList()
 
 
             var beer: Beer?
-            var beerOwner: User?
             var price: Float?
-            var prevBeerOwner: String? = mapOfBeer?.get(0)?.owner
+            val prevBeerName: String = mapOfBeer!!.get(0).owner
 
+            /* HER */
+            var beerOwner: User =  service.db.userDao().getUser(prevBeerName)
+            var prevBeerOwner: String? = beerOwner.name
 
             for (i in 0 until qtySelected) {
 
-                beer = mapOfBeer?.removeFirstOrNull()
+                beer = mapOfBeer.removeFirstOrNull()
 
-                if (beer != null) {
-                    beerOwner = beer.owner.deserializeUser()
+                if (beer != null && currentUser?.name != beer.owner) {
+
+                    if(prevBeerOwner != beer.owner) beerOwner = service.db.userDao().getUser(beer.owner)
+
 
                     price = beer.price
 
-                    val owedFromList: MutableMap<String, Float>? =
-                        if (list != null) beerOwner.owedFrom?.fromJsonToList() else mutableMapOf()
+                    val beerOwnerOwedFromList = beerOwner.owedFrom.fromJsonToList()
 
-                    if (owedToList != null) setPayments(owedToList, beerOwner, price)
-                    if (owedFromList != null) setPayments(owedFromList, currentUser, price)
+                    if (userOwesToList != null) setPayments(userOwesToList, beerOwner, price)
+                    setPayments(beerOwnerOwedFromList, currentUser, price)
 
-                    beerOwner.owedFrom = owedFromList?.fromListToJson()
+                    beerOwner.owedFrom = beerOwnerOwedFromList.fromListToJson()
 
 
-                    if (i == qtySelected - 1 || prevBeerOwner != beer.owner) {
 
-                        if (prevBeerOwner != null) {
-                            service.db.userDao().updateUser(prevBeerOwner.deserializeUser())
-                        }
-
-                        prevBeerOwner = beer.owner
-                    }
+                    service.db.userDao().updateUser(beerOwner)
+                    if (prevBeerOwner != beer.owner) prevBeerOwner = beer.owner
 
                 }
             }
-            currentUser?.owesTo = owedToList?.fromListToJson()
+
+
+            if (userOwesToList != null) {
+                currentUser.owesTo = userOwesToList.fromListToJson()
+            }
 
             if (currentUser != null) {
                 service.db.userDao().updateUser(currentUser)
@@ -167,15 +180,14 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
             val beerGroupToUpdate = BeerGroup(selectedBeer.name, serializeBeerGroup(mapOfBeer))
 
-           /* val beerToUpdate: BeerGroup =
-                selectedBeer.name.let { service.db.beerDao().getAllFromGroup(it) }
-            beerToUpdate.beers = serializeBeerGroup(mapOfBeer)*/
 
             service.db.beerDao().updateBeerGroup(beerGroupToUpdate)
 
         }
 
     }
+
+
 
 
     private fun setPayments(

@@ -27,6 +27,10 @@ fun DebugDrawer(drawer: DebugDrawerViewModel){
             Button(onClick = {drawer.removeBeers() }) {
                 Text(text = "Delete Beers")
             }
+
+            Button(onClick = {drawer.resetUsers() }) {
+                Text(text = "Reset Users")
+            }
         }
     }
 }

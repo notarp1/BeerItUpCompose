@@ -17,7 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class Service(ctx: Context, val userObs: UserObserverNotifier) {
+class Service(ctx: Context, val userObs: UserObserverNotifier, val paymentObs: PaymentObserverNotifier) {
 
   var currentUser: User? = null
   var selectedGlobalBeer: GlobalBeer? = null
@@ -46,7 +46,7 @@ class Service(ctx: Context, val userObs: UserObserverNotifier) {
     val alertDialogBuilder = AlertDialog.Builder(context)
     alertDialogBuilder
       .setTitle("${currentUser?.name} you are selecting $beerQty beers")
-      .setMessage("For at total of $price \nDo you really want to continue?")
+      .setMessage("For at total of $price DKK \nDo you really want to continue?")
 
     alertDialogBuilder.setPositiveButton(android.R.string.yes) { _, _ ->
       makeToast("Succesfully bought beers")
@@ -87,20 +87,6 @@ class Service(ctx: Context, val userObs: UserObserverNotifier) {
   }
 
 
-  /*TEMPORARY*/
-
-  fun removeUsers(){
-    CoroutineScope(Dispatchers.IO).launch{
-      db.userDao().deleteAll()
-    }
-
-  }
-
-  fun removeBeers(){
-    CoroutineScope(Dispatchers.IO).launch{
-     db.beerDao().deleteAll()
-    }
-  }
 
 }
 

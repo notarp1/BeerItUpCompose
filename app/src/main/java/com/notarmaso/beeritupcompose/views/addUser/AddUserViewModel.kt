@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.fromListToJson
 import com.notarmaso.beeritupcompose.models.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,8 +18,7 @@ class AddUserViewModel(val service: Service): ViewModel() {
 
     var name by mutableStateOf("")
     var phone by mutableStateOf("")
-    var owedFrom by mutableStateOf<Map<String, Double>?>(null)
-    var owesTo by mutableStateOf<Map<String, Double>?>(null)
+
 
     var errorFound: Boolean = false
 
@@ -30,10 +30,11 @@ class AddUserViewModel(val service: Service): ViewModel() {
         filterWhitespaces()
         if(phoneValidation()){
            // val users = service.db.userDao().getAll()
+            val owedFrom: MutableMap<String, Float> = mutableMapOf()
+            val owesTo: MutableMap<String, Float> = mutableMapOf()
 
 
-
-            val user = User(name, phone, null, null)
+            val user = User(name, phone, owedFrom.fromListToJson(), owesTo.fromListToJson(), 0)
 
             viewModelScope.launch(Dispatchers.IO){
                 try {

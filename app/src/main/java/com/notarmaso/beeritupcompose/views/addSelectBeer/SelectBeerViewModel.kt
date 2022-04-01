@@ -1,5 +1,6 @@
 package com.notarmaso.beeritupcompose.views.addSelectBeer
 
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.BeerService
@@ -9,6 +10,7 @@ import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import com.notarmaso.beeritupcompose.models.Beer
 import com.notarmaso.beeritupcompose.models.BeerGroup
 import com.notarmaso.beeritupcompose.models.GlobalBeer
+import com.notarmaso.beeritupcompose.models.SampleData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,7 +44,7 @@ class SelectBeerViewModel(val service: Service, val beerService: BeerService) : 
     /*Should only happen if change has happened */
     override fun update() {
 
-        viewModelScope.launch(Dispatchers.IO) {
+     viewModelScope.launch(Dispatchers.IO) {
             val beerGroups: List<BeerGroup> = service.db.beerDao().getAllGroups()
 
             for (group in beerGroups) {
@@ -57,7 +59,9 @@ class SelectBeerViewModel(val service: Service, val beerService: BeerService) : 
                     }
                 }
             }
-            if(beerGroups.isEmpty()) beerService.mapOfBeer.clear()
+
         }
     }
 }
+
+

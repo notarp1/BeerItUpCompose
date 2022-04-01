@@ -19,9 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.R
+import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.components.TopBar
 import com.notarmaso.beeritupcompose.models.SampleData
 import com.notarmaso.beeritupcompose.models.User
+import org.koin.androidx.compose.get
 
 @Composable
 fun SelectUser(viewModel: SelectUserViewModel){
@@ -41,6 +43,8 @@ fun SelectUser(viewModel: SelectUserViewModel){
 
 @Composable
 fun UserList(users: List<User>, viewModel: SelectUserViewModel) {
+
+    val currentPage = get<Service>().currentPage
     Box(modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight()
@@ -49,7 +53,9 @@ fun UserList(users: List<User>, viewModel: SelectUserViewModel) {
         LazyColumn (modifier = Modifier.padding(top = 20.dp)) {
 
             items(users) { user ->
-                UserCard(user, viewModel)
+                if (currentPage != null) {
+                    UserCard(user, viewModel, currentPage)
+                }
             }
         }
     }
@@ -58,7 +64,8 @@ fun UserList(users: List<User>, viewModel: SelectUserViewModel) {
 
 
 @Composable
-fun UserCard(user: User = SampleData.userListSample[0], viewModel: SelectUserViewModel){
+fun UserCard(user: User = SampleData.userListSample[0], vm: SelectUserViewModel, cuurentPage: String){
+
     Surface(
         shape = RoundedCornerShape(50),
         elevation = 1.dp,
@@ -73,8 +80,18 @@ fun UserCard(user: User = SampleData.userListSample[0], viewModel: SelectUserVie
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .clickable { viewModel.navigate(MainActivity.SELECT_BEER)
-                            viewModel.service.currentUser = user},
+                .clickable {
+                    vm.service.currentUser = user
+                    when(cuurentPage){
+                        MainActivity.SELECT_BEER -> vm.navigate(MainActivity.SELECT_BEER)
+                        MainActivity.ADD_BEER -> vm.navigate(MainActivity.SELECT_BEER)
+                        MainActivity.PAYMENTS -> {
+                            vm.service.paymentObs.notifySubscribers()
+                            vm.navigate(MainActivity.PAYMENTS)
+                        }
+                        else -> vm.navigateBack(MainActivity.MAIN_MENU)
+                    }
+                           },
             contentAlignment = Alignment.CenterStart
         ) {
             Text(text = user.name,

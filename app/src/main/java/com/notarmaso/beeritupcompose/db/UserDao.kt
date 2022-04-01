@@ -9,6 +9,9 @@ interface UserDao {
     @Query("SELECT * FROM user")
     fun getAll(): MutableList<User>
 
+    @Query("SELECT * FROM User WHERE name =:username")
+    fun getUser(username: String): User
+
     @Insert
     fun insertUser(user: User)
 

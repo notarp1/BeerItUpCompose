@@ -87,7 +87,7 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 goToPage = {
                     service.userObs.notifySubscribers()
                     viewModel.navigate(MainActivity.SELECT_USER)
-                    viewModel.setPage("viewPayments")
+                    viewModel.setPage(MainActivity.PAYMENTS)
                 })
 
             Spacer(modifier = Modifier.height(50.dp))

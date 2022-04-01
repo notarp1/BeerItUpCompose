@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 data class User(
     @PrimaryKey @ColumnInfo(name= "name") val name: String,
     @ColumnInfo(name= "phone") val phone: String,
-    @ColumnInfo(name = "owedFrom") var owedFrom: String?,
-    @ColumnInfo(name = "owesTo") var owesTo: String?
+    @ColumnInfo(name = "owedFrom") var owedFrom: String,
+    @ColumnInfo(name = "owesTo") var owesTo: String,
+    @ColumnInfo(name = "beersBought") var totalBeers: Int
     )
