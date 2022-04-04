@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notarmaso.beeritupcompose.BeerService
@@ -25,14 +26,16 @@ import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.components.TopBar
 import org.koin.androidx.compose.get
 
-
+@Preview
 @Composable
-fun MainMenu(mainMenuViewModel: MainMenuViewModel){
+fun MainMenu(mainMenuViewModel: MainMenuViewModel? = null){
 
     val service = get<Service>()
     Column {
         TopBar("Menu", Icons.Rounded.DonutLarge) { service.navigateBack(MainActivity.DEBUG_DRAWER) }
-        MainMenuContents(mainMenuViewModel)
+        if (mainMenuViewModel != null) {
+            MainMenuContents(mainMenuViewModel)
+        }
     }
 
 
@@ -135,6 +138,7 @@ fun MenuRow(buttonText: String, buttonWidth: Double, text: String, goToPage: ()-
     }
 
 }
+
 
 
 @Composable

@@ -1,11 +1,14 @@
 package com.notarmaso.beeritupcompose.views.userSelection
 
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
+import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.models.User
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import kotlinx.coroutines.*
@@ -13,6 +16,8 @@ import kotlinx.coroutines.*
 class SelectUserViewModel(val service: Service): ViewModel(), ViewModelFunction {
 
     var users by mutableStateOf<List<User>?>(null)
+    private val beerRepository: BeerRepository = BeerRepository(Application())
+    private val userRepository: UserRepository = UserRepository(Application())
 
     init {
         service.userObs.register(this)
@@ -20,7 +25,9 @@ class SelectUserViewModel(val service: Service): ViewModel(), ViewModelFunction 
     }
 
     fun getUsers() {
-        users = service.db.userDao().getAll()
+        viewModelScope.launch(Dispatchers.IO) {
+            users = userRepository.getAllUsers()
+        }
     }
 
 

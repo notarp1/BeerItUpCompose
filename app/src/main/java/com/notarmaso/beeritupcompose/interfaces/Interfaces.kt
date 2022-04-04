@@ -2,6 +2,8 @@ package com.notarmaso.beeritupcompose.interfaces
 
 
 import com.notarmaso.beeritupcompose.*
+import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
+import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.views.addSelectBeer.BeerQuantityViewModel
 import com.notarmaso.beeritupcompose.views.addSelectBeer.SelectBeerViewModel
 import com.notarmaso.beeritupcompose.views.addUser.AddUserViewModel
@@ -28,6 +30,7 @@ val serviceModule = module {
     single { PaymentObserverNotifier() }
     single { params -> Service( ctx = params.get(), get(), get()) }
     single { BeerService(get(), get()) }
+
 
 }
 

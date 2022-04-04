@@ -1,11 +1,14 @@
 package com.notarmaso.beeritupcompose.views.addSelectBeer
 
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.*
+import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
+import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import com.notarmaso.beeritupcompose.models.Beer
 import com.notarmaso.beeritupcompose.models.BeerGroup
@@ -19,13 +22,26 @@ import java.math.RoundingMode
 
 class BeerQuantityViewModel(val service: Service, val beerService: BeerService): ViewModel(), ViewModelFunction {
 
+    /* Ting jeg ikke har orket at teste:
+        *
+        * Når man køber sine egne øl
+        *
+    */
 
-
+    /* Ting jeg mangler at implementere:
+       *
+       * Hvis jeg A, skylder B penge, så hvis B køber af mig, fratrukkes prisen hvad jeg skylder B
+       *
+   */
 
     var qtySelected by mutableStateOf(1)
     var pricePaid by mutableStateOf("120")
     var pricePerBeer: Float? = null
     var beerCount by mutableStateOf(0)
+
+
+    private val beerRepository: BeerRepository = BeerRepository(service.context)
+    private val userRepository: UserRepository = UserRepository(service.context)
     init {
         beerService.beerObs.register(this)
     }
@@ -117,7 +133,8 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
             /* Update BeerGroup  STRING STRING */
             val beerGroup = BeerGroup(selectedBeer.name, serializeBeerGroup(mapOfBeer))
 
-            service.db.beerDao().updateBeerGroup(beerGroup)
+            beerRepository.updateBeerGroup(beerGroup)
+           // service.db.beerDao().updateBeerGroup(beerGroup)
             beerService.beerObs.notifySubscribers()
         }
     }
@@ -137,19 +154,21 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
             var beer: Beer?
             var price: Float?
-            val prevBeerName: String = mapOfBeer!!.get(0).owner
+            val prevBeerName: String = mapOfBeer!![0].owner
 
             /* HER */
-            var beerOwner: User =  service.db.userDao().getUser(prevBeerName)
+            var beerOwner: User =  userRepository.getUser(prevBeerName)
             var prevBeerOwner: String? = beerOwner.name
 
             for (i in 0 until qtySelected) {
+                /*Increment total beers*/
+                currentUser?.totalBeers = currentUser?.totalBeers?.plus(1)!!
 
                 beer = mapOfBeer.removeFirstOrNull()
 
-                if (beer != null && currentUser?.name != beer.owner) {
+                if (beer != null && currentUser.name != beer.owner) {
 
-                    if(prevBeerOwner != beer.owner) beerOwner = service.db.userDao().getUser(beer.owner)
+                    if(prevBeerOwner != beer.owner) beerOwner = userRepository.getUser(beer.owner)
 
 
                     price = beer.price
@@ -162,8 +181,7 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
                     beerOwner.owedFrom = beerOwnerOwedFromList.fromListToJson()
 
 
-
-                    service.db.userDao().updateUser(beerOwner)
+                    userRepository.updateUser(beerOwner)
                     if (prevBeerOwner != beer.owner) prevBeerOwner = beer.owner
 
                 }
@@ -175,13 +193,13 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
             }
 
             if (currentUser != null) {
-                service.db.userDao().updateUser(currentUser)
+                userRepository.updateUser(currentUser)
             }
 
             val beerGroupToUpdate = BeerGroup(selectedBeer.name, serializeBeerGroup(mapOfBeer))
 
 
-            service.db.beerDao().updateBeerGroup(beerGroupToUpdate)
+            beerRepository.updateBeerGroup(beerGroupToUpdate)
 
         }
 

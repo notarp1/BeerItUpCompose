@@ -1,5 +1,6 @@
 package com.notarmaso.beeritupcompose.views.addUser
 
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -7,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
+import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.fromListToJson
 import com.notarmaso.beeritupcompose.models.User
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +19,7 @@ import timber.log.Timber
 
 class AddUserViewModel(val service: Service): ViewModel() {
 
+    private val userRepository: UserRepository = UserRepository(service.context)
     var name by mutableStateOf("")
     var phone by mutableStateOf("")
 
@@ -38,7 +42,7 @@ class AddUserViewModel(val service: Service): ViewModel() {
 
             viewModelScope.launch(Dispatchers.IO){
                 try {
-                    service.db.userDao().insertUser(user)
+                    userRepository.insertUser(user = user)
                     service.userObs.notifySubscribers()
 
                 } catch (e: Exception){

@@ -3,18 +3,11 @@ package com.notarmaso.beeritupcompose
 import android.app.AlertDialog
 import android.content.Context
 import android.widget.Toast
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import androidx.room.Room
-import com.google.gson.Gson
 import com.notarmaso.beeritupcompose.db.AppDatabase
-import com.notarmaso.beeritupcompose.models.Beer
 import com.notarmaso.beeritupcompose.models.GlobalBeer
 import com.notarmaso.beeritupcompose.models.User
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 class Service(ctx: Context, val userObs: UserObserverNotifier, val paymentObs: PaymentObserverNotifier) {
@@ -25,12 +18,8 @@ class Service(ctx: Context, val userObs: UserObserverNotifier, val paymentObs: P
   var navHostController: NavHostController? = null
 
 
-  private val context = ctx
+  val context = ctx
 
-  val db = Room.databaseBuilder(
-    ctx,
-    AppDatabase::class.java, "BeerItUpDB"
-  ).fallbackToDestructiveMigration().build()
 
   fun navigate(location: String){
     navHostController?.navigate(location)

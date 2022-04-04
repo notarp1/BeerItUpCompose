@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notarmaso.beeritupcompose.MainActivity
@@ -46,8 +47,7 @@ fun UserList(users: List<User>, viewModel: SelectUserViewModel) {
 
     val currentPage = get<Service>().currentPage
     Box(modifier = Modifier
-        .fillMaxWidth()
-        .fillMaxHeight()
+        .fillMaxSize()
         .background(colorResource(id = R.color.background))){
 
         LazyColumn (modifier = Modifier.padding(top = 20.dp)) {
@@ -87,6 +87,7 @@ fun UserCard(user: User = SampleData.userListSample[0], vm: SelectUserViewModel,
                         MainActivity.ADD_BEER -> vm.navigate(MainActivity.SELECT_BEER)
                         MainActivity.PAYMENTS -> {
                             vm.service.paymentObs.notifySubscribers()
+                            Thread.sleep(50)
                             vm.navigate(MainActivity.PAYMENTS)
                         }
                         else -> vm.navigateBack(MainActivity.MAIN_MENU)

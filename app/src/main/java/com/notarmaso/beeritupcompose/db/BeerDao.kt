@@ -8,20 +8,6 @@ import com.notarmaso.beeritupcompose.models.User
 @Dao
 interface BeerDao {
 
-/*    @Query("SELECT * FROM Beer")
-    fun getAll(): MutableList<Beer>
-
-    @Insert
-    fun insert(beer: Beer)
-
-    @Update
-    fun updateBeer(beerList: MutableList<Beer>)
-
-    @Delete
-    fun deleteBeer(beer: Beer)
-
-    @Query("DELETE FROM beer")
-    fun deleteAll()*/
 
     @Query ("SELECT * FROM BeerGroup WHERE BeerGroupName LIKE :beer")
     fun getAllFromGroup(beer: String): BeerGroup

@@ -1,10 +1,13 @@
 package com.notarmaso.beeritupcompose.views.addSelectBeer
 
+import android.app.Application
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.BeerService
 import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
+import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.deserializeBeerGroup
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import com.notarmaso.beeritupcompose.models.Beer
@@ -18,7 +21,7 @@ import kotlinx.coroutines.launch
 
 class SelectBeerViewModel(val service: Service, val beerService: BeerService) : ViewModel(), ViewModelFunction {
 
-
+    private val beerRepository: BeerRepository = BeerRepository(service.context)
     init {
         beerService.beerObs.register(this)
     }
@@ -45,7 +48,8 @@ class SelectBeerViewModel(val service: Service, val beerService: BeerService) : 
     override fun update() {
 
      viewModelScope.launch(Dispatchers.IO) {
-            val beerGroups: List<BeerGroup> = service.db.beerDao().getAllGroups()
+            val beerGroups: List<BeerGroup> = beerRepository.getAllBeerGroups()
+
 
             for (group in beerGroups) {
 

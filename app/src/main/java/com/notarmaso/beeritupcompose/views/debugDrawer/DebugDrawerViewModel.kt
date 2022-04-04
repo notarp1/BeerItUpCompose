@@ -1,8 +1,11 @@
 package com.notarmaso.beeritupcompose.views.debugDrawer
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.*
+import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
+import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.models.Beer
 import com.notarmaso.beeritupcompose.models.BeerGroup
 import com.notarmaso.beeritupcompose.models.User
@@ -10,16 +13,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class DebugDrawerViewModel(val service: Service, private val beerService: BeerService): ViewModel() {
+    private val beerRepository: BeerRepository = BeerRepository(service.context)
+    private val userRepository: UserRepository = UserRepository(service.context)
+
     fun removeUsers() {
         viewModelScope.launch(Dispatchers.IO){
-            service.db.userDao().deleteAll()
+          userRepository.deleteAll()
         }
 
     }
 
     fun removeBeers() {
         viewModelScope.launch(Dispatchers.IO){
-            service.db.beerDao().deleteAll()
+            beerRepository.deleteAll()
             for ((key, value) in beerService.mapOfBeer.entries) {
               value?.clear()
             }
@@ -38,11 +44,11 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
         val user4 = User("FerrariBuy", "22334455", owedFrom.fromListToJson(), owesTo.fromListToJson(),0)
 
         viewModelScope.launch(Dispatchers.IO){
+            userRepository.insertUser(user1)
+            userRepository.insertUser(user2)
+            userRepository.insertUser(user3)
+            userRepository.insertUser(user4)
 
-            service.db.userDao().insertUser(user1)
-            service.db.userDao().insertUser(user2)
-            service.db.userDao().insertUser(user3)
-            service.db.userDao().insertUser(user4)
 
             val mapOfBeer = beerService.mapOfBeer["Carlsberg"]
             for (i in 0 until 4) {
@@ -60,7 +66,8 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
                 mapOfBeer?.add(beer)
             }
             val beerGroup = BeerGroup("Carlsberg", serializeBeerGroup(mapOfBeer))
-            service.db.beerDao().updateBeerGroup(beerGroup)
+
+            beerRepository.updateBeerGroup(beerGroup)
             beerService.beerObs.notifySubscribers()
         }
 

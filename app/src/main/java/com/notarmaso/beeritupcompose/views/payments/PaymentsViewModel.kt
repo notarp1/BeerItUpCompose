@@ -1,8 +1,14 @@
 package com.notarmaso.beeritupcompose.views.payments
 
 import android.app.Service
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
+import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.fromJsonToList
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import com.notarmaso.beeritupcompose.models.User
@@ -12,8 +18,12 @@ import kotlinx.coroutines.launch
 class PaymentsViewModel(val service: com.notarmaso.beeritupcompose.Service): ViewModel(), ViewModelFunction {
 
     var user: User? = null
-    var owedFrom: MutableMap<String, Float>? = mutableMapOf()
-    var owesTo: MutableMap<String, Float>? = mutableMapOf()
+
+
+    var owedFrom: MutableMap<String, Float>? by mutableStateOf(mutableMapOf())
+    var owesTo: MutableMap<String, Float>? by mutableStateOf(mutableMapOf())
+
+    private val userRepository: UserRepository = UserRepository(service.context)
 
 
     init {
@@ -21,15 +31,14 @@ class PaymentsViewModel(val service: com.notarmaso.beeritupcompose.Service): Vie
     }
 
     private fun getUser(){
-        owedFrom = mutableMapOf()
-        owesTo = mutableMapOf()
 
         viewModelScope.launch(Dispatchers.IO) {
-            user = service.currentUser?.let { service.db.userDao().getUser(it.name) }
-        }
+            user = service.currentUser?.let { userRepository.getUser(it.name) }
 
-        if(user?.owedFrom != null) owedFrom = user?.owedFrom?.fromJsonToList()
-        if(user?.owesTo != null) owesTo = user?.owesTo?.fromJsonToList()
+
+        owedFrom = user?.owedFrom?.fromJsonToList()
+        owesTo = user?.owesTo?.fromJsonToList()
+        }
     }
 
     override fun navigate(location: String) {
@@ -43,4 +52,6 @@ class PaymentsViewModel(val service: com.notarmaso.beeritupcompose.Service): Vie
     override fun update() {
        getUser()
     }
+
+
 }
