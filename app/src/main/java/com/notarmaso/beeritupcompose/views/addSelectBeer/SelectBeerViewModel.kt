@@ -33,7 +33,7 @@ class SelectBeerViewModel(val service: Service, val beerService: BeerService) : 
     }
 
 
-    fun getStock(name: String): Int? {
+    fun getStock(name: String): Int {
         return beerService.getStock(name = name)
     }
 

@@ -24,7 +24,7 @@ class SelectUserViewModel(val service: Service): ViewModel(), ViewModelFunction 
 
     }
 
-    fun getUsers() {
+    private fun getUsers() {
         viewModelScope.launch(Dispatchers.IO) {
             users = userRepository.getAllUsers()
         }

@@ -2,6 +2,7 @@ package com.notarmaso.beeritupcompose.views.addUser
 
 import android.app.Application
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -34,8 +35,8 @@ class AddUserViewModel(val service: Service): ViewModel() {
         filterWhitespaces()
         if(phoneValidation()){
            // val users = service.db.userDao().getAll()
-            val owedFrom: MutableMap<String, Float> = mutableMapOf()
-            val owesTo: MutableMap<String, Float> = mutableMapOf()
+            val owedFrom: MutableMap<String, Float> = mutableStateMapOf()
+            val owesTo: MutableMap<String, Float> = mutableStateMapOf()
 
 
             val user = User(name, phone, owedFrom.fromListToJson(), owesTo.fromListToJson(), 0)

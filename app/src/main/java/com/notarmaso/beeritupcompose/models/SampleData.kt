@@ -1,12 +1,13 @@
 package com.notarmaso.beeritupcompose.models
 
+import androidx.compose.runtime.mutableStateMapOf
 import com.notarmaso.beeritupcompose.R
 import com.notarmaso.beeritupcompose.fromListToJson
 
 object SampleData {
     // Sample conversation data
-    private val owedFrom: MutableMap<String, Float> = mutableMapOf()
-    private val owesTo: MutableMap<String, Float> = mutableMapOf()
+    private val owedFrom: MutableMap<String, Float> = mutableStateMapOf()
+    private val owesTo: MutableMap<String, Float> = mutableStateMapOf()
     val userListSample = listOf(
         User("Christian", "22222222", owedFrom.fromListToJson(), owesTo.fromListToJson(), 0),
         User("Mads", "22222222", owedFrom.fromListToJson(), owesTo.fromListToJson(), 0),

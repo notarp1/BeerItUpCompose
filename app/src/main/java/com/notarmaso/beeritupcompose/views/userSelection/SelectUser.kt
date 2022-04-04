@@ -87,7 +87,6 @@ fun UserCard(user: User = SampleData.userListSample[0], vm: SelectUserViewModel,
                         MainActivity.ADD_BEER -> vm.navigate(MainActivity.SELECT_BEER)
                         MainActivity.PAYMENTS -> {
                             vm.service.paymentObs.notifySubscribers()
-                            Thread.sleep(50)
                             vm.navigate(MainActivity.PAYMENTS)
                         }
                         else -> vm.navigateBack(MainActivity.MAIN_MENU)

@@ -1,6 +1,7 @@
 package com.notarmaso.beeritupcompose.views.debugDrawer
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.*
@@ -27,7 +28,7 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
         viewModelScope.launch(Dispatchers.IO){
             beerRepository.deleteAll()
             for ((key, value) in beerService.mapOfBeer.entries) {
-              value?.clear()
+              value.clear()
             }
         }
     }
@@ -35,8 +36,8 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
     fun resetUsers(){
 
 
-        val owedFrom: MutableMap<String, Float> = mutableMapOf()
-        val owesTo: MutableMap<String, Float> = mutableMapOf()
+        val owedFrom: MutableMap<String, Float> = mutableStateMapOf()
+        val owesTo: MutableMap<String, Float> = mutableStateMapOf()
 
         val user1 = User("MadsSell", "22334455", owedFrom.fromListToJson(), owesTo.fromListToJson(),0)
         val user2 = User("HenrietteSell", "22334455", owedFrom.fromListToJson(), owesTo.fromListToJson(),0)

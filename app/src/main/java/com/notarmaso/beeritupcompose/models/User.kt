@@ -12,3 +12,5 @@ data class User(
     @ColumnInfo(name = "owesTo") var owesTo: String,
     @ColumnInfo(name = "beersBought") var totalBeers: Int
     )
+
+data class UserEntry(val name: String, val price: Float, val phone: String)

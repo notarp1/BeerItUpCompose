@@ -48,7 +48,7 @@ fun BeerList(globalBeers: List<GlobalBeer>, selectBeerViewModel: SelectBeerViewM
         ) {
             items(globalBeers) { beer ->
                 val beerStock = selectBeerViewModel.getStock(beer.name)
-                if (beerStock!! > 0 || isAddingBeer) BeerCard(beer, selectBeerViewModel, beerStock)
+                if (beerStock > 0 || isAddingBeer) BeerCard(beer, selectBeerViewModel, beerStock)
             }
         }
     }

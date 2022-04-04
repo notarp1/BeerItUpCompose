@@ -66,7 +66,7 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold)
 
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(25.dp))
 
             MenuRow(
                 buttonText = "Drink beer!",
@@ -81,7 +81,7 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                     viewModel.navigate(MainActivity.SELECT_USER)
                 })
 
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(25.dp))
 
             MenuRow(
                 buttonText = "See payments",
@@ -93,7 +93,7 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                     viewModel.setPage(MainActivity.PAYMENTS)
                 })
 
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(25.dp))
 
             MenuRow(
                 buttonText = "Add beers",
@@ -108,7 +108,7 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
 
 
 
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(25.dp))
 
             MenuRow(
                 buttonText = "Create User",
@@ -127,9 +127,9 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
 @Composable
 fun MenuRow(buttonText: String, buttonWidth: Double, text: String, goToPage: ()-> Unit){
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         MenuButton(buttonWidth, buttonText, goToPage)
-        Spacer(modifier = Modifier.width(40.dp))
+        Spacer(modifier = Modifier.width(25.dp))
         Text(
             text = text,
             style = MaterialTheme.typography.body1,
