@@ -1,21 +1,17 @@
 package com.notarmaso.beeritupcompose.views.payments
 
-import android.annotation.SuppressLint
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
-import com.notarmaso.beeritupcompose.fromJsonToList
-import com.notarmaso.beeritupcompose.fromListToJson
+import com.notarmaso.beeritupcompose.fromJsonToListFloat
+import com.notarmaso.beeritupcompose.fromListFloatToJson
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import com.notarmaso.beeritupcompose.models.User
 import com.notarmaso.beeritupcompose.models.UserEntry
 import com.notarmaso.beeritupcompose.Service
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-
 
 
 class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
@@ -43,8 +39,8 @@ class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
 
            user = service.currentUser.let { userRepository.getUser(it.name) }
 
-            val owedFrom: MutableMap<String, Float> = user.owedFrom.fromJsonToList()
-            val owesTo: MutableMap<String, Float> = user.owesTo.fromJsonToList()
+            val owedFrom: MutableMap<String, Float> = user.owedFrom.fromJsonToListFloat()
+            val owesTo: MutableMap<String, Float> = user.owesTo.fromJsonToListFloat()
 
             createDataObjects(list = owedFrom, true)
             createDataObjects(list = owesTo, false)
@@ -60,10 +56,10 @@ class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
 
             if (isFrom) {
                 _owedFrom.add(UserEntry(user.name, value, user.phone))
-                return
-            }
 
-            _owesTo.add(UserEntry(user.name, value, user.phone))
+            } else {
+                _owesTo.add(UserEntry(user.name, value, user.phone))
+            }
         }
     }
 
@@ -89,22 +85,22 @@ class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
         viewModelScope.launch(Dispatchers.IO) {
             /* Handle current user */
             val currentUser = service.currentUser
-            val userPayments = currentUser.owesTo.fromJsonToList()
+            val userPayments = currentUser.owesTo.fromJsonToListFloat()
 
             userPayments[user.name] = 0f
 
 
-            service.currentUser.owesTo = userPayments.fromListToJson()
+            service.currentUser.owesTo = userPayments.fromListFloatToJson()
 
             userRepository.updateUser(currentUser)
 
             /* Handle selected user */
             val selectedUser = userRepository.getUser(user.name)
-            val selectedUserPayments = selectedUser.owedFrom.fromJsonToList()
+            val selectedUserPayments = selectedUser.owedFrom.fromJsonToListFloat()
 
             selectedUserPayments[currentUser.name] = 0f
 
-            selectedUser.owedFrom = selectedUserPayments.fromListToJson()
+            selectedUser.owedFrom = selectedUserPayments.fromListFloatToJson()
 
             userRepository.updateUser(selectedUser)
 

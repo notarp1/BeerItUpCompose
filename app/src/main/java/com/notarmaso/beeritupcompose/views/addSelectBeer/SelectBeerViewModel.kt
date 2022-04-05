@@ -17,11 +17,15 @@ import com.notarmaso.beeritupcompose.models.SampleData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.get
+import org.koin.core.parameter.parametersOf
+import org.koin.java.KoinJavaComponent.get
 
 
 class SelectBeerViewModel(val service: Service, val beerService: BeerService) : ViewModel(), ViewModelFunction {
 
     private val beerRepository: BeerRepository = BeerRepository(service.context)
+
     init {
         beerService.beerObs.register(this)
     }
@@ -30,6 +34,7 @@ class SelectBeerViewModel(val service: Service, val beerService: BeerService) : 
 
     fun setBeer(globalBeer: GlobalBeer){
         service.selectedGlobalBeer = globalBeer
+        service.miscObs.notifySubscribers()
     }
 
 

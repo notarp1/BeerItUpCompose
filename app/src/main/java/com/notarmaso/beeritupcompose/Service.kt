@@ -3,13 +3,15 @@ package com.notarmaso.beeritupcompose
 import android.app.AlertDialog
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavHostController
 import com.notarmaso.beeritupcompose.models.GlobalBeer
 import com.notarmaso.beeritupcompose.models.User
 import com.notarmaso.beeritupcompose.models.UserEntry
+import kotlinx.datetime.*
 
 
-class Service(ctx: Context, val userObs: UserObserverNotifier, val paymentObs: PaymentObserverNotifier) {
+class Service(ctx: Context, val userObs: UserObserverNotifier, val paymentObs: PaymentObserverNotifier, val miscObs: MiscObserverNotifier) {
 
   lateinit var currentUser: User
   var selectedGlobalBeer: GlobalBeer? = null
@@ -17,8 +19,16 @@ class Service(ctx: Context, val userObs: UserObserverNotifier, val paymentObs: P
   var navHostController: NavHostController? = null
 
 
+  private var _currentDate: String = Clock.System.todayAt(TimeZone.currentSystemDefault()).month.toString()
+  val currentDate: String get() = _currentDate
+
   val context = ctx
 
+
+
+  fun getDate(){
+    _currentDate = Clock.System.todayAt(TimeZone.currentSystemDefault()).month.toString()
+  }
 
   fun navigate(location: String){
     navHostController?.navigate(location)
@@ -82,6 +92,24 @@ class Service(ctx: Context, val userObs: UserObserverNotifier, val paymentObs: P
     }
 
     alertDialogBuilder.setNegativeButton("Wait!") { _, _ ->
+      makeToast("Cancelled")
+    }
+    alertDialogBuilder.show()
+
+
+  }
+
+  fun createAlertBoxAddUser(user: User, onAccept: () -> Unit){
+    val alertDialogBuilder = AlertDialog.Builder(context)
+    alertDialogBuilder
+      .setTitle("Is this correct?")
+      .setMessage("Username: ${user.name} \nPhone: ${user.phone}")
+
+    alertDialogBuilder.setPositiveButton("Yes create user!") { _, _ ->
+      onAccept()
+    }
+
+    alertDialogBuilder.setNegativeButton("Wait, go back!!") { _, _ ->
       makeToast("Cancelled")
     }
     alertDialogBuilder.show()

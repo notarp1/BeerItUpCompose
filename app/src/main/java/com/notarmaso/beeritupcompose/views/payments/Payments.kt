@@ -101,32 +101,36 @@ fun OwedFromList(payVm: PaymentsViewModel){
 
 @Composable 
 fun UserPaymentCard(user: UserEntry ,payVm: PaymentsViewModel, isClickable: Boolean = false){
-    
+
     Surface(modifier = Modifier
         .fillMaxWidth()
-        .height(45.dp)
-        .padding(start = 10.dp).padding(end = 10.dp)
+        .height(30.dp)
+        .padding(start = 5.dp)
+        .padding(end = 5.dp)
         .background(Color.Transparent), shape = RoundedCornerShape(20.dp)){
-        
+
         Box(modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.topbarcolor))
             .clickable{
                 if(isClickable) payVm.makeTransaction(user)
             },
-            contentAlignment = Alignment.Center) {
+            contentAlignment = Alignment.CenterStart) {
 
-           Row(Modifier.padding(start = 10.dp).padding(end = 10.dp)) {
-               Text(text = "${user.price} DKK", color = Color.Magenta)
-               Text(text = " | ")
-               Text(text = user.name, color = colorResource(id = R.color.darkorange))
-               Text(text = " | ")
-               Text(text = "+45 ${user.phone}", color = Color.Cyan)
-           }
+            Row(Modifier
+                .padding(start = 20.dp).fillMaxWidth()
+                .padding(end = 20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
+
+            ) {
+
+                Text(text = "${user.price} DKK", color = colorResource(id = R.color.buttonColor), fontWeight = FontWeight.Bold)
+                Text(text = user.name, color = colorResource(id = R.color.buttonColor))
+                Text(text = "+45 ${user.phone}", color = colorResource(id = R.color.darkorange))
+            }
 
         }
-        }
-    Spacer(modifier = Modifier.height(10.dp))
+    }
+    Spacer(modifier = Modifier.height(5.dp))
     
 }
 

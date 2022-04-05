@@ -8,7 +8,7 @@ import com.notarmaso.beeritupcompose.models.Beer
 import com.notarmaso.beeritupcompose.models.BeerGroup
 import com.notarmaso.beeritupcompose.models.User
 
-@Database(entities = [User::class, BeerGroup::class], version = 3)
+@Database(entities = [User::class, BeerGroup::class], version = 4)
 
 abstract class AppDatabase : RoomDatabase() {
 

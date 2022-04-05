@@ -27,8 +27,9 @@ val serviceModule = module {
 
     single { UserObserverNotifier() }
     single { BeerObserverNotifier() }
+    single { MiscObserverNotifier()}
     single { PaymentObserverNotifier() }
-    single { params -> Service( ctx = params.get(), get(), get()) }
+    single { params -> Service( ctx = params.get(), get(), get(), get()) }
     single { BeerService(get(), get()) }
 
 
@@ -57,6 +58,12 @@ internal interface BeerObserver<T>{
 }
 
 internal interface PaymentObserver<T>{
+    fun register(subscriber: ViewModelFunction)
+    fun remove(subscriber: ViewModelFunction)
+    fun notifySubscribers()
+}
+
+internal interface MiscObserver<T>{
     fun register(subscriber: ViewModelFunction)
     fun remove(subscriber: ViewModelFunction)
     fun notifySubscribers()

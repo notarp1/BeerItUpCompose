@@ -3,6 +3,8 @@ package com.notarmaso.beeritupcompose.views.addSelectBeer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -12,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -23,6 +26,7 @@ import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.R
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.components.TopBar
+import com.notarmaso.beeritupcompose.models.Beer
 import com.notarmaso.beeritupcompose.models.GlobalBeer
 import com.notarmaso.beeritupcompose.models.SampleData
 import org.koin.androidx.compose.get
@@ -128,12 +132,60 @@ fun BeerQuantity(
 
             ConfirmButton(vm, addBeer)
 
+            Spacer(modifier = Modifier.height(10.dp))
+            
+            BeerList(vm = vm)
 
-
-
+    
         }
     }
 }
+
+
+@Composable
+fun BeerList(vm: BeerQuantityViewModel){
+    val configuration = LocalConfiguration.current
+    val width = configuration.screenWidthDp
+    LazyColumn(modifier = Modifier.padding(top = 20.dp)) {
+
+        items(vm.beerList) { beer ->
+            BeerListItem(beer, width.toDouble())
+        }
+    }
+}
+
+@Composable
+fun BeerListItem(beer: Beer, width: Double){
+
+    Surface(modifier = Modifier
+        .fillMaxWidth()
+        .height(30.dp)
+        .padding(start = 5.dp)
+        .padding(end = 5.dp)
+        .background(Color.Transparent), shape = RoundedCornerShape(20.dp)){
+
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(id = R.color.topbarcolor)),
+            contentAlignment = Alignment.CenterStart) {
+
+            Row(Modifier
+                .padding(start = 20.dp).fillMaxWidth()
+                .padding(end = 20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
+
+            ) {
+
+                Text(text = "${beer.price} DKK", color = colorResource(id = R.color.buttonColor), fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.width(20.dp))
+                Text(text = beer.owner, color = colorResource(id = R.color.darkorange))
+            }
+
+        }
+    }
+    Spacer(modifier = Modifier.height(5.dp))
+
+}
+
 
 
 @Composable

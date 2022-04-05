@@ -64,7 +64,7 @@ fun UserList(users: List<User>, viewModel: SelectUserViewModel) {
 
 
 @Composable
-fun UserCard(user: User = SampleData.userListSample[0], vm: SelectUserViewModel, cuurentPage: String){
+fun UserCard(user: User, vm: SelectUserViewModel, cuurentPage: String){
 
     Surface(
         shape = RoundedCornerShape(50),

@@ -17,3 +17,5 @@ data class BeerGroup(
     @PrimaryKey @ColumnInfo(name = "BeerGroupName") val groupName: String,
     @ColumnInfo(name = "BeerList") var beers: String
 )
+
+

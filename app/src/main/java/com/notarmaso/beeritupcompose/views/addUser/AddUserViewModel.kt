@@ -1,6 +1,5 @@
 package com.notarmaso.beeritupcompose.views.addUser
 
-import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -9,9 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.Service
-import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
-import com.notarmaso.beeritupcompose.fromListToJson
+import com.notarmaso.beeritupcompose.fromListFloatToJson
+import com.notarmaso.beeritupcompose.fromListIntToJson
 import com.notarmaso.beeritupcompose.models.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,7 +24,7 @@ class AddUserViewModel(val service: Service): ViewModel() {
     var phone by mutableStateOf("")
 
 
-    var errorFound: Boolean = false
+    private var errorFound: Boolean = false
 
     fun navigateBack(location: String){
         service.navigateBack(location)
@@ -37,30 +36,50 @@ class AddUserViewModel(val service: Service): ViewModel() {
            // val users = service.db.userDao().getAll()
             val owedFrom: MutableMap<String, Float> = mutableStateMapOf()
             val owesTo: MutableMap<String, Float> = mutableStateMapOf()
+            val totalBeers: MutableMap<String, Int> = mutableStateMapOf(
+                "TOTAL" to 0,
+                "JANUARY" to 0,
+                "FEBRUARY" to 0,
+                "MARCH" to 0,
+                "APRIL" to 0,
+                "MAY" to 0,
+                "JUNE" to 0,
+                "JULY" to 0,
+                "AUGUST" to 0,
+                "SEPTEMBER" to 0,
+                "OCTOBER" to 0,
+                "NOVEMBER" to 0,
+                "DECEMBER" to 0
+            )
 
 
-            val user = User(name, phone, owedFrom.fromListToJson(), owesTo.fromListToJson(), 0)
-
-            viewModelScope.launch(Dispatchers.IO){
-                try {
-                    userRepository.insertUser(user = user)
-                    service.userObs.notifySubscribers()
-
-                } catch (e: Exception){
-                    Timber.d("Username already exists %s", e.toString())
-                    errorFound = true
-                }
-            }
-
-            if(errorFound) service.makeToast("Username is already taken!")
-            else service.navigateBack(MainActivity.MAIN_MENU)
+            val user = User(name, phone, owedFrom.fromListFloatToJson(), owesTo.fromListFloatToJson(), totalBeers = totalBeers.fromListIntToJson())
+            service.createAlertBoxAddUser(user){submitUser(user)}
 
         }
+    }
 
+    private fun submitUser(user: User) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                userRepository.insertUser(user = user)
+            } catch (e: Exception) {
+                Timber.d("Username already exists %s", e.toString())
+                errorFound = true
+            } finally {
 
+                viewModelScope.launch(Dispatchers.Main) {
+                    if (!errorFound) {
+                        service.userObs.notifySubscribers()
+                        service.navigateBack(MainActivity.MAIN_MENU)
+                    } else {
+                        service.makeToast("Username is already taken!")
+                        errorFound = false
+                    }
 
-
-
+                }
+            }
+        }
     }
 
     private fun filterWhitespaces(){

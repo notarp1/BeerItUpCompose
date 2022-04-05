@@ -1,6 +1,5 @@
 package com.notarmaso.beeritupcompose.views.debugDrawer
 
-import android.app.Application
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -38,11 +37,26 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
 
         val owedFrom: MutableMap<String, Float> = mutableStateMapOf()
         val owesTo: MutableMap<String, Float> = mutableStateMapOf()
+        val totalBeers: MutableMap<String, Int> = mutableStateMapOf(
+            "TOTAL" to 0,
+            "JANUARY" to 0,
+            "FEBRUARY" to 0,
+            "MARCH" to 0,
+            "APRIL" to 0,
+            "MAY" to 0,
+            "JUNE" to 0,
+            "JULY" to 0,
+            "AUGUST" to 0,
+            "SEPTEMBER" to 0,
+            "OCTOBER" to 0,
+            "NOVEMBER" to 0,
+            "DECEMBER" to 0
+        )
 
-        val user1 = User("MadsSell", "22334455", owedFrom.fromListToJson(), owesTo.fromListToJson(),0)
-        val user2 = User("HenrietteSell", "22334455", owedFrom.fromListToJson(), owesTo.fromListToJson(),0)
-        val user3 = User("ArmadilloBuy", "22334455", owedFrom.fromListToJson(), owesTo.fromListToJson(),0)
-        val user4 = User("FerrariBuy", "22334455", owedFrom.fromListToJson(), owesTo.fromListToJson(),0)
+        val user1 = User("MadsSell", "22334455", owedFrom.fromListFloatToJson(), owesTo.fromListFloatToJson(),totalBeers.fromListIntToJson())
+        val user2 = User("HenrietteSell", "22334455", owedFrom.fromListFloatToJson(), owesTo.fromListFloatToJson(),totalBeers.fromListIntToJson())
+        val user3 = User("ArmadilloBuy", "22334455", owedFrom.fromListFloatToJson(), owesTo.fromListFloatToJson(),totalBeers.fromListIntToJson())
+        val user4 = User("FerrariBuy", "22334455", owedFrom.fromListFloatToJson(), owesTo.fromListFloatToJson(),totalBeers.fromListIntToJson())
 
         viewModelScope.launch(Dispatchers.IO){
             userRepository.insertUser(user1)

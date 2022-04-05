@@ -10,7 +10,9 @@ data class User(
     @ColumnInfo(name= "phone") val phone: String,
     @ColumnInfo(name = "owedFrom") var owedFrom: String,
     @ColumnInfo(name = "owesTo") var owesTo: String,
-    @ColumnInfo(name = "beersBought") var totalBeers: Int
+    @ColumnInfo(name = "totalBeers") var totalBeers: String
     )
 
 data class UserEntry(val name: String, val price: Float, val phone: String)
+
+data class UserLeaderboard(val name: String, val count: Int)
