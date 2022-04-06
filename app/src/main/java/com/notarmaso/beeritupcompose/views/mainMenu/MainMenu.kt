@@ -36,7 +36,7 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel){
 
     val service = get<Service>()
     Column {
-        TopBar("Menu", Icons.Rounded.DonutLarge) { service.navigateBack(MainActivity.DEBUG_DRAWER) }
+        TopBar("Menu", Icons.Rounded.DonutLarge) { /*service.navigateBack(MainActivity.DEBUG_DRAWER)*/ }
         MainMenuContents(mainMenuViewModel)
 
     }

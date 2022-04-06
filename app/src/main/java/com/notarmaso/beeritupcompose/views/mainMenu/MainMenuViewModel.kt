@@ -40,7 +40,7 @@ class MainMenuViewModel(val service: Service): ViewModel(), ViewModelFunction{
         service.observer.register(this)
 
        /*This makes the debugger crash*/
-        Timer("Init", false).schedule(5000) {
+        Timer("Init", false).schedule(3500) {
             _currentMonth = service.currentDate
             reloadHighscores(true)
         }
