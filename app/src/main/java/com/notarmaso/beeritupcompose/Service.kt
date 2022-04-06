@@ -25,7 +25,7 @@ class Service(ctx: Context, val observer: Observer) {
 
 
 
-  fun getDate(){
+  fun getDateMonth(){
     _currentDate = Clock.System.todayAt(TimeZone.currentSystemDefault()).month.toString()
   }
 

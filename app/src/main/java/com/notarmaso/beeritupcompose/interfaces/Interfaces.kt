@@ -6,6 +6,7 @@ import com.notarmaso.beeritupcompose.views.addSelectBeer.BeerQuantityViewModel
 import com.notarmaso.beeritupcompose.views.addSelectBeer.SelectBeerViewModel
 import com.notarmaso.beeritupcompose.views.addUser.AddUserViewModel
 import com.notarmaso.beeritupcompose.views.debugDrawer.DebugDrawerViewModel
+import com.notarmaso.beeritupcompose.views.logBooks.LogBookViewModel
 import com.notarmaso.beeritupcompose.views.mainMenu.MainMenuViewModel
 import com.notarmaso.beeritupcompose.views.payments.PaymentsViewModel
 import com.notarmaso.beeritupcompose.views.userSelection.SelectUserViewModel
@@ -38,6 +39,7 @@ val vmModule = module {
     viewModel { AddUserViewModel(get()) }
     viewModel { DebugDrawerViewModel(get(), get())}
     viewModel { PaymentsViewModel(get())}
+    viewModel { LogBookViewModel(get())}
 }
 
 internal interface UserObserver<T>{

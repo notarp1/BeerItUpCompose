@@ -16,6 +16,9 @@ import com.notarmaso.beeritupcompose.models.GlobalBeer
 import com.notarmaso.beeritupcompose.models.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayAt
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -75,6 +78,7 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
             return
         }
 
+
         val mapOfBeer = beerService.mapOfBeer[service.selectedGlobalBeer?.name]
         var priceToPay = 0f
         for (i in 0 until qtySelected) {
@@ -104,7 +108,13 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
         selectedBeer: GlobalBeer,
         mapOfBeer: MutableList<Beer>,
     ) {
-        val user = service.currentUser.name
+        val currentUser= service.currentUser
+
+        /*Log update*/
+        val date = Clock.System.todayAt(TimeZone.currentSystemDefault())
+        val log = currentUser.beersAddedLog.fromJsonToList()
+        log.add("You added $qtySelected ${selectedBeer.name} at $date")
+        service.currentUser.beersAddedLog = log.fromListToJson()
 
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -114,7 +124,7 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
                     val beer = Beer(name = selectedBeer.name,
                         price = pricePerBeer,
-                        owner = user)
+                        owner = currentUser.name)
                     mapOfBeer.add(beer)
 
             }
@@ -124,7 +134,12 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
             beerRepository.updateBeerGroup(beerGroup)
            // service.db.beerDao().updateBeerGroup(beerGroup)
+            currentUser.totalAddedDkk += pricePaid.toFloat()
+
+            userRepository.updateUser(user = currentUser)
+
             service.observer.notifySubscribers(MainActivity.SELECT_BEER_QUANTITY)
+
         }
     }
 
@@ -134,7 +149,7 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
         mapOfBeer: MutableList<Beer>
 
     ) {
-        service.getDate()
+        service.getDateMonth()
 
         viewModelScope.launch(Dispatchers.IO) {
             val currentUser = service.currentUser
@@ -143,7 +158,6 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
 
             var beer: Beer?
-            var price: Float?
             val prevBeerName: String = mapOfBeer[0].owner
 
             /* HER */
@@ -152,6 +166,10 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
             val totalBeers: MutableMap<String, Int> = currentUser.totalBeers.fromJsonToListInt()
             val month = service.currentDate
+
+            var totalPaid: Float = 0f
+            val date = Clock.System.todayAt(TimeZone.currentSystemDefault())
+
             var beersToAdd: Int  = 0
             for (i in 0 until qtySelected) {
 
@@ -165,12 +183,12 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
                     if(prevBeerOwner != beer.owner) beerOwner = userRepository.getUser(beer.owner)
 
 
-                    price = beer.price
+                    totalPaid += beer.price
 
                     val beerOwnerOwedFromList = beerOwner.owedFrom.fromJsonToListFloat()
 
-                    setPayments(userOwesToList, beerOwner, price)
-                    setPayments(beerOwnerOwedFromList, currentUser, price)
+                    setPayments(userOwesToList, beerOwner, beer.price)
+                    setPayments(beerOwnerOwedFromList, currentUser, beer.price)
 
                     beerOwner.owedFrom = beerOwnerOwedFromList.fromListFloatToJson()
 
@@ -190,6 +208,13 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
             currentUser.totalBeers = totalBeers.fromListIntToJson()
             currentUser.owesTo = userOwesToList.fromListFloatToJson()
 
+            /*Update log*/
+            val log = currentUser.beersBoughtLog.fromJsonToList()
+            log.add("You bought $beersToAdd ${selectedBeer.name} at $date")
+            currentUser.beersBoughtLog = log.fromListToJson()
+
+
+            currentUser.totalSpentDkk += totalPaid
 
             userRepository.updateUser(currentUser)
 
@@ -230,11 +255,13 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
     }
 
 
-    override fun navigate(location: String){
-        service.navigate(location)
+
+    private fun isAddingBeer(page: String): Boolean{
+        return page == MainActivity.ADD_BEER
     }
-    override fun navigateBack(location: String){
-        service.navigateBack(location)
+
+    private fun isBuyingBeer(page: String): Boolean{
+        return page == MainActivity.BUY_BEER
     }
 
     override fun update(page: String) {
@@ -255,12 +282,11 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
         }
     }
 
-    private fun isAddingBeer(page: String): Boolean{
-        return page == MainActivity.ADD_BEER
+    override fun navigate(location: String){
+        service.navigate(location)
     }
-
-    private fun isBuyingBeer(page: String): Boolean{
-        return page == MainActivity.BUY_BEER
+    override fun navigateBack(location: String){
+        service.navigateBack(location)
     }
 }
 

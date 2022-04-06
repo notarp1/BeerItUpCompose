@@ -4,4 +4,11 @@
     <string name="menu_btn_two">Add beer you have bought</string>
     <string name="menu_btn_three">Overview of payments</string>
     <string name="menu_btn_four">Add a new user</string>
+    <string name="menu_btn_five">See logs and stats</string>
+    <string name="welcome">Welcome to BeerItUp 2.0!</string>
+    <string name="drink_beer">Drink beer!</string>
+    <string name="see_payments">See payments</string>
+    <string name="add_beers">Add beers</string>
+    <string name="create_user">Create User</string>
+    <string name="log_books">Log Books</string>
 </resources>

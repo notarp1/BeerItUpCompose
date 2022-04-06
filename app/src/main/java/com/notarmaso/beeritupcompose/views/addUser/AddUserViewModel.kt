@@ -6,11 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.notarmaso.beeritupcompose.MainActivity
-import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.*
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
-import com.notarmaso.beeritupcompose.fromListFloatToJson
-import com.notarmaso.beeritupcompose.fromListIntToJson
 import com.notarmaso.beeritupcompose.models.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,8 +31,11 @@ class AddUserViewModel(val service: Service): ViewModel() {
         filterWhitespaces()
         if(phoneValidation()){
            // val users = service.db.userDao().getAll()
-            val owedFrom: MutableMap<String, Float> = mutableStateMapOf()
-            val owesTo: MutableMap<String, Float> = mutableStateMapOf()
+            val owesList: MutableMap<String, Float> = mutableStateMapOf()
+            val log: MutableList<String> = mutableListOf()
+
+            val owesJson = owesList.fromListFloatToJson()
+            val logJson = log.fromListToJson()
             val totalBeers: MutableMap<String, Int> = mutableStateMapOf(
                 "TOTAL" to 0,
                 "JANUARY" to 0,
@@ -53,7 +53,17 @@ class AddUserViewModel(val service: Service): ViewModel() {
             )
 
 
-            val user = User(name, phone, owedFrom.fromListFloatToJson(), owesTo.fromListFloatToJson(), totalBeers = totalBeers.fromListIntToJson())
+            val user = User(name, phone,
+                owesJson,
+                owesJson,
+                totalBeers = totalBeers.fromListIntToJson(),
+                0f,
+                0f,
+                logJson,
+                logJson,
+                logJson
+                )
+
             service.createAlertBoxAddUser(user){submitUser(user)}
 
         }

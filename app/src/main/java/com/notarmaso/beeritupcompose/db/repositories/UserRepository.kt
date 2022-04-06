@@ -41,4 +41,25 @@ class UserRepository(ctx: Context) {
     suspend fun deleteAll(){
         userDao.deleteAll()
     }
+
+    suspend fun getTotalBought(user: String): Float {
+        return userDao.getTotalBought(user)
+    }
+    suspend fun getTotalAdded(user: String): Float {
+        return userDao.getTotalAdded(user)
+    }
+
+    suspend fun getAddedLog(user: String): String {
+        return userDao.getBeersAdded(user)
+    }
+
+    suspend fun getBoughtLog(user: String): String{
+        return userDao.getBeersBought(user)
+    }
+
+    suspend fun getTranscationsLog(user: String): String{
+        return userDao.getTransactions(user)
+    }
+
+
 }

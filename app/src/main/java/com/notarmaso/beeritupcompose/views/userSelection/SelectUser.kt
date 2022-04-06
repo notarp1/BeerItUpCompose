@@ -91,6 +91,10 @@ fun UserCard(user: User, vm: SelectUserViewModel, currentPage: String){
                             vm.service.observer.notifySubscribers(MainActivity.PAYMENTS)
                             vm.navigate(MainActivity.PAYMENTS)
                         }
+                        MainActivity.LOG_BOOKS-> {
+                            vm.service.observer.notifySubscribers(MainActivity.LOG_BOOKS)
+                            vm.navigate(MainActivity.LOG_BOOKS)
+                        }
                         else -> vm.navigateBack(MainActivity.MAIN_MENU)
                     }
                            },

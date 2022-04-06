@@ -19,6 +19,8 @@ import com.notarmaso.beeritupcompose.views.addUser.AddUser
 import com.notarmaso.beeritupcompose.views.addUser.AddUserViewModel
 import com.notarmaso.beeritupcompose.views.debugDrawer.DebugDrawer
 import com.notarmaso.beeritupcompose.views.debugDrawer.DebugDrawerViewModel
+import com.notarmaso.beeritupcompose.views.logBooks.LogBook
+import com.notarmaso.beeritupcompose.views.logBooks.LogBookViewModel
 import com.notarmaso.beeritupcompose.views.mainMenu.MainMenu
 import com.notarmaso.beeritupcompose.views.mainMenu.MainMenuViewModel
 import com.notarmaso.beeritupcompose.views.payments.Payments
@@ -29,6 +31,7 @@ import org.koin.android.ext.android.get
 import org.koin.androidx.compose.get
 import org.koin.core.context.GlobalContext
 import org.koin.core.parameter.parametersOf
+import kotlin.math.log
 
 class MainActivity : ComponentActivity() {
 
@@ -41,6 +44,7 @@ class MainActivity : ComponentActivity() {
         const val DEBUG_DRAWER = "debugDrawer"
         const val ADD_BEER = "addBeer"
         const val PAYMENTS = "payments"
+        const val LOG_BOOKS = "logBooks"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,6 +81,7 @@ fun NavigationHost(service: Service){
     val addUserViewModel = get<AddUserViewModel>()
     val debugDrawerViewModel = get<DebugDrawerViewModel>()
     val paymentsViewModel = get<PaymentsViewModel>()
+    val logBookViewModel = get<LogBookViewModel>()
 
     NavHost(navController = navController, startDestination = cpm.MAIN_MENU){
         composable(cpm.MAIN_MENU){
@@ -102,6 +107,9 @@ fun NavigationHost(service: Service){
         }
         composable(cpm.PAYMENTS){
             Payments(paymentsViewModel)
+        }
+        composable(cpm.LOG_BOOKS){
+            LogBook(logBookViewModel = logBookViewModel)
         }
     }
 }

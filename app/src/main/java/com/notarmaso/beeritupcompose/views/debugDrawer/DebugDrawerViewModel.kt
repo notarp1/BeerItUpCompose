@@ -34,8 +34,11 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
 
     fun resetUsers(){
 
-        val owedFrom: MutableMap<String, Float> = mutableStateMapOf()
-        val owesTo: MutableMap<String, Float> = mutableStateMapOf()
+        val owesList: MutableMap<String, Float> = mutableStateMapOf()
+        val log: MutableList<String> = mutableListOf()
+
+        val owesJson = owesList.fromListFloatToJson()
+        val logJson = log.fromListToJson()
         val totalBeers: MutableMap<String, Int> = mutableStateMapOf(
             "TOTAL" to 0,
             "JANUARY" to 0,
@@ -52,10 +55,11 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
             "DECEMBER" to 0
         )
 
-        val user1 = User("MadsSell", "22334455", owedFrom.fromListFloatToJson(), owesTo.fromListFloatToJson(),totalBeers.fromListIntToJson())
-        val user2 = User("HenrietteSell", "22334455", owedFrom.fromListFloatToJson(), owesTo.fromListFloatToJson(),totalBeers.fromListIntToJson())
-        val user3 = User("ArmadilloBuy", "22334455", owedFrom.fromListFloatToJson(), owesTo.fromListFloatToJson(),totalBeers.fromListIntToJson())
-        val user4 = User("FerrariBuy", "22334455", owedFrom.fromListFloatToJson(), owesTo.fromListFloatToJson(),totalBeers.fromListIntToJson())
+        val user1 = User("Mads", "22334455", owesJson, owesJson ,totalBeers.fromListIntToJson(), 0f, 0f, logJson,logJson,logJson)
+        val user2 = User("Niels", "22334455", owesJson, owesJson ,totalBeers.fromListIntToJson(), 0f, 0f, logJson,logJson,logJson)
+        val user3 = User("Emma", "22334455", owesJson, owesJson ,totalBeers.fromListIntToJson(), 0f, 0f, logJson,logJson,logJson)
+        val user4 = User("Solvej", "22334455", owesJson, owesJson ,totalBeers.fromListIntToJson(), 0f, 0f, logJson,logJson,logJson)
+
 
         viewModelScope.launch(Dispatchers.IO){
             userRepository.insertUser(user1)

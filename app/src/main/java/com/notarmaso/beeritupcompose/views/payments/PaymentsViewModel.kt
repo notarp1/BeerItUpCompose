@@ -3,16 +3,16 @@ package com.notarmaso.beeritupcompose.views.payments
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.notarmaso.beeritupcompose.MainActivity
+import com.notarmaso.beeritupcompose.*
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
-import com.notarmaso.beeritupcompose.fromJsonToListFloat
-import com.notarmaso.beeritupcompose.fromListFloatToJson
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import com.notarmaso.beeritupcompose.models.User
 import com.notarmaso.beeritupcompose.models.UserEntry
-import com.notarmaso.beeritupcompose.Service
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayAt
 
 
 class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
@@ -85,25 +85,33 @@ class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
     }
 
     private fun handleTransaction(user: UserEntry){
+        val date = Clock.System.todayAt(TimeZone.currentSystemDefault())
+
         viewModelScope.launch(Dispatchers.IO) {
             /* Handle current user */
             val currentUser = service.currentUser
             val userPayments = currentUser.owesTo.fromJsonToListFloat()
+            val currUserLog = currentUser.transactionsLog.fromJsonToList()
 
             userPayments[user.name] = 0f
+            currentUser.owesTo = userPayments.fromListFloatToJson()
 
-
-            service.currentUser.owesTo = userPayments.fromListFloatToJson()
+            currUserLog.add("You paid ${user.name} ${user.price}DKK at $date")
+            currentUser.transactionsLog = currUserLog.fromListToJson()
 
             userRepository.updateUser(currentUser)
 
             /* Handle selected user */
             val selectedUser = userRepository.getUser(user.name)
             val selectedUserPayments = selectedUser.owedFrom.fromJsonToListFloat()
+            val selectedUserLog = selectedUser.transactionsLog.fromJsonToList()
 
             selectedUserPayments[currentUser.name] = 0f
-
             selectedUser.owedFrom = selectedUserPayments.fromListFloatToJson()
+
+            selectedUserLog.add("${currentUser.name} paid you ${user.price}DKK at $date")
+            selectedUser.transactionsLog = selectedUserLog.fromListToJson()
+
 
             userRepository.updateUser(selectedUser)
 

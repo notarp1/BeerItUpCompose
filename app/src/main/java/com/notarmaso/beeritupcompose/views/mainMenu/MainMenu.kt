@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notarmaso.beeritupcompose.BeerService
@@ -63,15 +64,15 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
         {
 
             Text(
-                text = "Welcome to BeerItUp!",
+                text = stringResource(R.string.welcome),
                 color = colorResource(id = R.color.darkorange),
-                fontSize = 28.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold)
 
             Spacer(modifier = Modifier.height(20.dp))
 
             MenuRow(
-                buttonText = "Drink beer!",
+                buttonText = stringResource(R.string.drink_beer),
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_one),
                 goToPage = {
@@ -83,7 +84,7 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
             Spacer(modifier = Modifier.height(15.dp))
 
             MenuRow(
-                buttonText = "See payments",
+                buttonText = stringResource(R.string.see_payments),
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_three),
                 goToPage = {
@@ -95,7 +96,7 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
             Spacer(modifier = Modifier.height(15.dp))
 
             MenuRow(
-                buttonText = "Add beers",
+                buttonText = stringResource(R.string.add_beers),
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_two),
                 goToPage = {
@@ -110,7 +111,7 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
             Spacer(modifier = Modifier.height(15.dp))
 
             MenuRow(
-                buttonText = "Create User",
+                buttonText = stringResource(R.string.create_user),
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_four),
                 goToPage = {
@@ -118,6 +119,17 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                     viewModel.navigate(MainActivity.ADD_USER)
                 })
             Spacer(modifier = Modifier.height(15.dp))
+
+            MenuRow(
+                buttonText = stringResource(R.string.log_books),
+                buttonWidth = 0.35,
+                text = stringResource(id = R.string.menu_btn_five),
+                goToPage = {
+                    viewModel.setPage(MainActivity.LOG_BOOKS)
+                    service.observer.notifySubscribers(MainActivity.SELECT_USER)
+                    viewModel.navigate(MainActivity.SELECT_USER)
+                })
+            Spacer(modifier = Modifier.height(10.dp))
 
             Highscores(viewModel)
         }
@@ -138,20 +150,26 @@ fun Highscores(vm: MainMenuViewModel){
 
                     Icon(Icons.Rounded.ArrowLeft,
                         contentDescription = "Reload Highscores",
-                        modifier = Modifier.clickable { vm.decrementMonth() }.size(50.dp))
+                        modifier = Modifier
+                            .clickable { vm.decrementMonth() }
+                            .size(50.dp),
+                    colorResource(id = R.color.topbarcolor))
 
-                    Text(text = vm.currentMonth)
+                    Text(text = vm.currentMonth, color = colorResource(id = R.color.topbarcolor), fontWeight = FontWeight.Bold, textDecoration = TextDecoration.Underline)
 
                     Icon(Icons.Rounded.ArrowRight,
                         contentDescription = "Reload Highscores",
-                        modifier = Modifier.clickable { vm.incrementMonth() }.size(50.dp))
+                        modifier = Modifier
+                            .clickable { vm.incrementMonth() }
+                            .size(50.dp),
+                        colorResource(id = R.color.topbarcolor))
                 }
 
             }
 
 
         }
-        LazyColumn(modifier = Modifier.padding(top = 20.dp)) {
+        LazyColumn(modifier = Modifier.padding(top = 5.dp)) {
 
             items(vm.userList) { users ->
                 HighScoreCard(users)
@@ -178,7 +196,8 @@ fun HighScoreCard(user: UserLeaderboard){
             contentAlignment = Alignment.CenterStart) {
 
             Row(Modifier
-                .padding(start = 20.dp).fillMaxWidth()
+                .padding(start = 20.dp)
+                .fillMaxWidth()
                 .padding(end = 20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
 
             ) {

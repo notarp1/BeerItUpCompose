@@ -23,4 +23,18 @@ interface UserDao {
 
     @Query("DELETE FROM User")
     fun deleteAll()
+
+    @Query("SELECT logBeersAdded FROM User WHERE name =:username")
+    fun getBeersAdded(username: String): String
+    @Query("SELECT logBeersBought FROM User WHERE name =:username")
+    fun getBeersBought(username: String): String
+    @Query("SELECT logTransactions FROM User WHERE name =:username")
+    fun getTransactions(username: String): String
+
+    @Query("SELECT totalAddedDKK FROM User WHERE name =:username")
+    fun getTotalAdded(username: String): Float
+
+    @Query("SELECT totalSpentDKK FROM User WHERE name =:username")
+    fun getTotalBought(username: String): Float
+
 }

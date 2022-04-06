@@ -48,6 +48,19 @@ fun MutableMap<String, Int>.fromListIntToJson() : String {
     return gson.toJson(this)
 }
 
+
+fun String.fromJsonToList() :  MutableList<String>{
+
+    val itemType = object : TypeToken<MutableList<String>>() {}.type
+
+    return gson.fromJson(this, itemType)
+}
+fun MutableList<String>.fromListToJson() : String {
+    return gson.toJson(this)
+}
+
+
+
 fun String.fromJsonToListInt() : MutableMap<String, Int> {
 
     val itemType = object : TypeToken<MutableMap<String, Int>>() {}.type
