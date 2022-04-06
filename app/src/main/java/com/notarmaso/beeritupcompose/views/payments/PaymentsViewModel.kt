@@ -3,6 +3,7 @@ package com.notarmaso.beeritupcompose.views.payments
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.fromJsonToListFloat
 import com.notarmaso.beeritupcompose.fromListFloatToJson
@@ -29,7 +30,7 @@ class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
 
 
     init {
-        service.paymentObs.register(this)
+        service.observer.register(this)
     }
 
     private fun getUserPayments(){
@@ -73,8 +74,10 @@ class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
         service.navigate(location = location)
     }
 
-    override fun update() {
-       getUserPayments()
+    override fun update(page: String) {
+       if(page == MainActivity.PAYMENTS) {
+           getUserPayments()
+       }
     }
 
     fun makeTransaction(user: UserEntry) {

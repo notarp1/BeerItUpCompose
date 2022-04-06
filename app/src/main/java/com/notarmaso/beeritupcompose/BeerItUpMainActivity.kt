@@ -22,7 +22,6 @@ import com.notarmaso.beeritupcompose.views.debugDrawer.DebugDrawerViewModel
 import com.notarmaso.beeritupcompose.views.mainMenu.MainMenu
 import com.notarmaso.beeritupcompose.views.mainMenu.MainMenuViewModel
 import com.notarmaso.beeritupcompose.views.payments.Payments
-import com.notarmaso.beeritupcompose.views.payments.PaymentsPage
 import com.notarmaso.beeritupcompose.views.payments.PaymentsViewModel
 import com.notarmaso.beeritupcompose.views.userSelection.SelectUser
 import com.notarmaso.beeritupcompose.views.userSelection.SelectUserViewModel
@@ -36,7 +35,7 @@ class MainActivity : ComponentActivity() {
     companion object{
         const val MAIN_MENU = "mainMenu"
         const val SELECT_USER = "selectUser"
-        const val SELECT_BEER = "selectBeer"
+        const val BUY_BEER = "buyBeer"
         const val SELECT_BEER_QUANTITY = "selectBeerQuantity"
         const val ADD_USER = "addUser"
         const val DEBUG_DRAWER = "debugDrawer"
@@ -88,7 +87,7 @@ fun NavigationHost(service: Service){
             SelectUser(selectUserViewModel)
         }
 
-        composable(cpm.SELECT_BEER){
+        composable(cpm.BUY_BEER){
             SelectBeer(selectBeerViewModel)
         }
 

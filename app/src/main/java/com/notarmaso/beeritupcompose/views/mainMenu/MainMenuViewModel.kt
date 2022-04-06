@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.fromJsonToListInt
@@ -36,7 +37,7 @@ class MainMenuViewModel(val service: Service): ViewModel(), ViewModelFunction{
     private val userRepository: UserRepository = UserRepository(service.context)
 
     init {
-        service.miscObs.register(this)
+        service.observer.register(this)
         Timer("Init", false).schedule(1000) {
             _currentMonth = service.currentDate
             reloadHighscores(true)
@@ -68,10 +69,16 @@ class MainMenuViewModel(val service: Service): ViewModel(), ViewModelFunction{
         service.navigateBack(location)
     }
 
-    override fun update() {
-        _currentMonth = service.currentDate
-        reloadHighscores(true)
+    override fun update(page: String) {
+        if(page == MainActivity.MAIN_MENU) {
+            _currentMonth = service.currentDate
+            reloadHighscores(true)
+        }
     }
+
+
+
+
 
     private fun reloadHighscores(isIni: Boolean = false){
         if(!isIni)getSelectedMonth()
@@ -112,9 +119,7 @@ class MainMenuViewModel(val service: Service): ViewModel(), ViewModelFunction{
             12 -> "DECEMBER"
             else -> "Error"
         }
-
-
-
     }
+
 
 }

@@ -1,41 +1,37 @@
 package com.notarmaso.beeritupcompose.views.addSelectBeer
 
-import android.app.Application
-import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.BeerService
+import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
-import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.deserializeBeerGroup
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import com.notarmaso.beeritupcompose.models.Beer
 import com.notarmaso.beeritupcompose.models.BeerGroup
 import com.notarmaso.beeritupcompose.models.GlobalBeer
-import com.notarmaso.beeritupcompose.models.SampleData
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.get
-import org.koin.core.parameter.parametersOf
-import org.koin.java.KoinJavaComponent.get
 
 
-class SelectBeerViewModel(val service: Service, val beerService: BeerService) : ViewModel(), ViewModelFunction {
+class SelectBeerViewModel(val service: Service, private val beerService: BeerService) : ViewModel(), ViewModelFunction {
 
     private val beerRepository: BeerRepository = BeerRepository(service.context)
 
     init {
-        beerService.beerObs.register(this)
+        service.observer.register(this)
     }
 
 
 
     fun setBeer(globalBeer: GlobalBeer){
         service.selectedGlobalBeer = globalBeer
-        service.miscObs.notifySubscribers()
+
+        if(service.currentPage == MainActivity.BUY_BEER) service.observer.notifySubscribers(MainActivity.BUY_BEER)
     }
+
+
 
 
     fun getStock(name: String): Int {
@@ -50,26 +46,35 @@ class SelectBeerViewModel(val service: Service, val beerService: BeerService) : 
     }
 
     /*Should only happen if change has happened */
-    override fun update() {
+    override fun update(page: String) {
+    if(isAddingBeer(page) || isBuyingBeer(page) || page == "UPDATE_BEER_LIST"){
 
-     viewModelScope.launch(Dispatchers.IO) {
-            val beerGroups: List<BeerGroup> = beerRepository.getAllBeerGroups()
+        viewModelScope.launch(Dispatchers.IO) {
+                val beerGroups: List<BeerGroup> = beerRepository.getAllBeerGroups()
 
 
-            for (group in beerGroups) {
+                for (group in beerGroups) {
 
-                val beers: MutableList<Beer>? = deserializeBeerGroup(beers = group.beers)
+                    val beers: MutableList<Beer>? = deserializeBeerGroup(beers = group.beers)
 
-                val list = beerService.mapOfBeer[group.groupName]
-                list?.clear()
-                if (beers != null) {
-                    for(x in beers){
-                        list?.add(x)
+                    val list = beerService.mapOfBeer[group.groupName]
+                    list?.clear()
+                    if (beers != null) {
+                        for(x in beers){
+                            list?.add(x)
+                        }
                     }
                 }
             }
-
         }
+    }
+
+    private fun isAddingBeer(page: String): Boolean{
+        return page == MainActivity.ADD_BEER
+    }
+
+    private fun isBuyingBeer(page: String): Boolean{
+        return page == MainActivity.BUY_BEER
     }
 }
 

@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class BeerService(val service: Service, val beerObs: BeerObserverNotifier) {
+class BeerService(val service: Service) {
 
 
 

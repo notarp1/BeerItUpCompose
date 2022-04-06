@@ -2,8 +2,6 @@ package com.notarmaso.beeritupcompose.interfaces
 
 
 import com.notarmaso.beeritupcompose.*
-import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
-import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.views.addSelectBeer.BeerQuantityViewModel
 import com.notarmaso.beeritupcompose.views.addSelectBeer.SelectBeerViewModel
 import com.notarmaso.beeritupcompose.views.addUser.AddUserViewModel
@@ -19,18 +17,15 @@ interface ViewModelFunction{
 
     fun navigate(location: String)
     fun navigateBack(location: String)
-    fun update()
+    fun update(page: String)
 
 }
 
 val serviceModule = module {
 
-    single { UserObserverNotifier() }
-    single { BeerObserverNotifier() }
-    single { MiscObserverNotifier()}
-    single { PaymentObserverNotifier() }
-    single { params -> Service( ctx = params.get(), get(), get(), get()) }
-    single { BeerService(get(), get()) }
+    single { Observer() }
+    single { params -> Service( ctx = params.get(), get()) }
+    single { BeerService(get()) }
 
 
 }
@@ -48,23 +43,6 @@ val vmModule = module {
 internal interface UserObserver<T>{
     fun register(subscriber: ViewModelFunction)
     fun remove(subscriber: ViewModelFunction)
-    fun notifySubscribers()
+    fun notifySubscribers(page: String)
 }
 
-internal interface BeerObserver<T>{
-    fun register(subscriber: ViewModelFunction)
-    fun remove(subscriber: ViewModelFunction)
-    fun notifySubscribers()
-}
-
-internal interface PaymentObserver<T>{
-    fun register(subscriber: ViewModelFunction)
-    fun remove(subscriber: ViewModelFunction)
-    fun notifySubscribers()
-}
-
-internal interface MiscObserver<T>{
-    fun register(subscriber: ViewModelFunction)
-    fun remove(subscriber: ViewModelFunction)
-    fun notifySubscribers()
-}
