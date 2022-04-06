@@ -42,37 +42,14 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
     private val userRepository: UserRepository = UserRepository(service.context)
 
     init {
-        beerService.beerObs.register(this)
-        service.miscObs.register(this)
+        service.observer.register(this)
     }
 
-    override fun navigate(location: String){
-        service.navigate(location)
-    }
-    override fun navigateBack(location: String){
-        service.navigateBack(location)
-    }
-
-    override fun update() {
-
-        qtySelected = if (service.currentPage == MainActivity.ADD_BEER) 24 else 1
-
-        if(service.currentPage != MainActivity.ADD_BEER) {
-            _beerList.clear()
-            mapOfBeer = beerService.mapOfBeer[service.selectedGlobalBeer?.name]
-            if (mapOfBeer != null) {
-
-                for (x in mapOfBeer!!) {
-                    _beerList.add(x)
-                }
-            }
-        }
-    }
 
 
     fun incrementCounter(){
 
-        if(service.currentPage == MainActivity.SELECT_BEER){
+        if(service.currentPage == MainActivity.BUY_BEER){
             if(qtySelected >= beerCount) qtySelected = beerCount
             else qtySelected++
         } else {
@@ -113,11 +90,12 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
         val mapOfBeer = beerService.mapOfBeer[selectedBeer?.name]
 
         if(selectedBeer != null) {
-            when(service.currentPage){
+            when (service.currentPage) {
                 MainActivity.ADD_BEER -> mapOfBeer?.let { handleAddBeer(selectedBeer, it) }
-                MainActivity.SELECT_BEER -> mapOfBeer?.let { handleSelectBeer(selectedBeer, it) }
+                MainActivity.BUY_BEER -> mapOfBeer?.let { handleSelectBeer(selectedBeer, it) }
             }
         }
+
 
 
     }
@@ -146,7 +124,7 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
             beerRepository.updateBeerGroup(beerGroup)
            // service.db.beerDao().updateBeerGroup(beerGroup)
-            service.userObs.notifySubscribers()
+            service.observer.notifySubscribers(MainActivity.SELECT_BEER_QUANTITY)
         }
     }
 
@@ -220,8 +198,9 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
 
             beerRepository.updateBeerGroup(beerGroupToUpdate)
-            service.miscObs.notifySubscribers()
 
+            //Updatebeers
+            service.observer.notifySubscribers(MainActivity.MAIN_MENU)
         }
 
     }
@@ -251,6 +230,38 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
     }
 
 
+    override fun navigate(location: String){
+        service.navigate(location)
+    }
+    override fun navigateBack(location: String){
+        service.navigateBack(location)
+    }
+
+    override fun update(page: String) {
+
+
+        if (isAddingBeer(page))  qtySelected = 24 else if (isBuyingBeer(page)) qtySelected = 1
+
+
+        if(isBuyingBeer(page)) {
+            _beerList.clear()
+            mapOfBeer = beerService.mapOfBeer[service.selectedGlobalBeer?.name]
+            if (mapOfBeer != null) {
+
+                for (x in mapOfBeer!!) {
+                    _beerList.add(x)
+                }
+            }
+        }
+    }
+
+    private fun isAddingBeer(page: String): Boolean{
+        return page == MainActivity.ADD_BEER
+    }
+
+    private fun isBuyingBeer(page: String): Boolean{
+        return page == MainActivity.BUY_BEER
+    }
 }
 
 

@@ -43,7 +43,7 @@ fun BeerQuantityPage(viewModel: BeerQuantityViewModel) {
 
     Column {
         TopBar(if(isAddingBeer)"Add qty. of ${selectedBeer.name}" else "Select beers!", Icons.Rounded.ArrowBack) {
-            viewModel.navigateBack(MainActivity.SELECT_BEER)
+            viewModel.navigateBack(MainActivity.BUY_BEER)
         }
         BeerQuantity(selectedBeer, viewModel, isAddingBeer)
     }

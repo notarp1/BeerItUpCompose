@@ -26,7 +26,6 @@ import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.R
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.components.TopBar
-import com.notarmaso.beeritupcompose.models.User
 import com.notarmaso.beeritupcompose.models.UserLeaderboard
 import org.koin.androidx.compose.get
 
@@ -76,11 +75,8 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_one),
                 goToPage = {
-                    viewModel.setPage(MainActivity.SELECT_BEER)
-                    //Update userlist
-                    service.userObs.notifySubscribers()
-                    //Update beers
-                    beerService.beerObs.notifySubscribers()
+                    viewModel.setPage(MainActivity.BUY_BEER)
+                    service.observer.notifySubscribers(MainActivity.SELECT_USER)
                     viewModel.navigate(MainActivity.SELECT_USER)
                 })
 
@@ -91,9 +87,9 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_three),
                 goToPage = {
-                    service.userObs.notifySubscribers()
-                    viewModel.navigate(MainActivity.SELECT_USER)
                     viewModel.setPage(MainActivity.PAYMENTS)
+                    service.observer.notifySubscribers(MainActivity.SELECT_USER)
+                    viewModel.navigate(MainActivity.SELECT_USER)
                 })
 
             Spacer(modifier = Modifier.height(15.dp))
@@ -104,8 +100,8 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 text = stringResource(id = R.string.menu_btn_two),
                 goToPage = {
                     viewModel.setPage(MainActivity.ADD_BEER)
-                    service.userObs.notifySubscribers()
-                    beerService.beerObs.notifySubscribers()
+                    service.observer.notifySubscribers(MainActivity.SELECT_USER)
+                    service.observer.notifySubscribers(MainActivity.ADD_BEER)
                     viewModel.navigate(MainActivity.SELECT_USER)
                 })
 

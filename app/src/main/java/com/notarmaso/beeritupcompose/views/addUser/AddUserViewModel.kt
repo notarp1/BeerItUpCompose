@@ -70,7 +70,7 @@ class AddUserViewModel(val service: Service): ViewModel() {
 
                 viewModelScope.launch(Dispatchers.Main) {
                     if (!errorFound) {
-                        service.userObs.notifySubscribers()
+                        service.observer.notifySubscribers(MainActivity.SELECT_USER)
                         service.navigateBack(MainActivity.MAIN_MENU)
                     } else {
                         service.makeToast("Username is already taken!")

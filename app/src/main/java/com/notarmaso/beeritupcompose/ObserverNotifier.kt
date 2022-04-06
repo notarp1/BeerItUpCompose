@@ -2,18 +2,11 @@ package com.notarmaso.beeritupcompose
 
 import androidx.lifecycle.ViewModel
 import com.notarmaso.beeritupcompose.interfaces.*
-import com.notarmaso.beeritupcompose.interfaces.BeerObserver
-import com.notarmaso.beeritupcompose.interfaces.MiscObserver
-import com.notarmaso.beeritupcompose.interfaces.PaymentObserver
 import com.notarmaso.beeritupcompose.interfaces.UserObserver
-import org.koin.android.ext.android.get
-import org.koin.androidx.compose.get
-import org.koin.core.context.GlobalContext
-import org.koin.core.parameter.parametersOf
 
 
 
-class UserObserverNotifier: UserObserver<ViewModel> {
+class Observer: UserObserver<ViewModel> {
 
     private val subscribers: ArrayList<ViewModelFunction> = arrayListOf()
 
@@ -25,69 +18,9 @@ class UserObserverNotifier: UserObserver<ViewModel> {
         subscribers.remove(subscriber)
     }
 
-    override fun notifySubscribers() {
+    override fun notifySubscribers(page: String) {
         subscribers.forEach {
-            it.update()
+            it.update(page)
         }
     }
-}
-
-class BeerObserverNotifier: BeerObserver<ViewModel> {
-
-    private val subscribers: ArrayList<ViewModelFunction> = arrayListOf()
-
-    override fun register(subscriber: ViewModelFunction) {
-        subscribers.add(subscriber)
-    }
-
-    override fun remove(subscriber: ViewModelFunction) {
-        subscribers.remove(subscriber)
-    }
-
-    override fun notifySubscribers() {
-        subscribers.forEach {
-            it.update()
-        }
-    }
-
-}
-
-class PaymentObserverNotifier: PaymentObserver<ViewModel> {
-
-    private val subscribers: ArrayList<ViewModelFunction> = arrayListOf()
-
-    override fun register(subscriber: ViewModelFunction) {
-        subscribers.add(subscriber)
-    }
-
-    override fun remove(subscriber: ViewModelFunction) {
-        subscribers.remove(subscriber)
-    }
-
-    override fun notifySubscribers() {
-        subscribers.forEach {
-            it.update()
-        }
-    }
-
-}
-
-class MiscObserverNotifier: MiscObserver<ViewModel> {
-
-    private val subscribers: ArrayList<ViewModelFunction> = arrayListOf()
-
-    override fun register(subscriber: ViewModelFunction) {
-        subscribers.add(subscriber)
-    }
-
-    override fun remove(subscriber: ViewModelFunction) {
-        subscribers.remove(subscriber)
-    }
-
-    override fun notifySubscribers() {
-        subscribers.forEach {
-            it.update()
-        }
-    }
-
 }

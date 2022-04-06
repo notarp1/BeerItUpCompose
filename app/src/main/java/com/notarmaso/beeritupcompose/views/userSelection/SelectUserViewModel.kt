@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
@@ -15,18 +16,19 @@ import kotlinx.coroutines.*
 
 class SelectUserViewModel(val service: Service): ViewModel(), ViewModelFunction {
 
-    var users by mutableStateOf<List<User>?>(null)
-    private val beerRepository: BeerRepository = BeerRepository(Application())
+    var _users by mutableStateOf<List<User>>(listOf())
+    val users: List<User> get() = _users
+
     private val userRepository: UserRepository = UserRepository(Application())
 
     init {
-        service.userObs.register(this)
+        service.observer.register(this)
 
     }
 
     private fun getUsers() {
         viewModelScope.launch(Dispatchers.IO) {
-            users = userRepository.getAllUsers()
+            _users = userRepository.getAllUsers()
         }
     }
 
@@ -40,9 +42,15 @@ class SelectUserViewModel(val service: Service): ViewModel(), ViewModelFunction 
         service.navigateBack(location)
     }
 
-    override fun update() {
+    override fun update(page: String) {
+        if(isSelectingUser(page)){
         viewModelScope.launch(Dispatchers.IO){
             getUsers()
         }
+        }
+    }
+
+    private fun isSelectingUser(page: String): Boolean{
+        return page == MainActivity.SELECT_USER
     }
 }

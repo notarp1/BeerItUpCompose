@@ -3,7 +3,6 @@ package com.notarmaso.beeritupcompose
 import android.app.AlertDialog
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavHostController
 import com.notarmaso.beeritupcompose.models.GlobalBeer
 import com.notarmaso.beeritupcompose.models.User
@@ -11,7 +10,7 @@ import com.notarmaso.beeritupcompose.models.UserEntry
 import kotlinx.datetime.*
 
 
-class Service(ctx: Context, val userObs: UserObserverNotifier, val paymentObs: PaymentObserverNotifier, val miscObs: MiscObserverNotifier) {
+class Service(ctx: Context, val observer: Observer) {
 
   lateinit var currentUser: User
   var selectedGlobalBeer: GlobalBeer? = null

@@ -34,7 +34,6 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
 
     fun resetUsers(){
 
-
         val owedFrom: MutableMap<String, Float> = mutableStateMapOf()
         val owesTo: MutableMap<String, Float> = mutableStateMapOf()
         val totalBeers: MutableMap<String, Int> = mutableStateMapOf(
@@ -83,7 +82,8 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
             val beerGroup = BeerGroup("Carlsberg", serializeBeerGroup(mapOfBeer))
 
             beerRepository.updateBeerGroup(beerGroup)
-            beerService.beerObs.notifySubscribers()
+            service.observer.notifySubscribers(MainActivity.BUY_BEER)
+
         }
 
 

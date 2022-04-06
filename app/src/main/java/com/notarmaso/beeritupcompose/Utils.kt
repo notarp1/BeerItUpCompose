@@ -7,6 +7,7 @@ import com.notarmaso.beeritupcompose.models.User
 val gson = Gson()
 
 
+
 /*
 fun serializeUser(it: User?): String{
     return  gson.toJson(it)
@@ -28,12 +29,6 @@ fun serializeBeerGroup(it: MutableList<Beer>?): String{
     return  gson.toJson(it)
 }
 
-fun serializeBeer(it: Beer?): String{
-    return  gson.toJson(it)
-}
-fun deserializeBeer(it: String): Beer{
-    return gson.fromJson(it, Beer::class.java)
-}
 
 
 
@@ -59,16 +54,5 @@ fun String.fromJsonToListInt() : MutableMap<String, Int> {
 
     return gson.fromJson(this, itemType)
 }
-
-
-
-fun User.serializeUser() : String{
-    return  gson.toJson(this)
-}
-
-fun String.deserializeUser() : User{
-    return gson.fromJson(this, User::class.java)
-}
-
 
 
