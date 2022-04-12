@@ -7,16 +7,23 @@ import com.notarmaso.beeritupcompose.models.User
 val gson = Gson()
 
 
-
-/*
-fun serializeUser(it: User?): String{
-    return  gson.toJson(it)
+enum class Pages(val value: String) {
+    MAIN_MENU("main_menu"),
+    SELECT_USER("select_user"),
+    BUY_BEER("buy_beer"),
+    SELECT_BEER_QUANTITY("select_beer_quantity"),
+    ADD_USER("add_user"),
+    DEBUG_DRAWER("debug_drawer"),
+    ADD_BEER("add_beer"),
+    PAYMENTS("payments"),
+    LOG_BOOKS("log_books"),
+    DELETE_USER("delete_user"),
+    EDIT_USER("edit_user"),
+    PIN_PAD("pin_pad")
 }
-*/
 
-/*fun deserializeUser(it: String): User {
-    return gson.fromJson(it, User::class.java)
-}*/
+
+
 
 fun deserializeBeerGroup(beers: String): MutableList<Beer>?{
 

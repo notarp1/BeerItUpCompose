@@ -7,8 +7,8 @@ import java.sql.Date
 
 @Entity
 data class User(
-    @PrimaryKey @ColumnInfo(name= "name") val name: String,
-    @ColumnInfo(name= "phone") val phone: String,
+    @PrimaryKey @ColumnInfo(name= "name") var name: String,
+    @ColumnInfo(name= "phone") var phone: String,
     @ColumnInfo(name = "owedFrom") var owedFrom: String,
     @ColumnInfo(name = "owesTo") var owesTo: String,
     @ColumnInfo(name = "totalBeers") var totalBeers: String,

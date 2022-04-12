@@ -12,17 +12,15 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowLeft
 import androidx.compose.material.icons.rounded.ArrowRight
-import androidx.compose.material.icons.rounded.DonutLarge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.notarmaso.beeritupcompose.MainActivity
+import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.R
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.components.TopBar
@@ -33,7 +31,7 @@ fun LogBook(logBookViewModel: LogBookViewModel){
 
     val service = get<Service>()
     Column {
-        TopBar("${service.currentUser.name}'s Logbook", Icons.Rounded.ArrowLeft) { service.navigateBack(MainActivity.SELECT_USER) }
+        TopBar("${service.currentUser.name}'s Logbook", Icons.Rounded.ArrowLeft) { service.navigateBack(Pages.SELECT_USER) }
         LogBookContents(logBookViewModel)
 
     }

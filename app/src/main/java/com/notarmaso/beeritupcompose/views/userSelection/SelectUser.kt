@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notarmaso.beeritupcompose.MainActivity
+import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.R
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.components.TopBar
@@ -29,7 +30,7 @@ fun SelectUser(viewModel: SelectUserViewModel){
 
     Column{
         TopBar("Select User!", Icons.Rounded.ArrowBack) {
-            viewModel.navigateBack(MainActivity.MAIN_MENU)
+            viewModel.navigateBack(Pages.MAIN_MENU)
         }
 
         UserList(users = viewModel.users, viewModel = viewModel )
@@ -51,9 +52,7 @@ fun UserList(users: List<User>, viewModel: SelectUserViewModel) {
         LazyColumn (modifier = Modifier.padding(top = 20.dp)) {
 
             items(users) { user ->
-                if (currentPage != null) {
-                    UserCard(user, viewModel, currentPage)
-                }
+                UserCard(user, viewModel, currentPage)
             }
         }
     }
@@ -62,7 +61,7 @@ fun UserList(users: List<User>, viewModel: SelectUserViewModel) {
 
 
 @Composable
-fun UserCard(user: User, vm: SelectUserViewModel, currentPage: String){
+fun UserCard(user: User, vm: SelectUserViewModel, currentPage: Pages){
 
     Surface(
         shape = RoundedCornerShape(50),
@@ -81,21 +80,21 @@ fun UserCard(user: User, vm: SelectUserViewModel, currentPage: String){
                 .clickable {
                     vm.service.currentUser = user
                     when(currentPage){
-                        MainActivity.BUY_BEER -> {
+                        Pages.BUY_BEER -> {
                             vm.service.observer.notifySubscribers("UPDATE_BEER_LIST")
-                            vm.navigate(MainActivity.BUY_BEER)}
-                        MainActivity.ADD_BEER -> {
+                            vm.navigate(Pages.BUY_BEER)}
+                        Pages.ADD_BEER -> {
                             vm.service.observer.notifySubscribers("UPDATE_BEER_LIST")
-                            vm.navigate(MainActivity.BUY_BEER)}
-                        MainActivity.PAYMENTS -> {
-                            vm.service.observer.notifySubscribers(MainActivity.PAYMENTS)
-                            vm.navigate(MainActivity.PAYMENTS)
+                            vm.navigate(Pages.BUY_BEER)}
+                        Pages.PAYMENTS -> {
+                            vm.service.observer.notifySubscribers(Pages.PAYMENTS.value)
+                            vm.navigate(Pages.PAYMENTS)
                         }
-                        MainActivity.LOG_BOOKS-> {
-                            vm.service.observer.notifySubscribers(MainActivity.LOG_BOOKS)
-                            vm.navigate(MainActivity.LOG_BOOKS)
+                        Pages.LOG_BOOKS-> {
+                            vm.service.observer.notifySubscribers(Pages.LOG_BOOKS.value)
+                            vm.navigate(Pages.LOG_BOOKS)
                         }
-                        else -> vm.navigateBack(MainActivity.MAIN_MENU)
+                        else -> vm.navigateBack(Pages.MAIN_MENU)
                     }
                            },
             contentAlignment = Alignment.CenterStart

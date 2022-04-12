@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notarmaso.beeritupcompose.MainActivity
+import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.R
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.components.TopBar
@@ -29,7 +30,7 @@ import org.koin.androidx.compose.get
 fun SelectBeer(viewModel: SelectBeerViewModel){
     Column{
         TopBar("Select Beer!", Icons.Rounded.ArrowBack) {
-            viewModel.navigateBack(MainActivity.SELECT_USER)
+            viewModel.navigateBack(Pages.SELECT_USER)
         }
         BeerList(globalBeers = SampleData.beerListSample, viewModel)
     }
@@ -41,7 +42,7 @@ fun BeerList(globalBeers: List<GlobalBeer>, selectBeerViewModel: SelectBeerViewM
     var isAddingBeer by remember{ mutableStateOf(false) }
     val service = get<Service>()
 
-    if(service.currentPage == MainActivity.ADD_BEER) isAddingBeer =true
+    if(service.currentPage == Pages.ADD_BEER) isAddingBeer =true
 
     Box(modifier = Modifier.fillMaxSize().background(colorResource(id = R.color.background))) {
         LazyColumn(
@@ -72,7 +73,7 @@ fun BeerCard(globalBeer: GlobalBeer = SampleData.beerListSample[0], viewModel: S
                 .padding(all = 8.dp)
                 .clickable(onClick = {
                     viewModel.setBeer(globalBeer = globalBeer)
-                    viewModel.navigate(MainActivity.SELECT_BEER_QUANTITY)
+                    viewModel.navigate(Pages.SELECT_BEER_QUANTITY)
                 }
                 )
         ) {

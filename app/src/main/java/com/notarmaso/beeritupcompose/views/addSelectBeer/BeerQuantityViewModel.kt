@@ -23,7 +23,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 
-class BeerQuantityViewModel(val service: Service, val beerService: BeerService): ViewModel(), ViewModelFunction {
+class BeerQuantityViewModel(val service: Service, private val beerService: BeerService): ViewModel(), ViewModelFunction {
 
 
     /* Ting jeg mangler at implementere:
@@ -34,8 +34,8 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
     var qtySelected by mutableStateOf(1)
     var pricePaid by mutableStateOf("120")
-    var pricePerBeer: Float = 0f
     var beerCount by mutableStateOf(0)
+    private var pricePerBeer: Float = 0f
     private var mapOfBeer: MutableList<Beer>? = null
 
     private var _beerList = mutableStateListOf<Beer>()
@@ -52,9 +52,16 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
     fun incrementCounter(){
 
-        if(service.currentPage == MainActivity.BUY_BEER){
-            if(qtySelected >= beerCount) qtySelected = beerCount
-            else qtySelected++
+        if(service.currentPage == Pages.BUY_BEER){
+            if(qtySelected >= beerCount){
+                qtySelected = beerCount
+                return
+            }
+            if(qtySelected >= 10 ){
+                qtySelected = 10
+                return
+            }else qtySelected++
+
         } else {
             if(qtySelected >= 24) qtySelected = 24
             else qtySelected++
@@ -79,26 +86,27 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
         }
 
 
-        val mapOfBeer = beerService.mapOfBeer[service.selectedGlobalBeer?.name]
+        val mapOfBeer = beerService.mapOfBeer[service.selectedGlobalBeer.name]
         var priceToPay = 0f
         for (i in 0 until qtySelected) {
             priceToPay += mapOfBeer?.get(i)!!.price
         }
-
-        service.createAlertBoxSelectBeer(qtySelected, price =  priceToPay, ::onAccept)
+        val priceRounded = BigDecimal(priceToPay.toDouble()).setScale(2, RoundingMode.HALF_EVEN)
+        service.createAlertBoxSelectBeer(qtySelected, price =  priceRounded.toFloat(), ::onAccept)
 
     }
 
     private fun onAccept() {
         val selectedBeer = service.selectedGlobalBeer
-        val mapOfBeer = beerService.mapOfBeer[selectedBeer?.name]
+        val mapOfBeer = beerService.mapOfBeer[selectedBeer.name]
 
-        if(selectedBeer != null) {
-            when (service.currentPage) {
-                MainActivity.ADD_BEER -> mapOfBeer?.let { handleAddBeer(selectedBeer, it) }
-                MainActivity.BUY_BEER -> mapOfBeer?.let { handleSelectBeer(selectedBeer, it) }
-            }
+        when (service.currentPage) {
+            Pages.ADD_BEER -> mapOfBeer?.let { handleAddBeer(selectedBeer, it) }
+            Pages.BUY_BEER -> mapOfBeer?.let { handleSelectBeer(selectedBeer, it) }
+            else -> {}
         }
+
+
 
 
 
@@ -138,8 +146,11 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
             userRepository.updateUser(user = currentUser)
 
-            service.observer.notifySubscribers(MainActivity.SELECT_BEER_QUANTITY)
+            service.observer.notifySubscribers(Pages.SELECT_BEER_QUANTITY.value)
 
+            viewModelScope.launch(Dispatchers.Main) {
+                service.navigateBack(Pages.MAIN_MENU)
+            }
         }
     }
 
@@ -210,7 +221,7 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
             /*Update log*/
             val log = currentUser.beersBoughtLog.fromJsonToList()
-            log.add("You bought $beersToAdd ${selectedBeer.name} at $date")
+            log.add("You bought $beersToAdd ${selectedBeer.name} at $date for $totalPaid")
             currentUser.beersBoughtLog = log.fromListToJson()
 
 
@@ -221,11 +232,13 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
             val beerGroupToUpdate = BeerGroup(selectedBeer.name, serializeBeerGroup(mapOfBeer))
 
+            service.latestUser = currentUser
 
             beerRepository.updateBeerGroup(beerGroupToUpdate)
 
             //Updatebeers
-            service.observer.notifySubscribers(MainActivity.MAIN_MENU)
+            service.observer.notifySubscribers(Pages.MAIN_MENU.value)
+            viewModelScope.launch(Dispatchers.Main) { navigateBack(Pages.MAIN_MENU) }
         }
 
     }
@@ -244,7 +257,9 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
                 val prevPrice = paymentList[it]
 
                 if (prevPrice != null) {
-                    paymentList[it] = prevPrice + priceToUpdate
+                    val total: Float = prevPrice + priceToUpdate
+                    val priceRounded = BigDecimal(total.toDouble()).setScale(2, RoundingMode.HALF_EVEN)
+                    paymentList[it] = priceRounded.toFloat()
                 }
             }
         }
@@ -257,11 +272,11 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
 
 
     private fun isAddingBeer(page: String): Boolean{
-        return page == MainActivity.ADD_BEER
+        return page == Pages.ADD_BEER.value
     }
 
     private fun isBuyingBeer(page: String): Boolean{
-        return page == MainActivity.BUY_BEER
+        return page == Pages.BUY_BEER.value
     }
 
     override fun update(page: String) {
@@ -282,10 +297,10 @@ class BeerQuantityViewModel(val service: Service, val beerService: BeerService):
         }
     }
 
-    override fun navigate(location: String){
+    override fun navigate(location: Pages){
         service.navigate(location)
     }
-    override fun navigateBack(location: String){
+    override fun navigateBack(location: Pages){
         service.navigateBack(location)
     }
 }

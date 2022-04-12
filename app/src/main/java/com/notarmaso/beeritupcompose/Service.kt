@@ -3,8 +3,12 @@ package com.notarmaso.beeritupcompose
 import android.app.AlertDialog
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import com.notarmaso.beeritupcompose.models.GlobalBeer
+import com.notarmaso.beeritupcompose.models.SampleData
 import com.notarmaso.beeritupcompose.models.User
 import com.notarmaso.beeritupcompose.models.UserEntry
 import kotlinx.datetime.*
@@ -13,28 +17,37 @@ import kotlinx.datetime.*
 class Service(ctx: Context, val observer: Observer) {
 
   lateinit var currentUser: User
-  var selectedGlobalBeer: GlobalBeer? = null
-  var currentPage: String? = null
-  var navHostController: NavHostController? = null
+  var latestUser: User? = null
+  var selectedGlobalBeer: GlobalBeer = SampleData.beerListSample[0]
+
+
+  val context = ctx
+
+  private var _currentPage: Pages = Pages.MAIN_MENU
+  val currentPage: Pages get() = _currentPage
 
 
   private var _currentDate: String = Clock.System.todayAt(TimeZone.currentSystemDefault()).month.toString()
   val currentDate: String get() = _currentDate
 
-  val context = ctx
+  var navHostController: NavHostController? = null
 
 
+
+  fun setCurrentPage(page: Pages){
+    _currentPage = page
+  }
 
   fun getDateMonth(){
     _currentDate = Clock.System.todayAt(TimeZone.currentSystemDefault()).month.toString()
   }
 
-  fun navigate(location: String){
-    navHostController?.navigate(location)
+  fun navigate(location: Pages){
+    navHostController?.navigate(location.value)
   }
 
-  fun navigateBack(location: String){
-    navHostController?.navigate(location){popUpTo(location)}
+  fun navigateBack(location: Pages){
+    navHostController?.navigate(location.value){popUpTo(location.value)}
   }
 
 
@@ -48,7 +61,7 @@ class Service(ctx: Context, val observer: Observer) {
     alertDialogBuilder.setPositiveButton(android.R.string.yes) { _, _ ->
       makeToast("Succesfully bought beers")
       onAccept()
-      navigateBack(MainActivity.MAIN_MENU)
+
     }
 
     alertDialogBuilder.setNegativeButton(android.R.string.no) { _, _ ->
@@ -68,10 +81,29 @@ class Service(ctx: Context, val observer: Observer) {
     alertDialogBuilder.setPositiveButton(android.R.string.yes) { _, _ ->
       onAccept()
       makeToast("Succesfully added beers")
-      navigateBack(MainActivity.MAIN_MENU)
+
     }
 
     alertDialogBuilder.setNegativeButton(android.R.string.no) { _, _ ->
+      makeToast("Cancelled")
+    }
+    alertDialogBuilder.show()
+
+
+  }
+
+  fun createAlertBoxDeleteUser(onAccept: () -> Unit){
+    val alertDialogBuilder = AlertDialog.Builder(context)
+    alertDialogBuilder
+      .setTitle("DELETE USER")
+      .setMessage("ARE YOU SURE YOU WANT TO DELETE USER ${currentUser.name} \nDo you really want to continue?")
+
+    alertDialogBuilder.setPositiveButton("YES DELETE") { _, _ ->
+      onAccept()
+      makeToast("Deleting User")
+    }
+
+    alertDialogBuilder.setNegativeButton("NO GO BACK") { _, _ ->
       makeToast("Cancelled")
     }
     alertDialogBuilder.show()
@@ -112,8 +144,6 @@ class Service(ctx: Context, val observer: Observer) {
       makeToast("Cancelled")
     }
     alertDialogBuilder.show()
-
-
   }
 
   fun makeToast(msg: String){

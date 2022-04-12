@@ -25,14 +25,14 @@ import com.notarmaso.beeritupcompose.components.TopBar
 import com.notarmaso.beeritupcompose.models.UserEntry
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-
+import com.notarmaso.beeritupcompose.Pages
 
 
 @Composable
 fun Payments(viewModel: PaymentsViewModel) {
 
     Column {
-        TopBar(title = "Payments", goTo = {viewModel.navigateBack(MainActivity.SELECT_USER)})
+        TopBar(title = "Payments", goTo = {viewModel.navigateBack(Pages.SELECT_USER)})
 
         PaymentsPage(payVm = viewModel)
 

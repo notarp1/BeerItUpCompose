@@ -17,8 +17,7 @@ import com.notarmaso.beeritupcompose.views.addSelectBeer.SelectBeer
 import com.notarmaso.beeritupcompose.views.addSelectBeer.SelectBeerViewModel
 import com.notarmaso.beeritupcompose.views.addUser.AddUser
 import com.notarmaso.beeritupcompose.views.addUser.AddUserViewModel
-import com.notarmaso.beeritupcompose.views.debugDrawer.DebugDrawer
-import com.notarmaso.beeritupcompose.views.debugDrawer.DebugDrawerViewModel
+import com.notarmaso.beeritupcompose.views.debugDrawer.*
 import com.notarmaso.beeritupcompose.views.logBooks.LogBook
 import com.notarmaso.beeritupcompose.views.logBooks.LogBookViewModel
 import com.notarmaso.beeritupcompose.views.mainMenu.MainMenu
@@ -35,17 +34,7 @@ import kotlin.math.log
 
 class MainActivity : ComponentActivity() {
 
-    companion object{
-        const val MAIN_MENU = "mainMenu"
-        const val SELECT_USER = "selectUser"
-        const val BUY_BEER = "buyBeer"
-        const val SELECT_BEER_QUANTITY = "selectBeerQuantity"
-        const val ADD_USER = "addUser"
-        const val DEBUG_DRAWER = "debugDrawer"
-        const val ADD_BEER = "addBeer"
-        const val PAYMENTS = "payments"
-        const val LOG_BOOKS = "logBooks"
-    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,8 +60,7 @@ fun NavigationHost(service: Service){
     val navController = rememberNavController()
     service.navHostController = navController
 
-    //Companion object
-    val cpm = MainActivity.Companion
+
 
     val mainMenuViewModel = get<MainMenuViewModel>()
     val selectBeerViewModel = get<SelectBeerViewModel>()
@@ -83,33 +71,42 @@ fun NavigationHost(service: Service){
     val paymentsViewModel = get<PaymentsViewModel>()
     val logBookViewModel = get<LogBookViewModel>()
 
-    NavHost(navController = navController, startDestination = cpm.MAIN_MENU){
-        composable(cpm.MAIN_MENU){
+    NavHost(navController = navController, startDestination = Pages.MAIN_MENU.value){
+        composable(Pages.MAIN_MENU.value){
             MainMenu(mainMenuViewModel)
         }
 
-        composable(cpm.SELECT_USER){
+        composable(Pages.SELECT_USER.value){
             SelectUser(selectUserViewModel)
         }
 
-        composable(cpm.BUY_BEER){
+        composable(Pages.BUY_BEER.value){
             SelectBeer(selectBeerViewModel)
         }
 
-        composable(cpm.SELECT_BEER_QUANTITY){
+        composable(Pages.SELECT_BEER_QUANTITY.value){
             BeerQuantityPage(beerQuantityViewModel)
         }
-        composable(cpm.ADD_USER){
+        composable(Pages.ADD_USER.value){
             AddUser(addUserViewModel)
         }
-        composable(cpm.DEBUG_DRAWER){
+        composable(Pages.DEBUG_DRAWER.value){
             DebugDrawer(debugDrawerViewModel)
         }
-        composable(cpm.PAYMENTS){
+        composable(Pages.PAYMENTS.value){
             Payments(paymentsViewModel)
         }
-        composable(cpm.LOG_BOOKS){
+        composable(Pages.LOG_BOOKS.value){
             LogBook(logBookViewModel = logBookViewModel)
+        }
+        composable(Pages.PIN_PAD.value){
+            DebugPinAccess(drawer = debugDrawerViewModel)
+        }
+        composable(Pages.DELETE_USER.value){
+            DeleteUser(drawer = debugDrawerViewModel)
+        }
+        composable(Pages.EDIT_USER.value){
+            EditUser(drawer = debugDrawerViewModel)
         }
     }
 }

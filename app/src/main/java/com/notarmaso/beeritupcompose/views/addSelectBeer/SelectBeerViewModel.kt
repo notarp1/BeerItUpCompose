@@ -2,11 +2,8 @@ package com.notarmaso.beeritupcompose.views.addSelectBeer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.notarmaso.beeritupcompose.BeerService
-import com.notarmaso.beeritupcompose.MainActivity
-import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.*
 import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
-import com.notarmaso.beeritupcompose.deserializeBeerGroup
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import com.notarmaso.beeritupcompose.models.Beer
 import com.notarmaso.beeritupcompose.models.BeerGroup
@@ -28,7 +25,7 @@ class SelectBeerViewModel(val service: Service, private val beerService: BeerSer
     fun setBeer(globalBeer: GlobalBeer){
         service.selectedGlobalBeer = globalBeer
 
-        if(service.currentPage == MainActivity.BUY_BEER) service.observer.notifySubscribers(MainActivity.BUY_BEER)
+        if(service.currentPage == Pages.BUY_BEER) service.observer.notifySubscribers(Pages.BUY_BEER.value)
     }
 
 
@@ -38,10 +35,10 @@ class SelectBeerViewModel(val service: Service, private val beerService: BeerSer
         return beerService.getStock(name = name)
     }
 
-    override fun navigate(location: String){
+    override fun navigate(location: Pages){
         service.navigate(location)
     }
-    override fun navigateBack(location: String){
+    override fun navigateBack(location: Pages){
         service.navigateBack(location)
     }
 
@@ -70,12 +67,11 @@ class SelectBeerViewModel(val service: Service, private val beerService: BeerSer
     }
 
     private fun isAddingBeer(page: String): Boolean{
-        return page == MainActivity.ADD_BEER
+        return page == Pages.ADD_BEER.value
     }
 
     private fun isBuyingBeer(page: String): Boolean{
-        return page == MainActivity.BUY_BEER
+        return page == Pages.BUY_BEER.value
     }
 }
-
 

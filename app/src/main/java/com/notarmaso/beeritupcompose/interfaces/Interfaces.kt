@@ -16,8 +16,8 @@ import org.koin.dsl.module
 
 interface ViewModelFunction{
 
-    fun navigate(location: String)
-    fun navigateBack(location: String)
+    fun navigate(location: Pages)
+    fun navigateBack(location: Pages)
     fun update(page: String)
 
 }

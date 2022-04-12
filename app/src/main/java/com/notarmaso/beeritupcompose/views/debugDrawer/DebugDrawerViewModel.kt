@@ -1,6 +1,6 @@
 package com.notarmaso.beeritupcompose.views.debugDrawer
 
-import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.*
@@ -11,29 +11,319 @@ import com.notarmaso.beeritupcompose.models.BeerGroup
 import com.notarmaso.beeritupcompose.models.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.lang.Exception
 
 class DebugDrawerViewModel(val service: Service, private val beerService: BeerService): ViewModel() {
     private val beerRepository: BeerRepository = BeerRepository(service.context)
     private val userRepository: UserRepository = UserRepository(service.context)
 
-    fun removeUsers() {
-        viewModelScope.launch(Dispatchers.IO){
-            userRepository.deleteAll()
+    var pin by mutableStateOf("")
+    var newPrice by mutableStateOf("")
+    var newPhone by mutableStateOf("")
+    var newCount by mutableStateOf("0")
+
+    var selectMonth by mutableStateOf("JANUARY")
+
+    lateinit var selectedUser: User
+    var selectedUserName: String? by mutableStateOf("selectuser")
+
+    private var _notSettled:Boolean by mutableStateOf(false)
+    val notSettled: Boolean get() = _notSettled
+
+    private var _currentPage: String by mutableStateOf("Main_Menu")
+    val currentPage: String get() = _currentPage
+
+    private var _mainMenu: Boolean by mutableStateOf(true)
+    val mainMenu: Boolean
+        get() = _mainMenu
+
+    private var _deleteUser: Boolean by mutableStateOf(false)
+    val deleteUser: Boolean
+        get() =_deleteUser
+
+    private var _editUser: Boolean by mutableStateOf(false)
+    val editUser: Boolean
+        get() = _editUser
+
+    private var _miscellaneous: Boolean by mutableStateOf(false)
+    val miscellaneous: Boolean get() = _miscellaneous
+
+
+    private var _users by mutableStateOf<List<User>>(listOf())
+    val users: List<User> get() = _users
+
+
+
+    /*Get Users*/
+    fun getUserList(){
+        viewModelScope.launch(Dispatchers.IO) {
+            _users = userRepository.getAllUsers()
+            selectedUser = _users[0]
+        }
+    }
+
+    /* Edit Users*/
+
+
+    fun editWhoOwedFrom(){
+        val price = newPrice.toFloat()
+        val owedFromCurr = service.currentUser.owedFrom.fromJsonToListFloat()
+        owedFromCurr[selectedUser.name] = price
+        service.currentUser.owedFrom = owedFromCurr.fromListFloatToJson()
+
+        val owesToSelected = selectedUser.owesTo.fromJsonToListFloat()
+        owesToSelected[service.currentUser.name] = price
+        selectedUser.owesTo = owesToSelected.fromListFloatToJson()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                userRepository.updateUser(service.currentUser)
+                userRepository.updateUser(selectedUser)
+                viewModelScope.launch(Dispatchers.Main) { service.makeToast("Successfully updated user")
+                }
+            } catch (e: Exception){
+                Timber.d("Error:$e")
+                viewModelScope.launch(Dispatchers.Main) { service.makeToast("Error did not update user") }
+            }
+
+        }
+    }
+
+    fun editWhoOwesTo(){
+        val price = newPrice.toFloat()
+        val owesToCurr = service.currentUser.owesTo.fromJsonToListFloat()
+        owesToCurr[selectedUser.name] = price
+        service.currentUser.owesTo = owesToCurr.fromListFloatToJson()
+
+        val owedFromSelected = selectedUser.owedFrom.fromJsonToListFloat()
+        owedFromSelected[service.currentUser.name] = price
+        selectedUser.owedFrom = owedFromSelected.fromListFloatToJson()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                userRepository.updateUser(service.currentUser)
+                userRepository.updateUser(selectedUser)
+                viewModelScope.launch(Dispatchers.Main) { service.makeToast("Successfully updated user")
+                }
+            } catch (e: Exception){
+                Timber.d("Error:$e")
+                viewModelScope.launch(Dispatchers.Main) { service.makeToast("Error did not update user") }
+            }
+
+        }
+    }
+    fun editTotalBeers(){
+        val currentUser = service.currentUser
+        val totalBeers = currentUser.totalBeers.fromJsonToListInt()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val oldTotal = totalBeers["TOTAL"]
+                val oldCount = totalBeers[selectMonth]
+                val newVal = newCount.toInt()
+                var difference: Int = 0
+                var isGreat: Boolean = true
+                if (oldCount != null) {
+
+                    when {
+                        oldCount > newVal -> {
+                            difference = oldCount - newVal
+                            isGreat = false
+                        }
+                        oldCount == newVal -> {
+                            difference = 0
+                        }
+                        else -> {
+                            difference = newVal - oldCount
+                        }
+                    }
+
+                    totalBeers[selectMonth] = newVal
+
+                    if(isGreat) totalBeers["TOTAL"] =  difference + oldTotal!!
+                    else totalBeers["TOTAL"] = oldTotal!! - difference
+                    currentUser.totalBeers = totalBeers.fromListIntToJson()
+                    userRepository.updateUser(currentUser)
+                    service.currentUser = userRepository.getUser(currentUser.name)
+
+                    viewModelScope.launch(Dispatchers.Main) { service.makeToast("Successfully updated user") }
+
+                }
+
+
+
+            }catch (e: Exception){
+                Timber.d("Error:$e")
+                viewModelScope.launch(Dispatchers.Main) { service.makeToast("Error did not update user") }
+            }
         }
 
     }
+    fun editPhone(){
+        filterWhitespaces()
+        val currentUser = service.currentUser
+        if(phoneValidation()){
+            service.currentUser.phone = newPhone
 
-    fun removeBeers() {
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    userRepository.updateUser(currentUser)
+                    service.currentUser = userRepository.getUser(currentUser.name)
+                    viewModelScope.launch(Dispatchers.Main) { service.makeToast("Successfully updated user") }
+                }catch (e: Exception){
+                    Timber.d("Error:$e")
+                    viewModelScope.launch(Dispatchers.Main) { service.makeToast("Error did not update user") }
+                }
+            }
+        }
+    }
+
+    private fun filterWhitespaces(){
+        newPrice.filter { !it.isWhitespace() }
+        newPhone.filter { !it.isWhitespace() }
+    }
+    private fun phoneValidation():Boolean {
+        if (newPhone.length == 8) {
+            return try {
+                newPhone.toInt()
+                true
+            } catch (e: Exception) {
+                service.makeToast("Number should only contain digits!")
+                false
+            }
+        }
+        service.makeToast("Number must be 8 digits!")
+        return false
+    }
+
+    /*Delete User*/
+    fun deleteUser(user: User){
+        val owedFrom = user.owedFrom.fromJsonToListFloat()
+        val owesTo = user.owesTo.fromJsonToListFloat()
+        var unsettledMoney = 0f
+
+        for(x in owedFrom){
+            unsettledMoney += x.value
+        }
+
+        for(x in owesTo){
+            unsettledMoney += x.value
+        }
+
+        if(unsettledMoney > 0.0f){
+            _notSettled = true
+            service.makeToast("Oops something went wrong!")
+            return
+        }
+        service.createAlertBoxDeleteUser{deleteUserFromDatabase(user)}
+
+    }
+    private fun deleteUserFromDatabase(user: User){
+        viewModelScope.launch(Dispatchers.IO) {
+
+            try {
+                userRepository.deleteUser(user)
+            } catch (e: Exception){
+                Timber.d("Error", e)
+                viewModelScope.launch(Dispatchers.Main) {
+                    service.makeToast("Something went wrong")
+                }
+                return@launch
+            }
+
+            viewModelScope.launch(Dispatchers.Main) {
+                service.navigateBack(Pages.MAIN_MENU)
+            }
+
+
+        }
+    }
+
+
+    /*Boring functions*/
+    fun navigate(location: Pages){
+        service.navigate(location)
+    }
+    fun navigateBack(location: Pages){
+        service.navigateBack(location)
+    }
+
+    fun setCurrentPage(page: String){
+        _currentPage = page
+    }
+    fun setSettled(){
+        _notSettled = false
+    }
+    fun editUserPressed(){
+        _editUser = true
+        _mainMenu = false
+    }
+    fun deleteUserPressed(){
+        _deleteUser = true
+        _mainMenu = false
+    }
+    fun miscPressed(){
+        _miscellaneous = true
+        _mainMenu = false
+    }
+    fun backToMenuPressed(){
+        _deleteUser = false
+        _miscellaneous = false
+        _editUser = false
+        _mainMenu = true
+    }
+
+    /*PIN*/
+    fun pressed(number: String){
+        when(number){
+            "1" -> pin += 1
+            "2" -> pin += 2
+            "3" -> pin += 3
+            "4" -> pin += 4
+            "5" -> pin += 5
+            "6" -> pin += 6
+            "7" -> pin += 7
+            "8" -> pin += 8
+            "9" -> pin += 9
+        }
+    }
+
+    fun onEnter(){
+        if(pin == "2464"){
+            pin = ""
+            navigate(Pages.DEBUG_DRAWER)
+        } else{
+            pin = ""
+            service.makeToast("Wrong PinCode")
+        }
+    }
+
+
+
+
+    /* RESET EVERYTHING BUTTON */
+    fun resetUsers(){
         viewModelScope.launch(Dispatchers.IO){
             beerRepository.deleteAll()
             for ((key, value) in beerService.mapOfBeer.entries) {
                 value.clear()
             }
+            userRepository.deleteAll()
+
+            viewModelScope.launch(Dispatchers.Main) {
+                usersSetup()
+            }
         }
     }
 
-    fun resetUsers(){
+    private fun setBeer(user: User, count:Int) {
+        val beer = user.totalBeers.fromJsonToListInt()
+        beer["TOTAL"] = count
+        user.totalBeers = beer.fromListIntToJson()
+    }
 
+    private fun usersSetup(){
         val owesList: MutableMap<String, Float> = mutableStateMapOf()
         val log: MutableList<String> = mutableListOf()
 
@@ -336,25 +626,11 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
             beerRepository.updateBeerGroup(beerGroup2)
             beerRepository.updateBeerGroup(beerGroup3)
             beerRepository.updateBeerGroup(beerGroup4)
-            service.observer.notifySubscribers(MainActivity.BUY_BEER)
+            service.observer.notifySubscribers(Pages.BUY_BEER.value)
 
         }
-
-
     }
 
-    private fun setBeer(user: User, count:Int) {
-        val beer = user.totalBeers.fromJsonToListInt()
-        beer["TOTAL"] = count
-        user.totalBeers = beer.fromListIntToJson()
-    }
-
-    fun navigate(location: String){
-        service.navigate(location)
-    }
-    fun navigateBack(location: String){
-        service.navigateBack(location)
-    }
 
 
 }

@@ -7,12 +7,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.MainActivity
+import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.fromJsonToListInt
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import com.notarmaso.beeritupcompose.models.User
-import com.notarmaso.beeritupcompose.models.UserEntry
 import com.notarmaso.beeritupcompose.models.UserLeaderboard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -47,9 +47,8 @@ class MainMenuViewModel(val service: Service): ViewModel(), ViewModelFunction{
 
     }
 
-    fun setPage(page: String){
-        service.currentPage = page
-
+    fun setPage(page: Pages){
+        service.setCurrentPage(page)
     }
 
     fun incrementMonth(){
@@ -64,15 +63,15 @@ class MainMenuViewModel(val service: Service): ViewModel(), ViewModelFunction{
         reloadHighscores()
     }
 
-    override fun navigate(location: String){
+    override fun navigate(location: Pages){
         service.navigate(location)
     }
-    override fun navigateBack(location: String){
+    override fun navigateBack(location: Pages){
         service.navigateBack(location)
     }
 
     override fun update(page: String) {
-        if(page == MainActivity.MAIN_MENU) {
+        if(page == Pages.MAIN_MENU.value) {
             _currentMonth = service.currentDate
             reloadHighscores(true)
         }

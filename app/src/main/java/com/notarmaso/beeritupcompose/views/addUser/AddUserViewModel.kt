@@ -23,7 +23,7 @@ class AddUserViewModel(val service: Service): ViewModel() {
 
     private var errorFound: Boolean = false
 
-    fun navigateBack(location: String){
+    fun navigateBack(location: Pages){
         service.navigateBack(location)
     }
 
@@ -80,8 +80,8 @@ class AddUserViewModel(val service: Service): ViewModel() {
 
                 viewModelScope.launch(Dispatchers.Main) {
                     if (!errorFound) {
-                        service.observer.notifySubscribers(MainActivity.SELECT_USER)
-                        service.navigateBack(MainActivity.MAIN_MENU)
+                        service.observer.notifySubscribers(Pages.SELECT_USER.value)
+                        service.navigateBack(Pages.MAIN_MENU)
                     } else {
                         service.makeToast("Username is already taken!")
                         errorFound = false

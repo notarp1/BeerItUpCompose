@@ -22,10 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.notarmaso.beeritupcompose.BeerService
-import com.notarmaso.beeritupcompose.MainActivity
+import com.notarmaso.beeritupcompose.*
 import com.notarmaso.beeritupcompose.R
-import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.components.TopBar
 import com.notarmaso.beeritupcompose.models.UserLeaderboard
 import org.koin.androidx.compose.get
@@ -36,7 +34,7 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel){
 
     val service = get<Service>()
     Column {
-        TopBar("Menu", Icons.Rounded.DonutLarge) { /*service.navigateBack(MainActivity.DEBUG_DRAWER)*/ }
+        TopBar("Menu", Icons.Rounded.DonutLarge) { service.navigate(Pages.PIN_PAD)}
         MainMenuContents(mainMenuViewModel)
 
     }
@@ -48,7 +46,7 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel){
 @Composable
 fun MainMenuContents(viewModel: MainMenuViewModel){
     val service = get<Service>()
-    val beerService = get<BeerService>()
+
     Box(
         Modifier
             .background(colorResource(id = R.color.background))
@@ -76,9 +74,9 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_one),
                 goToPage = {
-                    viewModel.setPage(MainActivity.BUY_BEER)
-                    service.observer.notifySubscribers(MainActivity.SELECT_USER)
-                    viewModel.navigate(MainActivity.SELECT_USER)
+                    viewModel.setPage(Pages.BUY_BEER)
+                    service.observer.notifySubscribers(Pages.SELECT_USER.value)
+                    viewModel.navigate(Pages.SELECT_USER)
                 })
 
             Spacer(modifier = Modifier.height(15.dp))
@@ -88,9 +86,9 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_three),
                 goToPage = {
-                    viewModel.setPage(MainActivity.PAYMENTS)
-                    service.observer.notifySubscribers(MainActivity.SELECT_USER)
-                    viewModel.navigate(MainActivity.SELECT_USER)
+                    viewModel.setPage(Pages.PAYMENTS)
+                    service.observer.notifySubscribers(Pages.SELECT_USER.value)
+                    viewModel.navigate(Pages.SELECT_USER)
                 })
 
             Spacer(modifier = Modifier.height(15.dp))
@@ -100,10 +98,10 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_two),
                 goToPage = {
-                    viewModel.setPage(MainActivity.ADD_BEER)
-                    service.observer.notifySubscribers(MainActivity.SELECT_USER)
-                    service.observer.notifySubscribers(MainActivity.ADD_BEER)
-                    viewModel.navigate(MainActivity.SELECT_USER)
+                    viewModel.setPage(Pages.ADD_BEER)
+                    service.observer.notifySubscribers(Pages.SELECT_USER.value)
+                    service.observer.notifySubscribers(Pages.ADD_BEER.value)
+                    viewModel.navigate(Pages.SELECT_USER)
                 })
 
 
@@ -115,8 +113,8 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_four),
                 goToPage = {
-                    viewModel.setPage(MainActivity.ADD_USER)
-                    viewModel.navigate(MainActivity.ADD_USER)
+                    viewModel.setPage(Pages.ADD_USER)
+                    viewModel.navigate(Pages.ADD_USER)
                 })
             Spacer(modifier = Modifier.height(15.dp))
 
@@ -125,9 +123,9 @@ fun MainMenuContents(viewModel: MainMenuViewModel){
                 buttonWidth = 0.35,
                 text = stringResource(id = R.string.menu_btn_five),
                 goToPage = {
-                    viewModel.setPage(MainActivity.LOG_BOOKS)
-                    service.observer.notifySubscribers(MainActivity.SELECT_USER)
-                    viewModel.navigate(MainActivity.SELECT_USER)
+                    viewModel.setPage(Pages.LOG_BOOKS)
+                    service.observer.notifySubscribers(Pages.SELECT_USER.value)
+                    viewModel.navigate(Pages.SELECT_USER)
                 })
             Spacer(modifier = Modifier.height(10.dp))
 

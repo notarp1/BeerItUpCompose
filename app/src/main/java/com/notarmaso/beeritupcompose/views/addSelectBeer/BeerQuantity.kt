@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notarmaso.beeritupcompose.MainActivity
+import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.R
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.components.TopBar
@@ -39,11 +40,11 @@ fun BeerQuantityPage(viewModel: BeerQuantityViewModel) {
     val service = get<Service>()
     val selectedBeer = service.selectedGlobalBeer
     viewModel.setTotalQty(selectedBeer?.name!!)
-    if(service.currentPage == MainActivity.ADD_BEER) isAddingBeer = true
+    if(service.currentPage == Pages.ADD_BEER) isAddingBeer = true
 
     Column {
         TopBar(if(isAddingBeer)"Add qty. of ${selectedBeer.name}" else "Select beers!", Icons.Rounded.ArrowBack) {
-            viewModel.navigateBack(MainActivity.BUY_BEER)
+            viewModel.navigateBack(Pages.BUY_BEER)
         }
         BeerQuantity(selectedBeer, viewModel, isAddingBeer)
     }

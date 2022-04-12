@@ -14,7 +14,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.notarmaso.beeritupcompose.MainActivity
+import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.R
 import com.notarmaso.beeritupcompose.components.TopBar
 import com.notarmaso.beeritupcompose.views.mainMenu.MenuButton
@@ -24,7 +24,7 @@ import com.notarmaso.beeritupcompose.views.mainMenu.MenuButton
 fun AddUser(viewModel: AddUserViewModel) {
 
     Column {
-        TopBar(title = "Add user", goTo = {viewModel.navigateBack(MainActivity.MAIN_MENU)})
+        TopBar(title = "Add user", goTo = {viewModel.navigateBack(Pages.MAIN_MENU)})
         UserForm(viewModel)
     }
 }
@@ -37,7 +37,7 @@ fun UserForm(viewModel: AddUserViewModel){
     contentAlignment = Alignment.TopCenter){
 
         Column(Modifier.padding(40.dp)) {
-            FormRow("Name", "KennedKnappeRød_T-44", viewModel)
+            FormRow("Name", "Henriette_T-44", viewModel)
             Spacer(modifier = Modifier.height(40.dp))
             FormRow("Phone", "Eg. 23543245", viewModel)
             Box(contentAlignment = Alignment.BottomCenter, modifier = Modifier.fillMaxSize()){

@@ -66,16 +66,16 @@ class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
 
 
 
-    override fun navigate(location: String) {
+    override fun navigate(location: Pages) {
 
     }
 
-    override fun navigateBack(location: String) {
+    override fun navigateBack(location: Pages) {
         service.navigate(location = location)
     }
 
     override fun update(page: String) {
-       if(page == MainActivity.PAYMENTS) {
+       if(page == Pages.PAYMENTS.value) {
            getUserPayments()
        }
     }

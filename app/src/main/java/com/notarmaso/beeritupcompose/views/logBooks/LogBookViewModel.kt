@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.MainActivity
+import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.fromJsonToList
@@ -93,16 +94,16 @@ class LogBookViewModel(val service: Service): ViewModel(), ViewModelFunction {
         }
     }
 
-    override fun navigate(location: String) {
+    override fun navigate(location: Pages) {
 
     }
 
-    override fun navigateBack(location: String) {
+    override fun navigateBack(location: Pages) {
         service.navigate(location = location)
     }
 
     override fun update(page: String) {
-        if(page == MainActivity.LOG_BOOKS){
+        if(page == Pages.LOG_BOOKS.value){
         reloadLogs()
         }
 
