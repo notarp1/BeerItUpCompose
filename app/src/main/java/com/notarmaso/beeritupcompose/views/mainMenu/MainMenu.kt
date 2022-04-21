@@ -34,7 +34,7 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel){
 
     val service = get<Service>()
     Column {
-        TopBar("Menu", Icons.Rounded.DonutLarge) { service.navigate(Pages.PIN_PAD)}
+        TopBar("Menu", Icons.Rounded.DonutLarge) { service.navigate(Pages.DEBUG_DRAWER)}
         MainMenuContents(mainMenuViewModel)
 
     }
@@ -153,6 +153,7 @@ fun Highscores(vm: MainMenuViewModel){
                             .size(50.dp),
                     colorResource(id = R.color.topbarcolor))
 
+                    /*Month*/
                     Text(text = vm.currentMonth, color = colorResource(id = R.color.topbarcolor), fontWeight = FontWeight.Bold, textDecoration = TextDecoration.Underline)
 
                     Icon(Icons.Rounded.ArrowRight,

@@ -6,14 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.notarmaso.beeritupcompose.MainActivity
-import com.notarmaso.beeritupcompose.Pages
-import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.*
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
-import com.notarmaso.beeritupcompose.fromJsonToList
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LogBookViewModel(val service: Service): ViewModel(), ViewModelFunction {
 
@@ -24,11 +22,11 @@ class LogBookViewModel(val service: Service): ViewModel(), ViewModelFunction {
     private var _currentPage by mutableStateOf("Payments")
     val currentPage: String get() = _currentPage
 
-    private var _totalBought: Float by mutableStateOf(0f)
-    val totalBought: Float get() = _totalBought
+    private var _totalBought: String by mutableStateOf("0")
+    val totalBought: String get() = _totalBought
 
-    private var _totalAdded: Float by mutableStateOf(0f)
-    val totalAdded: Float get() = _totalAdded
+    private var _totalAdded: String by mutableStateOf("0")
+    val totalAdded: String get() = _totalAdded
 
     private var _logList = mutableStateListOf<String>()
     val loglist: List<String> get() = _logList
@@ -53,34 +51,38 @@ class LogBookViewModel(val service: Service): ViewModel(), ViewModelFunction {
         getSelectedMonth()
         val name = service.currentUser.name
 
-        viewModelScope.launch(Dispatchers.IO) {
-            _logList.clear()
-            _totalAdded = userRepository.getTotalAdded(name)
-            _totalBought = userRepository.getTotalBought(name)
+        viewModelScope.launch() {
 
-            when(_currentPageNumber){
-                0 -> {
-                    val list = userRepository.getTranscationsLog(name).fromJsonToList()
-                    for(x in list){
-                        _logList.add(x)
-                    }
-                }
-                1 ->  {
-                    val list = userRepository.getBoughtLog(name).fromJsonToList()
-                    for(x in list){
-                        _logList.add(x)
-                    }
-                }
-                2 ->  {
-                    val list = userRepository.getAddedLog(name).fromJsonToList()
-                    for(x in list){
-                        _logList.add(x)
-                    }
-                }
-                else -> println("Error")
+            withContext(Dispatchers.IO){
+                _logList.clear()
+                _totalAdded = userRepository.getTotalAdded(name).roundOff()
+                _totalBought = userRepository.getTotalBought(name).roundOff()
 
+                when(_currentPageNumber){
+                    0 -> {
+                        val list = userRepository.getTranscationsLog(name).fromJsonToListReversed()
+                        for(x in list){
+                            _logList.add(x)
+                         }
+                    }
+                    1 ->  {
+                        val list = userRepository.getBoughtLog(name).fromJsonToListReversed()
+                        var curListItem = 0
+                        for(x in list){
+                            curListItem++
+                            if(curListItem >= 50) return@withContext
+                            _logList.add(x)
+                        }
+                    }
+                    2 ->  {
+                        val list = userRepository.getAddedLog(name).fromJsonToListReversed()
+                        for(x in list){
+                            _logList.add(x)
+                        }
+                    }
+                    else -> println("Error")
+                }
             }
-            _logList.reverse()
         }
     }
 

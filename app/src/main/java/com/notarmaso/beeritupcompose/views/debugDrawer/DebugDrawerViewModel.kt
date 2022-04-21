@@ -6,13 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.*
 import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
-import com.notarmaso.beeritupcompose.models.Beer
-import com.notarmaso.beeritupcompose.models.BeerGroup
 import com.notarmaso.beeritupcompose.models.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.Exception
+import kotlin.math.floor
 
 class DebugDrawerViewModel(val service: Service, private val beerService: BeerService): ViewModel() {
     private val beerRepository: BeerRepository = BeerRepository(service.context)
@@ -34,6 +33,27 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
     private var _currentPage: String by mutableStateOf("Main_Menu")
     val currentPage: String get() = _currentPage
 
+    private var _users by mutableStateOf<List<User>>(listOf())
+    val users: List<User> get() = _users
+
+    private var _totalAdded by mutableStateOf(0f)
+    val totalAdded: Float get() = _totalAdded
+
+    private var _totalOwedInPayments by mutableStateOf(0f)
+    val totalOwedInPayments: Float get() = _totalOwedInPayments
+
+    private var _totalSpent by mutableStateOf(0f)
+    val totalSpent: String get() = _totalSpent.roundOff()
+
+    private var _totalLeft by mutableStateOf(0f)
+    val totalLeft: Float get() = _totalLeft
+
+    private val totalSpentPlusLeft: Float get() = (_totalLeft + _totalSpent)
+    val displaySpentLeft: String get() = (_totalLeft + _totalSpent).roundOff()
+
+
+    val difference: Float get() = floor(_totalAdded - totalSpentPlusLeft)
+
     private var _mainMenu: Boolean by mutableStateOf(true)
     val mainMenu: Boolean
         get() = _mainMenu
@@ -50,8 +70,8 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
     val miscellaneous: Boolean get() = _miscellaneous
 
 
-    private var _users by mutableStateOf<List<User>>(listOf())
-    val users: List<User> get() = _users
+
+
 
 
 
@@ -64,8 +84,6 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
     }
 
     /* Edit Users*/
-
-
     fun editWhoOwedFrom(){
         val price = newPrice.toFloat()
         val owedFromCurr = service.currentUser.owedFrom.fromJsonToListFloat()
@@ -89,7 +107,6 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
 
         }
     }
-
     fun editWhoOwesTo(){
         val price = newPrice.toFloat()
         val owesToCurr = service.currentUser.owesTo.fromJsonToListFloat()
@@ -122,8 +139,8 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
                 val oldTotal = totalBeers["TOTAL"]
                 val oldCount = totalBeers[selectMonth]
                 val newVal = newCount.toInt()
-                var difference: Int = 0
-                var isGreat: Boolean = true
+                var difference = 0
+                var isGreat = true
                 if (oldCount != null) {
 
                     when {
@@ -202,13 +219,16 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
         val owedFrom = user.owedFrom.fromJsonToListFloat()
         val owesTo = user.owesTo.fromJsonToListFloat()
         var unsettledMoney = 0f
+        val names = mutableListOf<String>()
 
         for(x in owedFrom){
             unsettledMoney += x.value
+            names.add(x.key)
         }
 
         for(x in owesTo){
             unsettledMoney += x.value
+            names.add(x.key)
         }
 
         if(unsettledMoney > 0.0f){
@@ -216,9 +236,43 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
             service.makeToast("Oops something went wrong!")
             return
         }
-        service.createAlertBoxDeleteUser{deleteUserFromDatabase(user)}
+
+
+
+        service.createAlertBoxDeleteUser {
+            removeUserFromLists(names, user)
+            deleteUserFromDatabase(user)
+        }
 
     }
+
+    private fun removeUserFromLists(names: MutableList<String>, user: User) {
+        for (x in names) {
+            viewModelScope.launch(Dispatchers.IO) {
+                updateUser(x, user.name)
+            }
+        }
+    }
+
+
+    private suspend fun updateUser(name: String, userToDelete: String) {
+        val foreignUser = userRepository.getUser(name)
+        viewModelScope.launch(Dispatchers.Main) {
+            val foreignOwed = foreignUser.owedFrom.fromJsonToListFloat()
+            val foreignOwes = foreignUser.owesTo.fromJsonToListFloat()
+
+            foreignOwed.remove(userToDelete)
+            foreignOwes.remove(userToDelete)
+            foreignUser.owedFrom = foreignOwed.fromListFloatToJson()
+            foreignUser.owesTo = foreignOwes.fromListFloatToJson()
+            viewModelScope.launch(Dispatchers.IO) {
+                userRepository.updateUser(foreignUser)
+
+            }
+        }
+
+    }
+
     private fun deleteUserFromDatabase(user: User){
         viewModelScope.launch(Dispatchers.IO) {
 
@@ -241,7 +295,7 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
     }
 
 
-    /*Boring functions*/
+    /*View Func functionality, should be remade*/
     fun navigate(location: Pages){
         service.navigate(location)
     }
@@ -300,20 +354,47 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
     }
 
 
+    /* Differences */
+
+    fun calculateDifferences(){
+        viewModelScope.launch(Dispatchers.IO) {
+            val mapOfValues: Map<String, Float> = service.calcBeerDifference()
+            _totalSpent = mapOfValues["TotalSpent"]!!
+            _totalAdded = mapOfValues["TotalAdded"]!!
+            _totalLeft = mapOfValues["TotalLeft"]!!
+
+            val users = userRepository.getAllUsers()
+            var totalOwed = 0f
+            for(user in users){
+                val list = user.owedFrom.fromJsonToListFloat()
+                for(x in list){
+                    totalOwed += x.value
+                }
+            }
+
+            _totalOwedInPayments = totalOwed
+
+        }
+
+    }
+
 
 
     /* RESET EVERYTHING BUTTON */
     fun resetUsers(){
         viewModelScope.launch(Dispatchers.IO){
-            beerRepository.deleteAll()
-            for ((key, value) in beerService.mapOfBeer.entries) {
-                value.clear()
+
+        beerRepository.deleteAll()
+            for (x in beerService.mapOfBeer) {
+                x.value.clear()
             }
             userRepository.deleteAll()
 
             viewModelScope.launch(Dispatchers.Main) {
                 usersSetup()
             }
+            service.resetPrefs()
+
         }
     }
 
@@ -349,7 +430,7 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
         val user2 = User("Benjamin_T64", "27116223", owesJson, owesJson ,totalBeers.fromListIntToJson(), 0f, 0f, logJson,logJson,logJson)
         val user3 = User("Sebastian_T48", "61406035", owesJson, owesJson ,totalBeers.fromListIntToJson(), 0f, 0f, logJson,logJson,logJson)
         val user4 = User("Christian_T66", "22270704", owesJson, owesJson ,totalBeers.fromListIntToJson(), 0f, 0f, logJson,logJson,logJson)
-        val user5 = User("Jonas_S40", "23394505", owesJson, owesJson ,totalBeers.fromListIntToJson(), 0f, 0f, logJson,logJson,logJson)
+     /*   val user5 = User("Jonas_S40", "23394505", owesJson, owesJson ,totalBeers.fromListIntToJson(), 0f, 0f, logJson,logJson,logJson)
         val user6 = User("Mathilde_T52", "28774814", owesJson, owesJson ,totalBeers.fromListIntToJson(), 0f, 0f, logJson,logJson,logJson)
         val user7 = User("Fiskefrede69", "30366290", owesJson, owesJson ,totalBeers.fromListIntToJson(), 0f, 0f, logJson,logJson,logJson)
         val user8 = User("Lasse_T46", "22508087", owesJson, owesJson ,totalBeers.fromListIntToJson(), 0f, 0f, logJson,logJson,logJson)
@@ -362,11 +443,12 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
         val user15 = User("Marie_T50", "60681667", owesJson, owesJson ,totalBeers.fromListIntToJson(), 0f, 0f, logJson,logJson,logJson)
         val user16 = User("Juliane_S30", "61664157", owesJson, owesJson ,totalBeers.fromListIntToJson(), 0f, 0f, logJson,logJson,logJson)
         val user17 = User("FrederikDenFørste", "26228814", owesJson, owesJson ,totalBeers.fromListIntToJson(), 0f, 0f, logJson,logJson,logJson)
+       */
         setBeer(user1, 139)
         setBeer(user2, 126)
         setBeer(user3, 81)
         setBeer(user4, 72)
-        setBeer(user5, 57)
+        /*setBeer(user5, 57)
         setBeer(user6, 56)
         setBeer(user7, 53)
         setBeer(user8, 52)
@@ -379,7 +461,8 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
         setBeer(user15, 3)
         setBeer(user16, 0)
         setBeer(user17, 15)
-
+*/
+        /*
         /*Sebastian*/
         val seb = user3.owesTo.fromJsonToListFloat()
         val seb2 = user3.owedFrom.fromJsonToListFloat()
@@ -563,14 +646,14 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
         list11[user11.name] = 22.20f
 
         user1.owesTo = list1.fromListFloatToJson()
-        user1.owedFrom = list11.fromListFloatToJson()
+        user1.owedFrom = list11.fromListFloatToJson() */
 
         viewModelScope.launch(Dispatchers.IO){
             userRepository.insertUser(user1)
             userRepository.insertUser(user2)
             userRepository.insertUser(user3)
             userRepository.insertUser(user4)
-            userRepository.insertUser(user5)
+  /*          userRepository.insertUser(user5)
             userRepository.insertUser(user6)
             userRepository.insertUser(user7)
             userRepository.insertUser(user8)
@@ -582,8 +665,8 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
             userRepository.insertUser(user14)
             userRepository.insertUser(user15)
             userRepository.insertUser(user16)
-            userRepository.insertUser(user17)
-
+            userRepository.insertUser(user17)*/
+/*
 
 
             val mapOfBeerTuborg = beerService.mapOfBeer["Tuborg"]
@@ -626,7 +709,7 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
             beerRepository.updateBeerGroup(beerGroup2)
             beerRepository.updateBeerGroup(beerGroup3)
             beerRepository.updateBeerGroup(beerGroup4)
-            service.observer.notifySubscribers(Pages.BUY_BEER.value)
+            service.observer.notifySubscribers(Pages.BUY_BEER.value)*/
 
         }
     }

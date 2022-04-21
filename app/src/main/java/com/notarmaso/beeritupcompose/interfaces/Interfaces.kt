@@ -1,6 +1,7 @@
 package com.notarmaso.beeritupcompose.interfaces
 
 
+import com.notarmaso.beeritupcompose.BeerItUpMainActivityViewModel
 import com.notarmaso.beeritupcompose.*
 import com.notarmaso.beeritupcompose.views.addSelectBeer.BeerQuantityViewModel
 import com.notarmaso.beeritupcompose.views.addSelectBeer.SelectBeerViewModel
@@ -11,6 +12,7 @@ import com.notarmaso.beeritupcompose.views.mainMenu.MainMenuViewModel
 import com.notarmaso.beeritupcompose.views.payments.PaymentsViewModel
 import com.notarmaso.beeritupcompose.views.userSelection.SelectUserViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.scope.getViewModel
 import org.koin.dsl.module
 
 
@@ -33,6 +35,7 @@ val serviceModule = module {
 
 val vmModule = module {
     viewModel { MainMenuViewModel(get()) }
+    viewModel { BeerItUpMainActivityViewModel(get()) }
     viewModel { SelectBeerViewModel(get(), get()) }
     viewModel { SelectUserViewModel(get()) }
     viewModel { BeerQuantityViewModel(get(), get()) }

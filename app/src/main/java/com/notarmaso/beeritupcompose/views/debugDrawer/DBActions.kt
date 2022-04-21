@@ -13,6 +13,7 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -179,11 +180,59 @@ fun MainRow(drawer: DebugDrawerViewModel){
                 .padding(end = 10.dp)) {
 
 
-            Button(onClick = { /*drawer.resetUsers()*/ },
+            Button(onClick = { drawer.resetUsers() },
                 colors = ButtonDefaults.buttonColors(backgroundColor = topBarColor)) {
                 Text(text = "Reset Everything", color = orange)
             }
         }
+
+        Row() {
+            Button(onClick = { drawer.calculateDifferences() },
+                colors = ButtonDefaults.buttonColors(backgroundColor = topBarColor)) {
+                Text(text = "Calculate differences", color = orange)
+            }
+            Button(onClick = { drawer.service.resetPrefs() },
+                colors = ButtonDefaults.buttonColors(backgroundColor = topBarColor)) {
+                Text(text = "Reset differences", color = orange)
+            }
+        }
+
+
+        Row() {
+            Text(text = "Total value added DKK:", fontWeight = FontWeight.Bold, color = colorResource(
+                id = R.color.topbarcolor))
+            Text(text = drawer.totalAdded.toString() )
+        }
+
+        Row() {
+            Text(text = "Total owed in payments:", fontWeight = FontWeight.Bold, color = colorResource(
+                id = R.color.topbarcolor))
+            Text(text = drawer.totalOwedInPayments.toString(), color = Color.Magenta)
+        }
+        Row() {
+            Text(text = "Total value spent DKK:", fontWeight = FontWeight.Bold, color = colorResource(
+                id = R.color.topbarcolor))
+            Text(text = drawer.totalSpent, color = Color.Cyan)
+        }
+
+        Row() {
+            Text(text = "Total value left DKK:", fontWeight = FontWeight.Bold, color = colorResource(
+                id = R.color.topbarcolor))
+            Text(text = drawer.totalLeft.toString(), color = Color.Cyan )
+        }
+
+        Row() {
+            Text(text = "Total left + spent:", fontWeight = FontWeight.Bold, color = colorResource(
+                id = R.color.topbarcolor))
+            Text(text = drawer.displaySpentLeft, color = Color.Red)
+        }
+
+        Row() {
+            Text(text = "Difference ADDED and SPENT (0) DKK:", fontWeight = FontWeight.Bold, color = colorResource(
+                id = R.color.topbarcolor))
+            Text(text = drawer.difference.toString(), color = Color.Blue)
+        }
+
     }
 }
 @Composable

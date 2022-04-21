@@ -1,38 +1,42 @@
 package com.notarmaso.beeritupcompose
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.content.SharedPreferences
 import android.widget.Toast
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
-import com.notarmaso.beeritupcompose.models.GlobalBeer
-import com.notarmaso.beeritupcompose.models.SampleData
-import com.notarmaso.beeritupcompose.models.User
-import com.notarmaso.beeritupcompose.models.UserEntry
+import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
+import com.notarmaso.beeritupcompose.models.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.*
 
 
 class Service(ctx: Context, val observer: Observer) {
 
-  lateinit var currentUser: User
-  var latestUser: User? = null
-  var selectedGlobalBeer: GlobalBeer = SampleData.beerListSample[0]
-
-
-  val context = ctx
 
   private var _currentPage: Pages = Pages.MAIN_MENU
   val currentPage: Pages get() = _currentPage
 
-
   private var _currentDate: String = Clock.System.todayAt(TimeZone.currentSystemDefault()).month.toString()
   val currentDate: String get() = _currentDate
 
+  val context = ctx
+
   var navHostController: NavHostController? = null
+  var sharedPref: SharedPreferences
 
+  lateinit var currentUser: User
+  var latestUser: User? = null
+  var selectedGlobalBeer: GlobalBeer = SampleData.beerListSample[0]
 
+  private val beerRepository: BeerRepository = BeerRepository(context)
+
+  init {
+    val activity: Activity = context as Activity
+    sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
+  }
 
   fun setCurrentPage(page: Pages){
     _currentPage = page
@@ -51,20 +55,71 @@ class Service(ctx: Context, val observer: Observer) {
   }
 
 
+  fun updateTotalAddedBeersPrefs(added: Float) {
+    val oldPrice = sharedPref.getFloat("TotalAdded", 0f)
+    with (sharedPref.edit()) {
+      putFloat("TotalAdded", (oldPrice + added).roundOff().toFloat())
+      apply()
+    }
+  }
 
+  fun updateTotalBoughtBeersPrefs(paid: Float) {
+    val oldPrice = sharedPref.getFloat("TotalBought", 0f)
+    with (sharedPref.edit()) {
+      putFloat("TotalBought", (oldPrice + paid).roundOff().toFloat())
+      apply()
+
+    }
+  }
+
+  fun resetPrefs(){
+    with (sharedPref.edit()) {
+      putFloat("TotalBought", 0f)
+      putFloat("TotalAdded", 0f)
+      apply()
+    }
+  }
+
+  suspend fun calcBeerDifference(): Map<String, Float> {
+    var totalLeft = 0f
+    val totalSpent = sharedPref.getFloat("TotalBought", 0f)
+    val totalAdded = sharedPref.getFloat("TotalAdded", 0f)
+
+
+
+    withContext(Dispatchers.IO) {
+      val list: MutableList<BeerGroup> = beerRepository.getAllBeerGroups()
+
+      for (x in list) {
+        val beers: MutableList<Beer>? = deserializeBeerGroup(beers = x.beers)
+        if (beers != null) {
+          for (beer in beers) {
+            totalLeft += beer.price
+          }
+        }
+      }
+    }
+    return mapOf(
+      "TotalSpent" to totalSpent,
+      "TotalAdded" to totalAdded,
+      "TotalLeft" to totalLeft
+    )
+  }
+
+  /* Insert Into Other Support Class*/
   fun createAlertBoxSelectBeer(beerQty: Int, price: Float, onAccept: () -> Unit){
     val alertDialogBuilder = AlertDialog.Builder(context)
     alertDialogBuilder
       .setTitle("${currentUser.name} you are selecting $beerQty beers")
       .setMessage("For at total of $price DKK \nDo you really want to continue?")
 
-    alertDialogBuilder.setPositiveButton(android.R.string.yes) { _, _ ->
+    alertDialogBuilder.setPositiveButton("OK") { _, _ ->
       makeToast("Succesfully bought beers")
       onAccept()
 
     }
 
-    alertDialogBuilder.setNegativeButton(android.R.string.no) { _, _ ->
+    alertDialogBuilder.setNegativeButton("Cancel") { _, _ ->
 
     }
     alertDialogBuilder.show()
@@ -78,13 +133,13 @@ class Service(ctx: Context, val observer: Observer) {
       .setTitle("${currentUser.name} you are adding $qty beers!")
       .setMessage("For at price of $price DKK/pcs \nDo you really want to continue?")
 
-    alertDialogBuilder.setPositiveButton(android.R.string.yes) { _, _ ->
+    alertDialogBuilder.setPositiveButton("OK") { _, _ ->
       onAccept()
       makeToast("Succesfully added beers")
 
     }
 
-    alertDialogBuilder.setNegativeButton(android.R.string.no) { _, _ ->
+    alertDialogBuilder.setNegativeButton("Cancel") { _, _ ->
       makeToast("Cancelled")
     }
     alertDialogBuilder.show()

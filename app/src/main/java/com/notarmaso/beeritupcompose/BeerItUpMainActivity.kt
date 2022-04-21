@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -30,7 +31,6 @@ import org.koin.android.ext.android.get
 import org.koin.androidx.compose.get
 import org.koin.core.context.GlobalContext
 import org.koin.core.parameter.parametersOf
-import kotlin.math.log
 
 class MainActivity : ComponentActivity() {
 
@@ -44,7 +44,10 @@ class MainActivity : ComponentActivity() {
         }
        // val observer : ObserverNotifier = get()
         val beerService : Service = get(parameters = { parametersOf(this)})
-
+        val mainVieModel: BeerItUpMainActivityViewModel = get()
+        installSplashScreen().apply {
+            setKeepVisibleCondition{mainVieModel.isLoading.value}
+        }
         setContent {
             BeerItUpComposeTheme {
                 Scaffold() {

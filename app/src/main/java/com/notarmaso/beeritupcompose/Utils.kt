@@ -4,6 +4,10 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.notarmaso.beeritupcompose.models.Beer
 import com.notarmaso.beeritupcompose.models.User
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.text.DecimalFormat
+
 val gson = Gson()
 
 
@@ -21,6 +25,7 @@ enum class Pages(val value: String) {
     EDIT_USER("edit_user"),
     PIN_PAD("pin_pad")
 }
+
 
 
 
@@ -47,6 +52,12 @@ fun String.fromJsonToListFloat() : MutableMap<String, Float> {
     return gson.fromJson(this, itemType)
 }
 
+
+fun Float.roundOff(): String {
+    val df = DecimalFormat("##.##")
+    return df.format(this)
+}
+
 fun MutableMap<String, Float>.fromListFloatToJson() : String {
     return gson.toJson(this)
 }
@@ -56,10 +67,16 @@ fun MutableMap<String, Int>.fromListIntToJson() : String {
 }
 
 
+fun String.fromJsonToListReversed() :  MutableList<String>{
+        val itemType = object : TypeToken<MutableList<String>>() {}.type
+        val list: MutableList<String> = gson.fromJson(this, itemType)
+        list.reverse()
+        return list
+}
+
 fun String.fromJsonToList() :  MutableList<String>{
 
     val itemType = object : TypeToken<MutableList<String>>() {}.type
-
     return gson.fromJson(this, itemType)
 }
 fun MutableList<String>.fromListToJson() : String {

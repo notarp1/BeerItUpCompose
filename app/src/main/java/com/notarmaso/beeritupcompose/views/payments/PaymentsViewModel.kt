@@ -1,9 +1,12 @@
 package com.notarmaso.beeritupcompose.views.payments
 
+import android.app.Activity
+import android.content.Context
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.*
+import com.notarmaso.beeritupcompose.R
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import com.notarmaso.beeritupcompose.models.User
@@ -13,6 +16,8 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayAt
+import timber.log.Timber
+import kotlin.math.log
 
 
 class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
@@ -36,6 +41,9 @@ class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
     private fun getUserPayments(){
         _owedFrom.clear()
         _owesTo.clear()
+
+
+
         viewModelScope.launch(Dispatchers.IO) {
 
            user = service.currentUser.let { userRepository.getUser(it.name) }
@@ -53,7 +61,11 @@ class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
     private suspend fun createDataObjects(list: MutableMap<String, Float>, isFrom: Boolean) {
 
         for ((key, value) in  list.entries) {
-            user = userRepository.getUser(key)
+            try {
+                user = userRepository.getUser(key)
+            }catch (e: Exception){
+                Timber.d("Error: $e")
+            }
 
             if (isFrom) {
                 _owedFrom.add(UserEntry(user.name, value, user.phone))
@@ -85,8 +97,8 @@ class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
     }
 
     private fun handleTransaction(user: UserEntry){
-        val date = Clock.System.todayAt(TimeZone.currentSystemDefault())
-
+        val currDate = Clock.System.todayAt(TimeZone.currentSystemDefault())
+        val date: String =  currDate.dayOfMonth.toString()  + "/" + currDate.monthNumber + "/" + currDate.year
         viewModelScope.launch(Dispatchers.IO) {
             /* Handle current user */
             val currentUser = service.currentUser

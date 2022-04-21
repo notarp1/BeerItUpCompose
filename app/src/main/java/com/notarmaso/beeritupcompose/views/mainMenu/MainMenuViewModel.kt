@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
@@ -16,8 +15,9 @@ import com.notarmaso.beeritupcompose.models.User
 import com.notarmaso.beeritupcompose.models.UserLeaderboard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
-import kotlin.concurrent.schedule
+import kotlinx.coroutines.withContext
+import kotlinx.datetime.*
+import kotlinx.datetime.TimeZone
 
 
 class MainMenuViewModel(val service: Service): ViewModel(), ViewModelFunction{
@@ -38,14 +38,12 @@ class MainMenuViewModel(val service: Service): ViewModel(), ViewModelFunction{
 
     init {
         service.observer.register(this)
-
-       /*This makes the debugger crash*/
-        Timer("Init", false).schedule(3500) {
-            _currentMonth = service.currentDate
-            reloadHighscores(true)
-        }
-
     }
+
+  /*  suspend fun getHighScores(onComplete: () -> Unit) {
+        _currentMonth = Clock.System.todayAt(TimeZone.currentSystemDefault()).month.toString()
+        reloadHighScores(true)
+    }*/
 
     fun setPage(page: Pages){
         service.setCurrentPage(page)
@@ -54,13 +52,13 @@ class MainMenuViewModel(val service: Service): ViewModel(), ViewModelFunction{
     fun incrementMonth(){
         if(_currentMonthNumber >= 12) _currentMonthNumber = 12
         else _currentMonthNumber++
-        reloadHighscores()
+        reloadHighScores()
 
     }
     fun decrementMonth(){
         if(_currentMonthNumber <= 0) _currentMonthNumber = 0
         else _currentMonthNumber --
-        reloadHighscores()
+        reloadHighScores()
     }
 
     override fun navigate(location: Pages){
@@ -73,7 +71,10 @@ class MainMenuViewModel(val service: Service): ViewModel(), ViewModelFunction{
     override fun update(page: String) {
         if(page == Pages.MAIN_MENU.value) {
             _currentMonth = service.currentDate
-            reloadHighscores(true)
+            reloadHighScores(true)
+        } else if(page == "init"){
+            _currentMonth = Clock.System.todayAt(TimeZone.currentSystemDefault()).month.toString()
+            reloadHighScores(true)
         }
     }
 
@@ -81,23 +82,27 @@ class MainMenuViewModel(val service: Service): ViewModel(), ViewModelFunction{
 
 
 
-    private fun reloadHighscores(isIni: Boolean = false){
+    private fun reloadHighScores(isIni: Boolean = false){
         if(!isIni)getSelectedMonth()
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch() {
             _userList.clear()
 
-            val temp = userRepository.getAllUsers()
+            withContext(Dispatchers.IO) {
+                val temp = userRepository.getAllUsers()
 
-            for(user in temp){
+                for (user in temp) {
 
-                val totalBeersTemp = user.totalBeers.fromJsonToListInt()[_currentMonth]
+                    val totalBeersTemp = user.totalBeers.fromJsonToListInt()[_currentMonth]
 
-                if(totalBeersTemp != null) {
-                    _userList.add(UserLeaderboard(user.name, totalBeersTemp))
+                    if (totalBeersTemp != null) {
+                        _userList.add(UserLeaderboard(user.name, totalBeersTemp))
+                    }
                 }
+
             }
             _userList.sortByDescending { x -> x.count }
-
+            print("debug")
+            service.observer.notifySubscribers("finishedLoading")
 
         }
     }
