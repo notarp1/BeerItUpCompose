@@ -191,7 +191,7 @@ fun MainRow(drawer: DebugDrawerViewModel){
                 colors = ButtonDefaults.buttonColors(backgroundColor = topBarColor)) {
                 Text(text = "Calculate differences", color = orange)
             }
-            Button(onClick = { drawer.service.resetPrefs() },
+            Button(onClick = { /*drawer.service.resetPrefs() */},
                 colors = ButtonDefaults.buttonColors(backgroundColor = topBarColor)) {
                 Text(text = "Reset differences", color = orange)
             }

@@ -34,7 +34,7 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel){
 
     val service = get<Service>()
     Column {
-        TopBar("Menu", Icons.Rounded.DonutLarge) { service.navigate(Pages.DEBUG_DRAWER)}
+        TopBar("Menu", Icons.Rounded.DonutLarge) { service.navigate(Pages.PIN_PAD)}
         MainMenuContents(mainMenuViewModel)
 
     }

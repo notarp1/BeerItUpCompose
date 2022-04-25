@@ -43,6 +43,7 @@ class UserRepository(ctx: Context) {
     }
 
     suspend fun getTotalBought(user: String): Float {
+
         return userDao.getTotalBought(user)
     }
     suspend fun getTotalAdded(user: String): Float {
