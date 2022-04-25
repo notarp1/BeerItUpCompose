@@ -70,23 +70,19 @@ class AddUserViewModel(val service: Service): ViewModel() {
     }
 
     private fun submitUser(user: User) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch{
             try {
                 userRepository.insertUser(user = user)
             } catch (e: Exception) {
                 Timber.d("Username already exists %s", e.toString())
                 errorFound = true
             } finally {
-
-                viewModelScope.launch(Dispatchers.Main) {
-                    if (!errorFound) {
-                        service.observer.notifySubscribers(Pages.SELECT_USER.value)
-                        service.navigateBack(Pages.MAIN_MENU)
-                    } else {
-                        service.makeToast("Username is already taken!")
-                        errorFound = false
-                    }
-
+                if (!errorFound) {
+                    service.observer.notifySubscribers(Pages.SELECT_USER.value)
+                    service.navigateBack(Pages.MAIN_MENU)
+                } else {
+                    service.makeToast("Username is already taken!")
+                    errorFound = false
                 }
             }
         }

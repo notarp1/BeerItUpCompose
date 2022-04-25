@@ -30,7 +30,7 @@ class SelectUserViewModel(val service: Service): ViewModel(), ViewModelFunction 
     }
 
     private fun getUsers() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch() {
             val tempUsers: MutableList<User> = userRepository.getAllUsers()
 
             tempUsers.sortByDescending {user -> user.totalBeers.fromJsonToListInt()[service.currentDate] }

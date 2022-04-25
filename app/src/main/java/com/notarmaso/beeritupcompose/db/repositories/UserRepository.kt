@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData
 import com.notarmaso.beeritupcompose.db.AppDatabase
 import com.notarmaso.beeritupcompose.db.UserDao
 import com.notarmaso.beeritupcompose.models.User
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 class UserRepository(ctx: Context) {
@@ -19,47 +21,84 @@ class UserRepository(ctx: Context) {
     }
 
     suspend fun getAllUsers(): MutableList<User> {
-        return userDao.getAll()
+        val userList: MutableList<User>
+
+        withContext(Dispatchers.IO){
+           userList = userDao.getAll()
+        }
+        return userList
     }
 
     suspend fun getUser(name: String): User {
-        return  userDao.getUser(name)
+        val user: User
+        withContext(Dispatchers.IO){
+            user = userDao.getUser(name)
+        }
+        return user
     }
 
     suspend fun insertUser(user: User){
-        userDao.insertUser(user)
+        withContext(Dispatchers.IO){
+            userDao.insertUser(user)
+        }
     }
 
     suspend fun updateUser(user: User){
-        userDao.updateUser(user)
+        withContext(Dispatchers.IO){
+            userDao.updateUser(user)
+        }
     }
 
     suspend fun deleteUser(user: User){
-        userDao.deleteUser(user)
+        withContext(Dispatchers.IO){
+            userDao.deleteUser(user)
+        }
     }
 
     suspend fun deleteAll(){
-        userDao.deleteAll()
+        withContext(Dispatchers.IO){
+            userDao.deleteAll()
+        }
+
     }
 
     suspend fun getTotalBought(user: String): Float {
-
-        return userDao.getTotalBought(user)
+        val totalBought: Float
+        withContext(Dispatchers.IO){
+           totalBought =  userDao.getTotalBought(user)
+        }
+        return totalBought
     }
     suspend fun getTotalAdded(user: String): Float {
-        return userDao.getTotalAdded(user)
+        val totalAdded: Float
+        withContext(Dispatchers.IO){
+            totalAdded = userDao.getTotalAdded(user)
+        }
+        return totalAdded
     }
 
     suspend fun getAddedLog(user: String): String {
-        return userDao.getBeersAdded(user)
+        val addedLog: String
+        withContext(Dispatchers.IO){
+            addedLog =  userDao.getBeersAdded(user)
+        }
+        return addedLog
     }
 
     suspend fun getBoughtLog(user: String): String{
-        return userDao.getBeersBought(user)
+       val boughtLog: String
+        withContext(Dispatchers.IO){
+            boughtLog = userDao.getBeersBought(user)
+        }
+        return boughtLog
     }
 
     suspend fun getTranscationsLog(user: String): String{
-        return userDao.getTransactions(user)
+        val transactionLog: String
+        withContext(Dispatchers.IO){
+           transactionLog = userDao.getTransactions(user)
+        }
+        return transactionLog
     }
 
 

@@ -126,7 +126,7 @@ class BeerQuantityViewModel(val service: Service, private val beerService: BeerS
         service.currentUser.beersAddedLog = log.fromListToJson()
 
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             //val priceRounded = BigDecimal(pricePerBeer!!.toDouble()).setScale(1, RoundingMode.HALF_EVEN)
             for (i in 0 until qtySelected) {
 
@@ -142,10 +142,6 @@ class BeerQuantityViewModel(val service: Service, private val beerService: BeerS
             val beerGroup = BeerGroup(selectedBeer.name, serializeBeerGroup(mapOfBeer))
 
             beerRepository.updateBeerGroup(beerGroup)
-           // service.db.beerDao().updateBeerGroup(beerGroup)
-
-
-
 
 
 
@@ -157,12 +153,10 @@ class BeerQuantityViewModel(val service: Service, private val beerService: BeerS
 
 
 
-            viewModelScope.launch(Dispatchers.Main) {
+            service.updateTotalAddedBeersPrefs(pricePaid.toFloat())
 
-                service.updateTotalAddedBeersPrefs(pricePaid.toFloat())
+            service.navigateBack(Pages.MAIN_MENU)
 
-                service.navigateBack(Pages.MAIN_MENU)
-            }
         }
     }
 
@@ -173,8 +167,11 @@ class BeerQuantityViewModel(val service: Service, private val beerService: BeerS
 
     ) {
         service.getDateMonth()
+        val currDate = Clock.System.todayAt(TimeZone.currentSystemDefault())
+        val date: String =  currDate.dayOfMonth.toString()  + "/" + currDate.monthNumber + "/" + currDate.year
 
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
             val currentUser = service.currentUser
 
             val userOwesToList = currentUser.owesTo.fromJsonToListFloat()
@@ -183,16 +180,15 @@ class BeerQuantityViewModel(val service: Service, private val beerService: BeerS
             var beer: Beer?
             val prevBeerName: String = mapOfBeer[0].owner
 
-            /* HER */
-            var beerOwner: User =  userRepository.getUser(prevBeerName)
-            var prevBeerOwner: String? = beerOwner.name
-
             val totalBeers: MutableMap<String, Int> = currentUser.totalBeers.fromJsonToListInt()
             val month = service.currentDate
 
             var totalPaid = 0f
-            val currDate = Clock.System.todayAt(TimeZone.currentSystemDefault())
-            val date: String =  currDate.dayOfMonth.toString()  + "/" + currDate.monthNumber + "/" + currDate.year
+
+
+            var beerOwner: User =  userRepository.getUser(prevBeerName)
+            var prevBeerOwner: String? = beerOwner.name
+
 
             var beersToAdd  = 0
             for (i in 0 until qtySelected) {
@@ -255,10 +251,9 @@ class BeerQuantityViewModel(val service: Service, private val beerService: BeerS
             service.updateTotalBoughtBeersPrefs(paidInTotal.toFloat())
             //Updatebeers
             service.observer.notifySubscribers(Pages.MAIN_MENU.value)
-            viewModelScope.launch(Dispatchers.Main) {
 
-                navigateBack(Pages.MAIN_MENU)
-            }
+            navigateBack(Pages.MAIN_MENU)
+
         }
 
     }

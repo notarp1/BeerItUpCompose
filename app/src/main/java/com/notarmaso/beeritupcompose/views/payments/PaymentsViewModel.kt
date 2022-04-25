@@ -44,7 +44,7 @@ class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
 
 
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
 
            user = service.currentUser.let { userRepository.getUser(it.name) }
 
@@ -99,7 +99,7 @@ class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
     private fun handleTransaction(user: UserEntry){
         val currDate = Clock.System.todayAt(TimeZone.currentSystemDefault())
         val date: String =  currDate.dayOfMonth.toString()  + "/" + currDate.monthNumber + "/" + currDate.year
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch() {
             /* Handle current user */
             val currentUser = service.currentUser
             val userPayments = currentUser.owesTo.fromJsonToListFloat()
