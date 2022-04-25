@@ -13,9 +13,7 @@ import com.notarmaso.beeritupcompose.fromJsonToListInt
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import com.notarmaso.beeritupcompose.models.User
 import com.notarmaso.beeritupcompose.models.UserLeaderboard
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.*
 import kotlinx.datetime.TimeZone
 
@@ -87,7 +85,7 @@ class MainMenuViewModel(val service: Service): ViewModel(), ViewModelFunction{
         viewModelScope.launch() {
             _userList.clear()
 
-            val temp = userRepository.getAllUsers()
+            val temp = userRepository.getAllUsersReplace()
 
             for (user in temp) {
                 val totalBeersTemp = user.totalBeers.fromJsonToListInt()[_currentMonth]

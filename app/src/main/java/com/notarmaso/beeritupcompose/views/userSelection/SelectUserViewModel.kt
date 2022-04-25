@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.notarmaso.beeritupcompose.MainActivity
 import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
@@ -31,7 +30,7 @@ class SelectUserViewModel(val service: Service): ViewModel(), ViewModelFunction 
 
     private fun getUsers() {
         viewModelScope.launch() {
-            val tempUsers: MutableList<User> = userRepository.getAllUsers()
+            val tempUsers: MutableList<User> = userRepository.getAllUsersReplace()
 
             tempUsers.sortByDescending {user -> user.totalBeers.fromJsonToListInt()[service.currentDate] }
 

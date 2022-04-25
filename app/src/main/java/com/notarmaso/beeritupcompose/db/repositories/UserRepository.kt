@@ -6,8 +6,7 @@ import androidx.lifecycle.LiveData
 import com.notarmaso.beeritupcompose.db.AppDatabase
 import com.notarmaso.beeritupcompose.db.UserDao
 import com.notarmaso.beeritupcompose.models.User
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 
 class UserRepository(ctx: Context) {
@@ -26,8 +25,18 @@ class UserRepository(ctx: Context) {
         withContext(Dispatchers.IO){
            userList = userDao.getAll()
         }
+
         return userList
     }
+
+
+    suspend fun getAllUsersReplace() : MutableList<User> = coroutineScope {
+        val userList = async(Dispatchers.IO) {
+            userDao.getAll()
+        }
+        userList.await()
+    }
+
 
     suspend fun getUser(name: String): User {
         val user: User
@@ -35,6 +44,14 @@ class UserRepository(ctx: Context) {
             user = userDao.getUser(name)
         }
         return user
+    }
+
+    suspend fun getUserReplace(name: String): User = coroutineScope {
+        val user = async(Dispatchers.IO) {
+             userDao.getUser(name)
+        }
+
+        user.await()
     }
 
     suspend fun insertUser(user: User){
