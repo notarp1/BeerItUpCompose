@@ -46,9 +46,8 @@ class SelectBeerViewModel(val service: Service, private val beerService: BeerSer
     override fun update(page: String) {
     if(isAddingBeer(page) || isBuyingBeer(page) || page == "UPDATE_BEER_LIST"){
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch() {
                 val beerGroups: List<BeerGroup> = beerRepository.getAllBeerGroups()
-
 
                 for (group in beerGroups) {
 
@@ -56,6 +55,7 @@ class SelectBeerViewModel(val service: Service, private val beerService: BeerSer
 
                     val list = beerService.mapOfBeer[group.groupName]
                     list?.clear()
+
                     if (beers != null) {
                         for(x in beers){
                             list?.add(x)

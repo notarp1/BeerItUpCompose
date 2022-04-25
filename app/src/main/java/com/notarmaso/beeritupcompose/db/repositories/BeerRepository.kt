@@ -3,6 +3,8 @@ import android.content.Context
 import com.notarmaso.beeritupcompose.db.AppDatabase
 import com.notarmaso.beeritupcompose.db.BeerDao
 import com.notarmaso.beeritupcompose.models.BeerGroup
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class BeerRepository(ctx: Context) {
    private var beerDao: BeerDao
@@ -13,21 +15,39 @@ class BeerRepository(ctx: Context) {
     }
 
     suspend fun getAllBeerGroups(): MutableList<BeerGroup> {
-        return beerDao.getAllGroups()
+        val beerGroups: MutableList<BeerGroup>
+        withContext(Dispatchers.IO){
+            beerGroups =  beerDao.getAllGroups()
+
+        }
+        return beerGroups
+
     }
 
     suspend fun getFromGroup(beerGroup: String): BeerGroup {
-        return beerDao.getAllFromGroup(beerGroup)
+
+        val beerGroups: BeerGroup
+        withContext(Dispatchers.IO){
+            beerGroups = beerDao.getAllFromGroup(beerGroup)
+        }
+        return beerGroups
     }
 
     suspend fun insertBeerList(beerGroup: BeerGroup) {
-        beerDao.insertBeerList(beerGroup)
+        withContext(Dispatchers.IO) {
+            beerDao.insertBeerList(beerGroup)
+        }
     }
     suspend fun updateBeerGroup(beerGroup: BeerGroup) {
-        beerDao.updateBeerGroup(beerGroup)
+        withContext(Dispatchers.IO){
+            beerDao.updateBeerGroup(beerGroup)
+        }
     }
 
     suspend fun deleteAll() {
-        beerDao.deleteAll()
+        withContext(Dispatchers.IO){
+            beerDao.deleteAll()
+
+        }
     }
 }

@@ -8,8 +8,7 @@ import android.widget.Toast
 import androidx.navigation.NavHostController
 import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
 import com.notarmaso.beeritupcompose.models.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+
 import kotlinx.datetime.*
 
 
@@ -87,18 +86,18 @@ class Service(ctx: Context, val observer: Observer) {
 
 
 
-    withContext(Dispatchers.IO) {
-      val list: MutableList<BeerGroup> = beerRepository.getAllBeerGroups()
 
-      for (x in list) {
-        val beers: MutableList<Beer>? = deserializeBeerGroup(beers = x.beers)
-        if (beers != null) {
-          for (beer in beers) {
-            totalLeft += beer.price
-          }
+    val list: MutableList<BeerGroup> = beerRepository.getAllBeerGroups()
+
+    for (x in list) {
+      val beers: MutableList<Beer>? = deserializeBeerGroup(beers = x.beers)
+      if (beers != null) {
+        for (beer in beers) {
+          totalLeft += beer.price
         }
       }
     }
+
     return mapOf(
       "TotalSpent" to totalSpent,
       "TotalAdded" to totalAdded,

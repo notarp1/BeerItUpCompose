@@ -87,21 +87,19 @@ class MainMenuViewModel(val service: Service): ViewModel(), ViewModelFunction{
         viewModelScope.launch() {
             _userList.clear()
 
-            withContext(Dispatchers.IO) {
-                val temp = userRepository.getAllUsers()
+            val temp = userRepository.getAllUsers()
 
-                for (user in temp) {
+            for (user in temp) {
+                val totalBeersTemp = user.totalBeers.fromJsonToListInt()[_currentMonth]
 
-                    val totalBeersTemp = user.totalBeers.fromJsonToListInt()[_currentMonth]
-
-                    if (totalBeersTemp != null) {
-                        _userList.add(UserLeaderboard(user.name, totalBeersTemp))
-                    }
+                if (totalBeersTemp != null) {
+                    _userList.add(UserLeaderboard(user.name, totalBeersTemp))
                 }
-
             }
+
+
             _userList.sortByDescending { x -> x.count }
-            print("debug")
+
             service.observer.notifySubscribers("finishedLoading")
 
         }

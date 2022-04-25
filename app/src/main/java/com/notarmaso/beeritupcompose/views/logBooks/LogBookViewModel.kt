@@ -11,7 +11,7 @@ import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
 
 class LogBookViewModel(val service: Service): ViewModel(), ViewModelFunction {
 
@@ -52,9 +52,8 @@ class LogBookViewModel(val service: Service): ViewModel(), ViewModelFunction {
         val name = service.currentUser.name
 
         viewModelScope.launch() {
-
-            withContext(Dispatchers.IO){
                 _logList.clear()
+
                 _totalAdded = userRepository.getTotalAdded(name).roundOff()
                 _totalBought = userRepository.getTotalBought(name).roundOff()
 
@@ -70,7 +69,7 @@ class LogBookViewModel(val service: Service): ViewModel(), ViewModelFunction {
                         var curListItem = 0
                         for(x in list){
                             curListItem++
-                            if(curListItem >= 50) return@withContext
+                            if(curListItem >= 50) return@launch
                             _logList.add(x)
                         }
                     }
@@ -82,7 +81,7 @@ class LogBookViewModel(val service: Service): ViewModel(), ViewModelFunction {
                     }
                     else -> println("Error")
                 }
-            }
+
         }
     }
 

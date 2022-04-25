@@ -77,7 +77,7 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
 
     /*Get Users*/
     fun getUserList(){
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _users = userRepository.getAllUsers()
             selectedUser = _users[0]
         }
@@ -94,15 +94,14 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
         owesToSelected[service.currentUser.name] = price
         selectedUser.owesTo = owesToSelected.fromListFloatToJson()
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
                 userRepository.updateUser(service.currentUser)
                 userRepository.updateUser(selectedUser)
-                viewModelScope.launch(Dispatchers.Main) { service.makeToast("Successfully updated user")
-                }
+                service.makeToast("Successfully updated user")
             } catch (e: Exception){
                 Timber.d("Error:$e")
-                viewModelScope.launch(Dispatchers.Main) { service.makeToast("Error did not update user") }
+                service.makeToast("Error did not update user")
             }
 
         }
@@ -117,15 +116,15 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
         owedFromSelected[service.currentUser.name] = price
         selectedUser.owedFrom = owedFromSelected.fromListFloatToJson()
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
                 userRepository.updateUser(service.currentUser)
                 userRepository.updateUser(selectedUser)
-                viewModelScope.launch(Dispatchers.Main) { service.makeToast("Successfully updated user")
-                }
+                service.makeToast("Successfully updated user")
+
             } catch (e: Exception){
                 Timber.d("Error:$e")
-                viewModelScope.launch(Dispatchers.Main) { service.makeToast("Error did not update user") }
+                service.makeToast("Error did not update user")
             }
 
         }
@@ -134,7 +133,7 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
         val currentUser = service.currentUser
         val totalBeers = currentUser.totalBeers.fromJsonToListInt()
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch{
             try {
                 val oldTotal = totalBeers["TOTAL"]
                 val oldCount = totalBeers[selectMonth]
@@ -164,7 +163,7 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
                     userRepository.updateUser(currentUser)
                     service.currentUser = userRepository.getUser(currentUser.name)
 
-                    viewModelScope.launch(Dispatchers.Main) { service.makeToast("Successfully updated user") }
+                   service.makeToast("Successfully updated user")
 
                 }
 
@@ -172,7 +171,7 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
 
             }catch (e: Exception){
                 Timber.d("Error:$e")
-                viewModelScope.launch(Dispatchers.Main) { service.makeToast("Error did not update user") }
+                service.makeToast("Error did not update user")
             }
         }
 
@@ -183,14 +182,14 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
         if(phoneValidation()){
             service.currentUser.phone = newPhone
 
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch{
                 try {
                     userRepository.updateUser(currentUser)
                     service.currentUser = userRepository.getUser(currentUser.name)
-                    viewModelScope.launch(Dispatchers.Main) { service.makeToast("Successfully updated user") }
+                     service.makeToast("Successfully updated user")
                 }catch (e: Exception){
                     Timber.d("Error:$e")
-                    viewModelScope.launch(Dispatchers.Main) { service.makeToast("Error did not update user") }
+                    service.makeToast("Error did not update user")
                 }
             }
         }
@@ -248,7 +247,7 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
 
     private fun removeUserFromLists(names: MutableList<String>, user: User) {
         for (x in names) {
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch {
                 updateUser(x, user.name)
             }
         }
@@ -257,40 +256,32 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
 
     private suspend fun updateUser(name: String, userToDelete: String) {
         val foreignUser = userRepository.getUser(name)
-        viewModelScope.launch(Dispatchers.Main) {
-            val foreignOwed = foreignUser.owedFrom.fromJsonToListFloat()
-            val foreignOwes = foreignUser.owesTo.fromJsonToListFloat()
 
-            foreignOwed.remove(userToDelete)
-            foreignOwes.remove(userToDelete)
-            foreignUser.owedFrom = foreignOwed.fromListFloatToJson()
-            foreignUser.owesTo = foreignOwes.fromListFloatToJson()
-            viewModelScope.launch(Dispatchers.IO) {
-                userRepository.updateUser(foreignUser)
+        val foreignOwed = foreignUser.owedFrom.fromJsonToListFloat()
+        val foreignOwes = foreignUser.owesTo.fromJsonToListFloat()
 
-            }
-        }
+        foreignOwed.remove(userToDelete)
+        foreignOwes.remove(userToDelete)
+
+        foreignUser.owedFrom = foreignOwed.fromListFloatToJson()
+        foreignUser.owesTo = foreignOwes.fromListFloatToJson()
+
+        userRepository.updateUser(foreignUser)
 
     }
 
     private fun deleteUserFromDatabase(user: User){
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
 
             try {
                 userRepository.deleteUser(user)
             } catch (e: Exception){
                 Timber.d("Error", e)
-                viewModelScope.launch(Dispatchers.Main) {
-                    service.makeToast("Something went wrong")
-                }
+                service.makeToast("Something went wrong")
                 return@launch
-            }
-
-            viewModelScope.launch(Dispatchers.Main) {
+            } finally {
                 service.navigateBack(Pages.MAIN_MENU)
             }
-
-
         }
     }
 
@@ -357,7 +348,7 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
     /* Differences */
 
     fun calculateDifferences(){
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch() {
             val mapOfValues: Map<String, Float> = service.calcBeerDifference()
             _totalSpent = mapOfValues["TotalSpent"]!!
             _totalAdded = mapOfValues["TotalAdded"]!!
@@ -382,7 +373,7 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
 
     /* RESET EVERYTHING BUTTON */
     fun resetUsers(){
-        viewModelScope.launch(Dispatchers.IO){
+        viewModelScope.launch(){
 
         beerRepository.deleteAll()
             for (x in beerService.mapOfBeer) {
@@ -390,9 +381,9 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
             }
             userRepository.deleteAll()
 
-            viewModelScope.launch(Dispatchers.Main) {
-                usersSetup()
-            }
+
+            usersSetup()
+
             service.resetPrefs()
 
         }
@@ -648,7 +639,7 @@ class DebugDrawerViewModel(val service: Service, private val beerService: BeerSe
         user1.owesTo = list1.fromListFloatToJson()
         user1.owedFrom = list11.fromListFloatToJson() */
 
-        viewModelScope.launch(Dispatchers.IO){
+        viewModelScope.launch(){
             userRepository.insertUser(user1)
             userRepository.insertUser(user2)
             userRepository.insertUser(user3)
