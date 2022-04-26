@@ -83,7 +83,7 @@ class PaymentsViewModel(val service: Service): ViewModel(), ViewModelFunction {
     }
 
     override fun navigateBack(location: Pages) {
-        service.navigate(location = location)
+        service.navigateBack(location = location)
     }
 
     override fun update(page: String) {

@@ -50,7 +50,7 @@ class Service(ctx: Context, val observer: Observer) {
   }
 
   fun navigateBack(location: Pages){
-    navHostController?.navigate(location.value){popUpTo(location.value)}
+    navHostController?.popBackStack()
   }
 
 
@@ -87,7 +87,7 @@ class Service(ctx: Context, val observer: Observer) {
 
 
 
-    val list: MutableList<BeerGroup> = beerRepository.getAllBeerGroups()
+    val list: MutableList<BeerGroup> = beerRepository.getAllBeerGroupsDunno()
 
     for (x in list) {
       val beers: MutableList<Beer>? = deserializeBeerGroup(beers = x.beers)
