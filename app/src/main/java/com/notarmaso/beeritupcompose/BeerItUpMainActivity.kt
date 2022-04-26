@@ -3,12 +3,21 @@ package com.notarmaso.beeritupcompose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+
+import com.google.accompanist.navigation.animation.navigation
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.notarmaso.beeritupcompose.interfaces.serviceModule
 import com.notarmaso.beeritupcompose.interfaces.vmModule
 import com.notarmaso.beeritupcompose.ui.theme.BeerItUpComposeTheme
@@ -58,9 +67,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NavigationHost(service: Service){
-    val navController = rememberNavController()
+    val navController = rememberAnimatedNavController()
     service.navHostController = navController
 
 
@@ -74,7 +84,13 @@ fun NavigationHost(service: Service){
     val paymentsViewModel = get<PaymentsViewModel>()
     val logBookViewModel = get<LogBookViewModel>()
 
-    NavHost(navController = navController, startDestination = Pages.MAIN_MENU.value){
+    AnimatedNavHost(navController = navController,
+        startDestination = Pages.MAIN_MENU.value,
+        enterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(200)) },
+        exitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(200)) },
+        popEnterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(200))},
+        popExitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(200)) }
+    ){
         composable(Pages.MAIN_MENU.value){
             MainMenu(mainMenuViewModel)
         }

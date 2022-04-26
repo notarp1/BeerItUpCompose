@@ -46,8 +46,9 @@ class SelectBeerViewModel(val service: Service, private val beerService: BeerSer
     override fun update(page: String) {
     if(isAddingBeer(page) || isBuyingBeer(page) || page == "UPDATE_BEER_LIST"){
 
-        viewModelScope.launch() {
-                val beerGroups: List<BeerGroup> = beerRepository.getAllBeerGroups()
+        /* Selecting dispatcher here loads users faster? */
+        viewModelScope.launch(Dispatchers.IO) {
+                val beerGroups: List<BeerGroup> = beerRepository.getAllBeerGroupsDunno()
 
                 for (group in beerGroups) {
 

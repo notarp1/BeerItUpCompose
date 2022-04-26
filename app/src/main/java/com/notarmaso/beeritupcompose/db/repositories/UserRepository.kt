@@ -34,6 +34,7 @@ class UserRepository(ctx: Context) {
         val userList = async(Dispatchers.IO) {
             userDao.getAll()
         }
+
         userList.await()
     }
 

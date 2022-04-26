@@ -29,7 +29,8 @@ class SelectUserViewModel(val service: Service): ViewModel(), ViewModelFunction 
     }
 
     private fun getUsers() {
-        viewModelScope.launch() {
+        /* Selecting dispatcher here loads users faster? */
+        viewModelScope.launch(Dispatchers.IO) {
             val tempUsers: MutableList<User> = userRepository.getAllUsersReplace()
 
             tempUsers.sortByDescending {user -> user.totalBeers.fromJsonToListInt()[service.currentDate] }

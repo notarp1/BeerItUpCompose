@@ -4,6 +4,8 @@ import com.notarmaso.beeritupcompose.db.AppDatabase
 import com.notarmaso.beeritupcompose.db.BeerDao
 import com.notarmaso.beeritupcompose.models.BeerGroup
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 
 class BeerRepository(ctx: Context) {
@@ -21,6 +23,15 @@ class BeerRepository(ctx: Context) {
 
         }
         return beerGroups
+
+    }
+
+    suspend fun getAllBeerGroupsDunno(): MutableList<BeerGroup> = coroutineScope {
+        val beerGroups = async(Dispatchers.IO) {
+            beerDao.getAllGroups()
+        }
+
+        beerGroups.await()
 
     }
 
