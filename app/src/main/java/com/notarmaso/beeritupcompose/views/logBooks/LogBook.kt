@@ -10,6 +10,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowLeft
 import androidx.compose.material.icons.rounded.ArrowRight
 import androidx.compose.runtime.Composable
@@ -31,7 +32,7 @@ fun LogBook(logBookViewModel: LogBookViewModel){
 
     val service = get<Service>()
     Column {
-        TopBar("${service.currentUser.name}'s Logbook", Icons.Rounded.ArrowLeft) { service.navigateBack(Pages.SELECT_USER) }
+        TopBar("${service.currentUser.name}'s Logbook", Icons.Rounded.ArrowBack) { service.navigateBack(Pages.SELECT_USER) }
         LogBookContents(logBookViewModel)
 
     }
