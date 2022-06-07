@@ -3,7 +3,6 @@ package com.notarmaso.beeritupcompose
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.interfaces.ViewModelFunction
-import com.notarmaso.beeritupcompose.views.mainMenu.MainMenuViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

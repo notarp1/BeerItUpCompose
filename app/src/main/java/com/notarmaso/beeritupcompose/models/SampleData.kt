@@ -3,6 +3,7 @@ package com.notarmaso.beeritupcompose.models
 import androidx.compose.runtime.mutableStateMapOf
 import com.notarmaso.beeritupcompose.R
 import com.notarmaso.beeritupcompose.fromListFloatToJson
+/* DELETE */
 
 object SampleData {
 

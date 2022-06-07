@@ -12,22 +12,34 @@ val gson = Gson()
 
 
 enum class Pages(val value: String) {
+    START_MENU("start_menu"),
     MAIN_MENU("main_menu"),
-    SELECT_USER("select_user"),
-    BUY_BEER("buy_beer"),
-    SELECT_BEER_QUANTITY("select_beer_quantity"),
     ADD_USER("add_user"),
-    DEBUG_DRAWER("debug_drawer"),
-    ADD_BEER("add_beer"),
+    ADD_KITCHEN("add_kitchen"),
+    ADD_BEVERAGE_STAGE_1("add_beverage_1"),
+    ADD_BEVERAGE_STAGE_2("add_beverage_2"),
+    SELECT_BEVERAGE_STAGE_1("select_beverage_stage_1"),
+    SELECT_BEVERAGE_STAGE_2("select_beverage_stage_2"),
+    LOGIN_USER("login_user"),
+    LOGIN_KITCHEN("login_kitchen"),
+    JOIN_KITCHEN("join_kitchen"),
+    USER_SELECTION("user_selection"),
+    STATISTICS("statistics"),
     PAYMENTS("payments"),
-    LOG_BOOKS("log_books"),
+    LOGBOOK("logbook"),
+
+
+    DEBUG_DRAWER("debugDaber"),
     DELETE_USER("delete_user"),
     EDIT_USER("edit_user"),
     PIN_PAD("pin_pad")
 }
 
 
-
+enum class Category(val category: String){
+    BEERS("beer"),
+    SOFT_DRINKS("soda")
+}
 
 
 fun deserializeBeerGroup(beers: String): MutableList<Beer>?{

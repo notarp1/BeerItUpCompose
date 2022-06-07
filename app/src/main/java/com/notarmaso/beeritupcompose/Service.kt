@@ -6,110 +6,61 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.navigation.NavHostController
-import com.notarmaso.beeritupcompose.db.repositories.BeerRepository
 import com.notarmaso.beeritupcompose.models.*
+import com.notarmaso.db_access_setup.StateHandler
+import com.notarmaso.db_access_setup.models.BeverageType
 
 import kotlinx.datetime.*
 
 
-class Service(ctx: Context, val observer: Observer) {
+class Service(ctx: Context, val stateHandler: StateHandler, val observer: Observer) {
+
+  var navHostController: NavHostController? = null
+  val context = ctx
 
 
   private var _currentPage: Pages = Pages.MAIN_MENU
   val currentPage: Pages get() = _currentPage
 
-  private var _currentDate: String = Clock.System.todayAt(TimeZone.currentSystemDefault()).month.toString()
-  val currentDate: String get() = _currentDate
+  private lateinit var _selectedBeverage: BeverageType
+  val selectedBeverage: BeverageType get() = _selectedBeverage
 
-  val context = ctx
 
-  var navHostController: NavHostController? = null
-  var sharedPref: SharedPreferences
-
-  lateinit var currentUser: User
-  var latestUser: User? = null
-  var selectedGlobalBeer: GlobalBeer = SampleData.beerListSample[0]
-
-  private val beerRepository: BeerRepository = BeerRepository(context)
-
-  init {
-    val activity: Activity = context as Activity
-    sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
+  fun setBeverageType(beverage: BeverageType) {
+    _selectedBeverage = beverage
   }
 
-  fun setCurrentPage(page: Pages){
+  fun setSelectedPage(page: Pages){
     _currentPage = page
-  }
-
-  fun getDateMonth(){
-    _currentDate = Clock.System.todayAt(TimeZone.currentSystemDefault()).month.toString()
   }
 
   fun navigate(location: Pages){
     navHostController?.navigate(location.value)
   }
 
-  fun navigateBack(location: Pages){
-    navHostController?.popBackStack()
-  }
-
-
-  fun updateTotalAddedBeersPrefs(added: Float) {
-    val oldPrice = sharedPref.getFloat("TotalAdded", 0f)
-    with (sharedPref.edit()) {
-      putFloat("TotalAdded", (oldPrice + added).roundOff().toFloat())
-      apply()
-    }
-  }
-
-  fun updateTotalBoughtBeersPrefs(paid: Float) {
-    val oldPrice = sharedPref.getFloat("TotalBought", 0f)
-    with (sharedPref.edit()) {
-      putFloat("TotalBought", (oldPrice + paid).roundOff().toFloat())
-      apply()
-
-    }
-  }
-
-  fun resetPrefs(){
-    with (sharedPref.edit()) {
-      putFloat("TotalBought", 0f)
-      putFloat("TotalAdded", 0f)
-      apply()
-    }
-  }
-
-  suspend fun calcBeerDifference(): Map<String, Float> {
-    var totalLeft = 0f
-    val totalSpent = sharedPref.getFloat("TotalBought", 0f)
-    val totalAdded = sharedPref.getFloat("TotalAdded", 0f)
-
-
-
-
-    val list: MutableList<BeerGroup> = beerRepository.getAllBeerGroupsDunno()
-
-    for (x in list) {
-      val beers: MutableList<Beer>? = deserializeBeerGroup(beers = x.beers)
-      if (beers != null) {
-        for (beer in beers) {
-          totalLeft += beer.price
-        }
+  fun navigatePopUpToInclusive(location: Pages, popTo: Pages){
+    navHostController?.navigate(location.value){
+      popUpTo(popTo.value){
+        inclusive =true
       }
     }
-
-    return mapOf(
-      "TotalSpent" to totalSpent,
-      "TotalAdded" to totalAdded,
-      "TotalLeft" to totalLeft
-    )
   }
+
+  fun navigateAndPopUpTo(location: Pages){
+    navHostController?.navigate(location.value){
+      popUpToRoute
+      navHostController?.popBackStack()
+      navHostController?.clearBackStack(location.value)
+    }
+  }
+
+
 
   /* Insert Into Other Support Class*/
   fun createAlertBoxSelectBeer(beerQty: Int, price: Float, onAccept: () -> Unit){
     val alertDialogBuilder = AlertDialog.Builder(context)
     alertDialogBuilder
-      .setTitle("${currentUser.name} you are selecting $beerQty beers")
+      .setTitle("FIXME you are selecting $beerQty beers")
       .setMessage("For at total of $price DKK \nDo you really want to continue?")
 
     alertDialogBuilder.setPositiveButton("OK") { _, _ ->
@@ -129,7 +80,7 @@ class Service(ctx: Context, val observer: Observer) {
   fun createAlertBoxAddBeer(price: Float, onAccept: () -> Unit, qty: Int){
     val alertDialogBuilder = AlertDialog.Builder(context)
     alertDialogBuilder
-      .setTitle("${currentUser.name} you are adding $qty beers!")
+      .setTitle("FIX ME you are adding $qty beers!")
       .setMessage("For at price of $price DKK/pcs \nDo you really want to continue?")
 
     alertDialogBuilder.setPositiveButton("OK") { _, _ ->
@@ -146,43 +97,8 @@ class Service(ctx: Context, val observer: Observer) {
 
   }
 
-  fun createAlertBoxDeleteUser(onAccept: () -> Unit){
-    val alertDialogBuilder = AlertDialog.Builder(context)
-    alertDialogBuilder
-      .setTitle("DELETE USER")
-      .setMessage("ARE YOU SURE YOU WANT TO DELETE USER ${currentUser.name} \nDo you really want to continue?")
-
-    alertDialogBuilder.setPositiveButton("YES DELETE") { _, _ ->
-      onAccept()
-      makeToast("Deleting User")
-    }
-
-    alertDialogBuilder.setNegativeButton("NO GO BACK") { _, _ ->
-      makeToast("Cancelled")
-    }
-    alertDialogBuilder.show()
 
 
-  }
-
-  fun createAlertBoxPayment(user: UserEntry, onAccept: () -> Unit){
-    val alertDialogBuilder = AlertDialog.Builder(context)
-    alertDialogBuilder
-      .setTitle("${currentUser.name} you are sending money!")
-      .setMessage("You must send ${user.price} DKK to ${user.name} with phone: ${user.phone}")
-
-    alertDialogBuilder.setPositiveButton("I have sent the money!") { _, _ ->
-      onAccept()
-      makeToast("Succesfully paid money")
-    }
-
-    alertDialogBuilder.setNegativeButton("Wait!") { _, _ ->
-      makeToast("Cancelled")
-    }
-    alertDialogBuilder.show()
-
-
-  }
 
   fun createAlertBoxAddUser(user: User, onAccept: () -> Unit){
     val alertDialogBuilder = AlertDialog.Builder(context)
