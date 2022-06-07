@@ -1,26 +1,24 @@
-package com.notarmaso.db_access_setup.views.beeritup.join_kitchen
+package com.notarmaso.beeritupcompose.views.beeritup.join_kitchen
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
-import com.notarmaso.db_access_setup.StateHandler
-import com.notarmaso.db_access_setup.Service
-import com.notarmaso.db_access_setup.dal.repositories.KitchenRepository
+import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.StateHandler
+import com.notarmaso.beeritupcompose.db.repositories.KitchenRepository
+import com.notarmaso.beeritupcompose.interfaces.Form
 import com.notarmaso.db_access_setup.models.Kitchen
 import com.notarmaso.db_access_setup.models.KitchenLoginObject
-import com.notarmaso.db_access_setup.views.beeritup.interfaces.Form
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
 class JoinKitchenViewModel(
-    private val service: Service,
-    private val navController: NavHostController,
-    private val stateHandler: StateHandler) : ViewModel(), Form {
+    private val s: Service
+) : ViewModel(), Form {
 
     private val kitchenRepo = KitchenRepository
 
@@ -67,7 +65,7 @@ class JoinKitchenViewModel(
         viewModelScope.launch {
             val kitchen: Kitchen? = res.body()
             val response: Response<String>
-            val currentUser = stateHandler.appMode as StateHandler.AppMode.SignedInAsUser
+            val currentUser = s.stateHandler.appMode as StateHandler.AppMode.SignedInAsUser
 
             if(kitchen != null) {
                 withContext(Dispatchers.IO) {
@@ -84,22 +82,22 @@ class JoinKitchenViewModel(
             200 -> {
                 handleKitchenRegistration(response)
             }
-            400 -> service.makeToast("Error: This kitchen does not exist")
-            401 -> service.makeToast("Error: Wrong password")
-            500 -> service.makeToast(response.message())
-            else -> service.makeToast(response.message())
+            400 -> s.makeToast("Error: This kitchen does not exist")
+            401 -> s.makeToast("Error: Wrong password")
+            500 -> s.makeToast(response.message())
+            else -> s.makeToast(response.message())
         }
     }
 
     private fun handleErrorJoined(response: Response<String>, kId: Int) {
         when(response.code()){
             201 -> {
-                service.makeToast("Successfully Joined!")
-                stateHandler.onUserJoinedKitchen(kId)
-                navController.popBackStack()
+                s.makeToast("Successfully Joined!")
+                s.stateHandler.onUserJoinedKitchen(kId)
+                s.nav?.popBackStack()
             }
-            500 -> service.makeToast(response.message())
-            else -> service.makeToast(response.message())
+            500 -> s.makeToast(response.message())
+            else -> s.makeToast(response.message())
         }
     }
 

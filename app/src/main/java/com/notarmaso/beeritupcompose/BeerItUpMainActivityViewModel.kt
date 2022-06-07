@@ -20,6 +20,7 @@ class BeerItUpMainActivityViewModel(service: Service): ViewModel(), ViewModelFun
             delay(50)
             service.observer.notifySubscribers("init")
 
+
         }
 
 

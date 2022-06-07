@@ -1,21 +1,19 @@
-package com.notarmaso.db_access_setup.views.beeritup.payments
+package com.notarmaso.beeritupcompose.views.beeritup.payments
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
-import com.notarmaso.db_access_setup.StateHandler
-import com.notarmaso.db_access_setup.Service
-import com.notarmaso.db_access_setup.dal.repositories.UserRepository
-import com.notarmaso.db_access_setup.models.UserPaymentObject
+import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.db.repositories.UserRepository
+import com.notarmaso.beeritupcompose.models.UserPaymentObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class PaymentsViewModel(val navController: NavHostController, val service: Service, val stateHandler: StateHandler): ViewModel()  {
+class PaymentsViewModel(val s: Service): ViewModel() {
 
     private var _owedFrom by mutableStateOf<List<UserPaymentObject>?>(listOf())
     val owedFrom: List<UserPaymentObject>? get() = _owedFrom
@@ -25,6 +23,7 @@ class PaymentsViewModel(val navController: NavHostController, val service: Servi
 
     private val userRepo = UserRepository
 
+
     fun loadLists() {
         viewModelScope.launch {
 
@@ -33,9 +32,9 @@ class PaymentsViewModel(val navController: NavHostController, val service: Servi
 
             withContext(Dispatchers.IO){
 
-                resOwed = userRepo.userOwed(stateHandler.appMode.uId)
+                resOwed = userRepo.userOwed(s.stateHandler.appMode.uId)
                 _owedFrom = resOwed.body()
-                resOwes = userRepo.userOwes(stateHandler.appMode.uId)
+                resOwes = userRepo.userOwes(s.stateHandler.appMode.uId)
                 _owesTo = resOwes.body()
             }
 
@@ -50,9 +49,11 @@ class PaymentsViewModel(val navController: NavHostController, val service: Servi
 
             withContext(Dispatchers.IO) {
 
-                res = userRepo.makePayment(stateHandler.appMode.uId, ownerId)
+                res = userRepo.makePayment(s.stateHandler.appMode.uId, ownerId)
 
             }
         }
     }
+
+
 }

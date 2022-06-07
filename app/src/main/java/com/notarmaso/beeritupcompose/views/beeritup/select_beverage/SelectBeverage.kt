@@ -24,17 +24,18 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
-import com.notarmaso.db_access_setup.MainActivity
-import com.notarmaso.db_access_setup.R
-import com.notarmaso.db_access_setup.models.BeverageType
-import com.notarmaso.db_access_setup.ui.theme.components.ButtonMain
-import com.notarmaso.db_access_setup.ui.theme.components.TopBar
-import com.notarmaso.db_access_setup.views.beeritup.Category
+import com.notarmaso.beeritupcompose.Category
+import com.notarmaso.beeritupcompose.Pages
+import com.notarmaso.beeritupcompose.R
+import com.notarmaso.beeritupcompose.models.BeverageType
+import com.notarmaso.beeritupcompose.ui.theme.components.ButtonMain
+import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
+
 
 @Composable
 fun SelectBeverage(selectBeverageViewModel: SelectBeverageViewModel) {
-
     val vm = selectBeverageViewModel
+
     /*TODO: Remake this wuth obsver*/
     vm.getBeverageTypes()
 
@@ -55,7 +56,7 @@ fun SelectBeverage(selectBeverageViewModel: SelectBeverageViewModel) {
 
         TopBar(Modifier.constrainAs(topBar){
             top.linkTo(parent.top)
-        }, "select beverage", goTo = { vm.navController.popBackStack() }, Icons.Rounded.ArrowBack)
+        }, "select beverage", goTo = { vm.s.nav?.popBackStack() }, Icons.Rounded.ArrowBack)
 
         Row(
             Modifier
@@ -132,7 +133,7 @@ private fun BeverageCard(vm: SelectBeverageViewModel, beverageType: BeverageType
             Modifier
                 .height(80.dp)
                 .clickable(onClick = {
-                    vm.navToNextPage(MainActivity.SELECT_BEVERAGE_2, beverageType)
+                    vm.navToNextPage(Pages.SELECT_BEVERAGE_STAGE_2, beverageType)
                     vm.hasRun = false
                 }
                 ), verticalAlignment = Alignment.CenterVertically

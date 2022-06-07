@@ -106,7 +106,7 @@ class AddUserViewModel(private val s: Service) : ViewModel(), Form {
         when(response.code()){
             201 -> {
                 s.makeToast("User Created!")
-                s.navHostController?.popBackStack()
+                s.nav?.popBackStack()
             }
             204 -> {
                 s.makeToast("User Updated!")

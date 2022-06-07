@@ -21,12 +21,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.notarmaso.db_access_setup.models.UserPaymentObject
-import com.notarmaso.db_access_setup.ui.theme.components.TopBar
+import com.notarmaso.beeritupcompose.models.UserPaymentObject
+import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
+import com.notarmaso.beeritupcompose.views.beeritup.payments.PaymentsViewModel
+
 
 @Composable
 fun Payments(paymentsViewModel: PaymentsViewModel) {
-    paymentsViewModel.loadLists()
+
+    val vm = paymentsViewModel
+
+    /* TODO do with observer!!*/
+    vm.loadLists()
+
+
     ConstraintLayout(
         Modifier
             .fillMaxSize()
@@ -43,9 +51,9 @@ fun Payments(paymentsViewModel: PaymentsViewModel) {
 
         TopBar(Modifier.constrainAs(topBar){
             top.linkTo(parent.top)
-        }, "Payments", goTo = { paymentsViewModel.navController.popBackStack() }, Icons.Rounded.ArrowBack)
+        }, "Payments", goTo = { vm.s.nav?.popBackStack() }, Icons.Rounded.ArrowBack)
 
-        PaymentsPage(payVm = paymentsViewModel, modifier = Modifier.constrainAs(payments){
+        PaymentsPage(payVm = vm, modifier = Modifier.constrainAs(payments){
             top.linkTo(topBar.bottom)
             centerHorizontallyTo(parent)
         })

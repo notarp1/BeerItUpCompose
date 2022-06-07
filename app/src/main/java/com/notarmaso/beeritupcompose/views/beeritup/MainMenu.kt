@@ -197,7 +197,7 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isUser: Boolean, mainMe
 
 
     ButtonMain(onClick = {
-            vm.s.setSelectedPage(Pages.ADD_BEVERAGE_STAGE_1)
+            vm.s.setCurrentPage(Pages.ADD_BEVERAGE_STAGE_1)
             if(isUser) vm.s.navigate(Pages.ADD_BEVERAGE_STAGE_1)
             else vm.s.navigate(Pages.USER_SELECTION)
         },
@@ -211,7 +211,7 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isUser: Boolean, mainMe
         })
     /* TODO STATISTICS FOR KITCHEN */
     ButtonMain(onClick = {
-            vm.s.setSelectedPage(Pages.STATISTICS)
+            vm.s.setCurrentPage(Pages.STATISTICS)
             vm.s.navigate(Pages.STATISTICS)
         },
         text = "Statistics",
@@ -224,8 +224,8 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isUser: Boolean, mainMe
         })
 
     ButtonMain(onClick = {
-            vm.s.setSelectedPage(Pages.LOGBOOK)
-            if(isUser) vm.s.navigate(Pages.LOGBOOK)
+            vm.s.setCurrentPage(Pages.LOGBOOKS)
+            if(isUser) vm.s.navigate(Pages.LOGBOOKS)
             else vm.s.navigate(Pages.USER_SELECTION)
         },
         text = "Logbook",
@@ -238,7 +238,7 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isUser: Boolean, mainMe
         })
 
     ButtonMain(onClick = {
-            vm.s.setSelectedPage(Pages.PAYMENTS)
+            vm.s.setCurrentPage(Pages.PAYMENTS)
             if(isUser) vm.s.navigate(Pages.PAYMENTS)
             else vm.s.navigate(Pages.USER_SELECTION)
         },
@@ -252,7 +252,7 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isUser: Boolean, mainMe
         })
 
     ButtonMain(onClick = {
-        vm.s.setSelectedPage(Pages.SELECT_BEVERAGE_STAGE_1)
+        vm.s.setCurrentPage(Pages.SELECT_BEVERAGE_STAGE_1)
         if(isUser) vm.s.navigate(Pages.SELECT_BEVERAGE_STAGE_1)
         else vm.s.navigate(Pages.USER_SELECTION)
     },

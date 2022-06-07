@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.views.beeritup.select_user
+package com.notarmaso.beeritupcompose.views.beeritup.select_user
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.runtime.Composable
@@ -17,23 +17,20 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.notarmaso.db_access_setup.R
-import com.notarmaso.db_access_setup.models.UserRecieve
-import com.notarmaso.db_access_setup.ui.theme.*
-import com.notarmaso.db_access_setup.ui.theme.components.TopBar
-import com.notarmaso.db_access_setup.views.beeritup.NavigationBar
+import com.notarmaso.beeritupcompose.R
+import com.notarmaso.beeritupcompose.models.UserRecieve
+import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
 
 
 @Composable
 fun SelectUser(selectUserViewModel: SelectUserViewModel) {
+    val vm = selectUserViewModel
+
     Column {
 
-        TopBar(Modifier,"select user", goTo = { selectUserViewModel.navController.popBackStack() }, Icons.Rounded.ArrowBack)
+        TopBar(Modifier,"select user", goTo = { vm.s.nav?.popBackStack() }, Icons.Rounded.ArrowBack)
 
         Box(modifier = Modifier.weight(1f)){
             UserList(selectUserViewModel)}

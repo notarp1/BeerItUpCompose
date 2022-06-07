@@ -106,7 +106,7 @@ class AddKitchenViewModel(private val service: Service) : ViewModel(), Form {
             201 -> {
                 service.makeToast("Kitchen Created!")
                 resetTextFields()
-                service.navHostController?.popBackStack()
+                service.nav?.popBackStack()
             }
 
             400 -> service.makeToast("Error: This User Does Not Exist")

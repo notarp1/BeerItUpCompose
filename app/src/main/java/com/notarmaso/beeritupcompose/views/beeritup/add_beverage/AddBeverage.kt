@@ -1,7 +1,6 @@
 package com.notarmaso.db_access_setup.views.beeritup.add_beverage
 
 
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,12 +22,14 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
-import com.notarmaso.db_access_setup.MainActivity
-import com.notarmaso.db_access_setup.R
-import com.notarmaso.db_access_setup.models.BeverageType
-import com.notarmaso.db_access_setup.ui.theme.components.ButtonMain
-import com.notarmaso.db_access_setup.ui.theme.components.TopBar
-import com.notarmaso.db_access_setup.views.beeritup.Category
+import com.notarmaso.beeritupcompose.Category
+import com.notarmaso.beeritupcompose.Pages
+import com.notarmaso.beeritupcompose.R
+import com.notarmaso.beeritupcompose.models.BeverageType
+import com.notarmaso.beeritupcompose.ui.theme.components.ButtonMain
+import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
+import com.notarmaso.beeritupcompose.views.beeritup.add_beverage.AddBeverageViewModel
+
 
 
 @Composable
@@ -36,9 +37,9 @@ fun AddBeverage(addBeverageViewModel: AddBeverageViewModel) {
 
     val vm = addBeverageViewModel
     /*TODO: Remake this with observer*/
-    if(!addBeverageViewModel.hasrun) {
-        addBeverageViewModel.getBeverageTypes()
-        addBeverageViewModel.hasrun = true
+    if(!vm.hasrun) {
+        vm.getBeverageTypes()
+        vm.hasrun = true
     }
     ConstraintLayout(
         Modifier
@@ -55,10 +56,10 @@ fun AddBeverage(addBeverageViewModel: AddBeverageViewModel) {
 
 
         val (beverageList, selectionRow, topBar, divider) = createRefs()
-        var beerIsSelected by remember{ mutableStateOf(true)}
+
         TopBar(Modifier.constrainAs(topBar){
             top.linkTo(parent.top)
-        }, "add beverage", goTo = { addBeverageViewModel.navController.popBackStack() }, Icons.Rounded.ArrowBack)
+        }, "add beverage", goTo = { vm.s.nav?.popBackStack() }, Icons.Rounded.ArrowBack)
 
         Row(
             Modifier
@@ -87,7 +88,7 @@ fun AddBeverage(addBeverageViewModel: AddBeverageViewModel) {
             top.linkTo(selectionRow.bottom, 10.dp)
         })
 
-        BeverageList(vm = addBeverageViewModel, Modifier.constrainAs(beverageList){
+        BeverageList(vm = vm, Modifier.constrainAs(beverageList){
             top.linkTo(divider.bottom)
 
         })
@@ -137,7 +138,7 @@ private fun BeverageCard(vm: AddBeverageViewModel, beverageType: BeverageType, m
             Modifier
                 .height(80.dp)
                 .clickable(onClick = {
-                    vm.navToNextPage(MainActivity.ADD_BEVERAGE_2, beverageType)
+                    vm.navToNextPage(Pages.ADD_BEVERAGE_STAGE_2, beverageType)
                     vm.hasrun = false
                 }
                 ), verticalAlignment = Alignment.CenterVertically

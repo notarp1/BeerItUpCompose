@@ -1,18 +1,13 @@
 package com.notarmaso.db_access_setup.views.beeritup.statistics
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
-import com.notarmaso.db_access_setup.Service
-import com.notarmaso.db_access_setup.StateHandler
-import com.notarmaso.db_access_setup.dal.repositories.KitchenRepository
-import com.notarmaso.db_access_setup.models.BeverageType
-import com.notarmaso.db_access_setup.models.LeaderboardEntryObj
-import com.notarmaso.db_access_setup.models.UserRecieve
+import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.db.repositories.KitchenRepository
+import com.notarmaso.beeritupcompose.models.LeaderboardEntryObj
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -22,7 +17,7 @@ import kotlinx.datetime.todayAt
 import retrofit2.Response
 
 
-class UserStatisticsViewModel(val service: Service, val stateHandler: StateHandler, val navController: NavHostController) : ViewModel() {
+class StatisticsViewModel(val s: Service) : ViewModel() {
     private val kitchenRepo = KitchenRepository
 
     private var _currentMonth: Int by mutableStateOf(Clock.System.todayAt(TimeZone.currentSystemDefault()).monthNumber)
@@ -55,12 +50,12 @@ class UserStatisticsViewModel(val service: Service, val stateHandler: StateHandl
             val res = when(_currentMonth){
                 0 -> {
                     withContext(Dispatchers.IO) {
-                        kitchenRepo.getYearlyLeaderboard(stateHandler.appMode.kId, _currentYear)
+                        kitchenRepo.getYearlyLeaderboard(s.stateHandler.appMode.kId, _currentYear)
                     }
                 }
                 else -> {
                     withContext(Dispatchers.IO) {
-                        kitchenRepo.getMonthlyLeaderboard(stateHandler.appMode.kId, _currentYear, _currentMonth)
+                        kitchenRepo.getMonthlyLeaderboard(s.stateHandler.appMode.kId, _currentYear, _currentMonth)
                     }
                 }
             }
@@ -98,8 +93,8 @@ class UserStatisticsViewModel(val service: Service, val stateHandler: StateHandl
             200 -> {
               _userList = response.body()
             }
-            500 -> service.makeToast(response.message())
-            else -> service.makeToast("Unknown error ${response.code()}: ${response.message()}")
+            500 -> s.makeToast(response.message())
+            else -> s.makeToast("Unknown error ${response.code()}: ${response.message()}")
         }
     }
 

@@ -9,12 +9,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-
-import com.notarmaso.db_access_setup.ui.theme.LightBlue
-import com.notarmaso.db_access_setup.ui.theme.components.ButtonMain
+import com.notarmaso.beeritupcompose.ui.theme.LightBlue
+import com.notarmaso.beeritupcompose.ui.theme.components.ButtonMain
+import com.notarmaso.beeritupcompose.views.beeritup.NavigationBar
+import com.notarmaso.beeritupcompose.views.beeritup.join_kitchen.JoinKitchenViewModel
 import com.notarmaso.db_access_setup.ui.theme.components.TextFieldName
 import com.notarmaso.db_access_setup.ui.theme.components.TextFieldPassword
-import com.notarmaso.db_access_setup.views.beeritup.NavigationBar
 
 @Composable
 fun JoinKitchen(joinKitchenViewModel: JoinKitchenViewModel) {
@@ -28,6 +28,7 @@ fun JoinKitchen(joinKitchenViewModel: JoinKitchenViewModel) {
 
 
 
+/*TODO Funciton below?*/
 
 @Composable
 fun JoinKitchenForm(jkVm: JoinKitchenViewModel){

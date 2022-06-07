@@ -1,7 +1,6 @@
 package com.notarmaso.beeritupcompose.db.repositories
 
-import com.notarmaso.beeritupcompose.models.LeaderboardEntryObj
-import com.notarmaso.beeritupcompose.models.UserRecieve
+import com.notarmaso.beeritupcompose.models.*
 import com.notarmaso.db_access_setup.models.*
 import retrofit2.Response
 import retrofit2.http.Body

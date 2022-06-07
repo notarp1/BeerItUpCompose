@@ -5,18 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
-import com.notarmaso.db_access_setup.StateHandler
-import com.notarmaso.db_access_setup.MainActivity
-import com.notarmaso.db_access_setup.Service
-import com.notarmaso.db_access_setup.dal.repositories.KitchenRepository
-import com.notarmaso.db_access_setup.models.BeverageDBEntryObject
+import com.notarmaso.beeritupcompose.Pages
+import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.db.repositories.KitchenRepository
+import com.notarmaso.beeritupcompose.models.BeverageDBEntryObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class AddBeverageQuantityViewModel(val navController: NavHostController, val service: Service, val stateHandler: StateHandler) : ViewModel() {
+class AddBeverageQuantityViewModel(val s: Service) : ViewModel() {
 
 
 
@@ -55,14 +53,14 @@ class AddBeverageQuantityViewModel(val navController: NavHostController, val ser
         viewModelScope.launch {
             val priceToInt = (pricePaid.toFloat() * 100).toInt()
             val pricePerBeer = priceToInt/(qtySelected)
-            val selectedBeer = service.selectedBeverage.name
+            val selectedBeer = s.selectedBeverage.name
 
-            val bevEntryObj = BeverageDBEntryObject(qtySelected, pricePerBeer, stateHandler.appMode.uId)
+            val bevEntryObj = BeverageDBEntryObject(qtySelected, pricePerBeer, s.stateHandler.appMode.uId)
 
             val res: Response<String>
 
             withContext(Dispatchers.IO){
-                res = kitchenRep.addBeverages(bevEntryObj, stateHandler.appMode.kId, selectedBeer)
+                res = kitchenRep.addBeverages(bevEntryObj, s.stateHandler.appMode.kId, selectedBeer)
             }
             handleError(res)
 
@@ -76,28 +74,22 @@ class AddBeverageQuantityViewModel(val navController: NavHostController, val ser
             200 -> {
 
                viewModelScope.launch(Dispatchers.Main) {
-                   service.makeToast("Added Beers")
-
-                   navController.navigate(MainActivity.MAIN_MENU){
-                       popUpTo(MainActivity.ADD_BEVERAGE_1){
-                           inclusive=true
-                       }}
-
+                   s.makeToast("Added Beers")
+                   s.navigatePopUpToInclusive(Pages.MAIN_MENU, Pages.ADD_BEVERAGE_STAGE_2)
                }
-
                 _qtySelected = 24
 
 
             }
             406 ->{
                 viewModelScope.launch {
-                  service.makeToast("Kitchen ID not found: Try re-login")
+                  s.makeToast("Kitchen ID not found: Try re-login")
                 }
 
 
             }
-            500 -> service.makeToast(response.message())
-            else -> service.makeToast("Error: Unknown: ${response.message()}")
+            500 -> s.makeToast(response.message())
+            else -> s.makeToast("Error: Unknown: ${response.message()}")
         }
     }
 

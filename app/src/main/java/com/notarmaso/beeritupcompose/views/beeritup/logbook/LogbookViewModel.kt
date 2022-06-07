@@ -5,23 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import com.notarmaso.db_access_setup.Service
-import com.notarmaso.db_access_setup.StateHandler
-import com.notarmaso.db_access_setup.dal.repositories.UserRepository
-import com.notarmaso.db_access_setup.models.BeverageLogEntryObj
-import com.notarmaso.db_access_setup.models.LeaderboardEntryObj
+import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.db.repositories.UserRepository
+import com.notarmaso.beeritupcompose.models.BeverageLogEntryObj
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
-import kotlin.math.log
 
 class LogbookViewModel(
-    val service: Service,
-    val stateHandler: StateHandler,
-    val nav: NavHostController
+    val s: Service
 ) : ViewModel() {
 
 
@@ -60,7 +53,7 @@ class LogbookViewModel(
     fun getLogs() {
         viewModelScope.launch(Dispatchers.Main) {
             var res: Response<List<BeverageLogEntryObj>>
-            val uId = stateHandler.appMode.uId
+            val uId = s.stateHandler.appMode.uId
 
 
             withContext(Dispatchers.IO) {
@@ -113,8 +106,8 @@ class LogbookViewModel(
                 200 -> {
                     _logs = response.body()
                 }
-                500 -> service.makeToast(response.message())
-                else -> service.makeToast("Unknown error ${response.code()}: ${response.message()}")
+                500 -> s.makeToast(response.message())
+                else -> s.makeToast("Unknown error ${response.code()}: ${response.message()}")
             }
         }
     }

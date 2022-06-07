@@ -5,21 +5,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
-import com.notarmaso.db_access_setup.StateHandler
-import com.notarmaso.db_access_setup.Service
-import com.notarmaso.db_access_setup.dal.repositories.KitchenRepository
-import com.notarmaso.db_access_setup.models.BeverageType
-import com.notarmaso.db_access_setup.views.beeritup.Category
-import com.notarmaso.db_access_setup.views.beeritup.add_beverage.AddBeverageViewModel
+import com.notarmaso.beeritupcompose.Category
+import com.notarmaso.beeritupcompose.Pages
+import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.db.repositories.KitchenRepository
+import com.notarmaso.beeritupcompose.models.BeverageType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class SelectBeverageViewModel(val service: Service,
-                              val navController: NavHostController,
-                              val stateHandler: StateHandler) : ViewModel() {
+class SelectBeverageViewModel(val s: Service) : ViewModel() {
 
 
     private val kitchenRepo = KitchenRepository
@@ -45,7 +41,7 @@ class SelectBeverageViewModel(val service: Service,
             val res: Response<MutableList<BeverageType>>
 
             withContext(Dispatchers.IO){
-                res = kitchenRepo.getBeveragesInStock(stateHandler.appMode.kId, selectedCategory)
+                res = kitchenRepo.getBeveragesInStock(s.stateHandler.appMode.kId, selectedCategory)
             }
 
             handleErrorKitchen(res)
@@ -54,9 +50,9 @@ class SelectBeverageViewModel(val service: Service,
         }
     }
 
-    fun navToNextPage(location: String, beverageType: BeverageType){
-        service.setBeverageType(beverageType)
-        navController.navigate(location)
+    fun navToNextPage(location: Pages, beverageType: BeverageType){
+        s.setBeverageType(beverageType)
+        s.navigate(location)
     }
 
 
@@ -67,8 +63,8 @@ class SelectBeverageViewModel(val service: Service,
                 response.body()?.let { _beverageTypes = it }
 
             }
-            500 -> service.makeToast(response.message())
-            else -> service.makeToast("Error: Unknown: ${response.message()}")
+            500 -> s.makeToast(response.message())
+            else -> s.makeToast("Error: Unknown: ${response.message()}")
         }
     }
 

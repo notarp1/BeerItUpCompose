@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -21,16 +20,17 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
-import com.notarmaso.db_access_setup.R
-import com.notarmaso.db_access_setup.models.BeverageType
-import com.notarmaso.db_access_setup.ui.theme.components.ButtonMain
-import com.notarmaso.db_access_setup.ui.theme.components.ButtonSelection
-import com.notarmaso.db_access_setup.ui.theme.components.SubmitButton
-import com.notarmaso.db_access_setup.ui.theme.components.TopBar
+import com.notarmaso.beeritupcompose.models.BeverageType
+import com.notarmaso.beeritupcompose.ui.theme.components.ButtonSelection
+import com.notarmaso.beeritupcompose.ui.theme.components.SubmitButton
+import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
+
 
 @Composable
 fun AddBeverageQuantity(bevQtyViewModel: AddBeverageQuantityViewModel){
-    val bevType: BeverageType = bevQtyViewModel.service.selectedBeverage
+    val vm = bevQtyViewModel
+
+    val bevType: BeverageType = bevQtyViewModel.s.selectedBeverage
     val configuration = LocalConfiguration.current
     fun height(widthScale: Double): Double { return configuration.screenHeightDp * widthScale }
 
@@ -51,7 +51,7 @@ fun AddBeverageQuantity(bevQtyViewModel: AddBeverageQuantityViewModel){
                 top.linkTo(parent.top)
             },
             "add ${bevType.name}",
-            goTo = { bevQtyViewModel.navController.popBackStack()},
+            goTo = { vm.s.nav?.popBackStack()},
             Icons.Rounded.ArrowBack
         )
 
@@ -76,9 +76,9 @@ fun AddBeverageQuantity(bevQtyViewModel: AddBeverageQuantityViewModel){
                 top.linkTo(titleText.bottom, 20.dp)
             }) {
             Spacer(modifier = Modifier.width(10.dp))
-            ButtonSelection(onClick = { bevQtyViewModel.decrementCounter()},  widthScale = 0.33)
-            Text(text = bevQtyViewModel.qtySelected.toString(), style = MaterialTheme.typography.h1, textAlign = TextAlign.Center, modifier = Modifier.width(80.dp))
-            ButtonSelection(onClick = { bevQtyViewModel.incrementCounter() },  widthScale = 0.33, true)
+            ButtonSelection(onClick = { vm.decrementCounter()},  widthScale = 0.33)
+            Text(text = vm.qtySelected.toString(), style = MaterialTheme.typography.h1, textAlign = TextAlign.Center, modifier = Modifier.width(80.dp))
+            ButtonSelection(onClick = { vm.incrementCounter() },  widthScale = 0.33, true)
             Spacer(modifier = Modifier.width(10.dp))
 
         }
@@ -90,13 +90,13 @@ fun AddBeverageQuantity(bevQtyViewModel: AddBeverageQuantityViewModel){
             }) {
             Text(text = "You've Paid:     ", color=MaterialTheme.colors.primary)
 
-            TextField(value = bevQtyViewModel.pricePaid,
+            TextField(value = vm.pricePaid,
                 shape = RoundedCornerShape(20.dp),
-                onValueChange = { newValue -> bevQtyViewModel.setPricePaidTxt(newValue) },
+                onValueChange = { newValue -> vm.setPricePaidTxt(newValue) },
                 singleLine = true,
                 placeholder = { Text(text = "Price Paid") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = if(bevQtyViewModel.pricePaid == "") Modifier.width(120.dp) else Modifier.width(60.dp))
+                modifier = if(vm.pricePaid == "") Modifier.width(120.dp) else Modifier.width(60.dp))
 
             Text(text = "     DKK Total", color=MaterialTheme.colors.primary)
 
@@ -104,7 +104,7 @@ fun AddBeverageQuantity(bevQtyViewModel: AddBeverageQuantityViewModel){
 
         SubmitButton(Modifier.constrainAs(confirmBtn) {
             bottom.linkTo(parent.bottom)
-        }, "CONFIRM", height(0.15).dp) { bevQtyViewModel.onConfirm() }
+        }, "CONFIRM", height(0.15).dp) { vm.onConfirm() }
 
 
 

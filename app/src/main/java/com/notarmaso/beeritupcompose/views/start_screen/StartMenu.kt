@@ -14,11 +14,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.navigation.NavHostController
 import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.ui.theme.components.ButtonMain
 import com.notarmaso.beeritupcompose.ui.theme.components.SelectionHeader
-import com.notarmaso.db_access_setup.views.start_screen.StartMenuViewModel
 
 @Composable
 fun StartMenu(startMenuViewModel: StartMenuViewModel) {

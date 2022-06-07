@@ -26,7 +26,7 @@ enum class Pages(val value: String) {
     USER_SELECTION("user_selection"),
     STATISTICS("statistics"),
     PAYMENTS("payments"),
-    LOGBOOK("logbook"),
+    LOGBOOKS("logbooks"),
 
 
     DEBUG_DRAWER("debugDaber"),

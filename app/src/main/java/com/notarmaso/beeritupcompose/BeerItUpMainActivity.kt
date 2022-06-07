@@ -18,13 +18,31 @@ import com.notarmaso.beeritupcompose.interfaces.vmModule
 import com.notarmaso.beeritupcompose.ui.theme.BeerItUpTheme
 import com.notarmaso.beeritupcompose.views.beeritup.MainMenu
 import com.notarmaso.beeritupcompose.views.beeritup.MainMenuViewModel
+import com.notarmaso.beeritupcompose.views.beeritup.add_beverage.AddBeverageViewModel
+import com.notarmaso.beeritupcompose.views.beeritup.join_kitchen.JoinKitchenViewModel
+import com.notarmaso.beeritupcompose.views.beeritup.payments.PaymentsViewModel
+import com.notarmaso.beeritupcompose.views.beeritup.select_user.SelectUser
+import com.notarmaso.beeritupcompose.views.beeritup.select_user.SelectUserViewModel
 import com.notarmaso.beeritupcompose.views.start_screen.StartMenu
 import com.notarmaso.beeritupcompose.views.start_screen.StartMenuViewModel
 import com.notarmaso.beeritupcompose.views.start_screen.add_kitchen.AddKitchenViewModel
 import com.notarmaso.beeritupcompose.views.start_screen.add_user.AddUserViewModel
 import com.notarmaso.beeritupcompose.views.start_screen.login_kitchen.LoginKitchenViewModel
 import com.notarmaso.beeritupcompose.views.start_screen.login_user.LoginUserViewModel
+import com.notarmaso.db_access_setup.views.beeritup.add_beverage.AddBeverage
+import com.notarmaso.db_access_setup.views.beeritup.add_beverage.AddBeverageQuantity
+import com.notarmaso.db_access_setup.views.beeritup.add_beverage.AddBeverageQuantityViewModel
+import com.notarmaso.db_access_setup.views.beeritup.join_kitchen.JoinKitchen
+import com.notarmaso.db_access_setup.views.beeritup.logbook.Logbook
+import com.notarmaso.db_access_setup.views.beeritup.logbook.LogbookViewModel
 import com.notarmaso.db_access_setup.views.beeritup.login.LoginKitchen
+import com.notarmaso.db_access_setup.views.beeritup.payments.Payments
+import com.notarmaso.db_access_setup.views.beeritup.select_beverage.SelectBeverage
+import com.notarmaso.db_access_setup.views.beeritup.select_beverage.SelectBeverageQuantity
+import com.notarmaso.db_access_setup.views.beeritup.select_beverage.SelectBeverageQuantityViewModel
+import com.notarmaso.db_access_setup.views.beeritup.select_beverage.SelectBeverageViewModel
+import com.notarmaso.db_access_setup.views.beeritup.statistics.Statistics
+import com.notarmaso.db_access_setup.views.beeritup.statistics.StatisticsViewModel
 import com.notarmaso.db_access_setup.views.start_screen.add_kitchen.AddKitchen
 import com.notarmaso.db_access_setup.views.start_screen.add_user.AddUser
 import com.notarmaso.db_access_setup.views.start_screen.login_user.LoginUser
@@ -45,6 +63,7 @@ class MainActivity : ComponentActivity() {
         val stateHandler: StateHandler = get(parameters = { parametersOf(this)})
         val beerService : Service = get(parameters = { parametersOf(this)})
         val mainVieModel: BeerItUpMainActivityViewModel = get()
+
         installSplashScreen().apply {
             setKeepVisibleCondition{mainVieModel.isLoading.value}
         }
@@ -62,15 +81,26 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun NavigationHost(service: Service){
     val navController = rememberAnimatedNavController()
-    service.navHostController = navController
+    service.nav = navController
 
 
     val startMenuViewModel = get<StartMenuViewModel>()
     val mainMenuViewModel = get<MainMenuViewModel>()
+    val joinKitchenViewModel = get<JoinKitchenViewModel>()
     val loginUserViewModel = get<LoginUserViewModel>()
     val loginKitchenViewModel = get<LoginKitchenViewModel>()
     val addKitchenViewModel = get <AddKitchenViewModel>()
     val addUserViewModel = get<AddUserViewModel>()
+
+    val selectUserViewModel = get<SelectUserViewModel>()
+    val selectBeverageViewModel = get<SelectBeverageViewModel>()
+    val selectBeverageQuantityViewModel = get<SelectBeverageQuantityViewModel>()
+    val addBeverageViewModel = get<AddBeverageViewModel>()
+    val addBeverageQuantityViewModel = get<AddBeverageQuantityViewModel>()
+
+    val paymentsViewModel = get<PaymentsViewModel>()
+    val logbookViewModel = get<LogbookViewModel>()
+    val statisticsViewModel = get<StatisticsViewModel>()
 
     AnimatedNavHost(navController = navController,
         startDestination = Pages.MAIN_MENU.value,
@@ -79,19 +109,21 @@ fun NavigationHost(service: Service){
         popEnterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(200))},
         popExitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(200)) }
     ){
+
         composable(Pages.START_MENU.value){
             StartMenu(startMenuViewModel)
         }
-
         composable(Pages.MAIN_MENU.value){
             MainMenu(mainMenuViewModel)
         }
-
         composable(Pages.LOGIN_KITCHEN.value){
             LoginKitchen(loginKitchenViewModel)
         }
         composable(Pages.LOGIN_USER.value){
             LoginUser(loginUserViewModel )
+        }
+        composable(Pages.JOIN_KITCHEN.value){
+            JoinKitchen(joinKitchenViewModel)
         }
         composable(Pages.ADD_USER.value){
             AddUser(addUserViewModel)
@@ -99,6 +131,34 @@ fun NavigationHost(service: Service){
         composable(Pages.ADD_KITCHEN.value){
             AddKitchen(addKitchenViewModel)
         }
+
+
+        composable(Pages.LOGBOOKS.value){
+            Logbook(logbookViewModel)
+        }
+        composable(Pages.PAYMENTS.value){
+            Payments(paymentsViewModel)
+        }
+        composable(Pages.STATISTICS.value){
+            Statistics(statisticsViewModel)
+        }
+        composable(Pages.USER_SELECTION.value){
+            SelectUser(selectUserViewModel)
+        }
+        composable(Pages.ADD_BEVERAGE_STAGE_1.value){
+            AddBeverage(addBeverageViewModel)
+        }
+        composable(Pages.ADD_BEVERAGE_STAGE_2.value){
+            AddBeverageQuantity(addBeverageQuantityViewModel)
+        }
+        composable(Pages.SELECT_BEVERAGE_STAGE_1.value){
+            SelectBeverage(selectBeverageViewModel)
+        }
+        composable(Pages.SELECT_BEVERAGE_STAGE_2.value){
+            SelectBeverageQuantity(selectBeverageQuantityViewModel)
+        }
+
+
 
 
 

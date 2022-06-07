@@ -1,18 +1,13 @@
 package com.notarmaso.db_access_setup.dal
 
-import com.google.gson.GsonBuilder
 import com.notarmaso.beeritupcompose.db.repositories.IKitchenRepository
 import com.notarmaso.beeritupcompose.db.repositories.IUserRepository
-
-import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.jackson.JacksonConverterFactory
-import java.net.ConnectException
 
 
 object DBInstance {
-
+    /*TODO DONT CRASH IF SERVER IS OFFLINE*/
     private val retrofit by lazy {
        Retrofit.Builder()
             .baseUrl("http://10.0.1.221:3000/")

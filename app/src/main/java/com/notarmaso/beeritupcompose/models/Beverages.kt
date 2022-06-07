@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.models
+package com.notarmaso.beeritupcompose.models
 
 import com.google.gson.annotations.SerializedName
 import java.util.Date

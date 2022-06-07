@@ -1,21 +1,15 @@
 package com.notarmaso.beeritupcompose
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.navigation.NavHostController
 import com.notarmaso.beeritupcompose.models.*
-import com.notarmaso.db_access_setup.StateHandler
-import com.notarmaso.db_access_setup.models.BeverageType
-
-import kotlinx.datetime.*
 
 
 class Service(ctx: Context, val stateHandler: StateHandler, val observer: Observer) {
 
-  var navHostController: NavHostController? = null
+  var nav: NavHostController? = null
   val context = ctx
 
 
@@ -30,16 +24,18 @@ class Service(ctx: Context, val stateHandler: StateHandler, val observer: Observ
     _selectedBeverage = beverage
   }
 
-  fun setSelectedPage(page: Pages){
+  fun setCurrentPage(page: Pages){
     _currentPage = page
   }
 
   fun navigate(location: Pages){
-    navHostController?.navigate(location.value)
+    nav?.navigate(location.value)
   }
 
+  /*TODO FIX BELOW*/
+
   fun navigatePopUpToInclusive(location: Pages, popTo: Pages){
-    navHostController?.navigate(location.value){
+    nav?.navigate(location.value){
       popUpTo(popTo.value){
         inclusive =true
       }
@@ -47,10 +43,10 @@ class Service(ctx: Context, val stateHandler: StateHandler, val observer: Observ
   }
 
   fun navigateAndPopUpTo(location: Pages){
-    navHostController?.navigate(location.value){
+    nav?.navigate(location.value){
       popUpToRoute
-      navHostController?.popBackStack()
-      navHostController?.clearBackStack(location.value)
+      nav?.popBackStack()
+      nav?.clearBackStack(location.value)
     }
   }
 

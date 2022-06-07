@@ -22,11 +22,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.notarmaso.db_access_setup.models.LeaderboardEntryObj
-import com.notarmaso.db_access_setup.ui.theme.components.TopBar
+import com.notarmaso.beeritupcompose.models.LeaderboardEntryObj
+import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
+
 
 @Composable
-fun UserStatistics(vm: UserStatisticsViewModel){
+fun Statistics(statisticViewModel: StatisticsViewModel){
+
+    val vm = statisticViewModel
     /*TODO: Remake this with observer*/
     vm.reloadHighScores()
 
@@ -46,9 +49,9 @@ fun UserStatistics(vm: UserStatisticsViewModel){
 
         TopBar(Modifier.constrainAs(topBar){
             top.linkTo(parent.top)
-        }, "stats", goTo = { vm.navController.popBackStack() }, Icons.Rounded.ArrowBack)
+        }, "stats", goTo = { vm.s.nav?.popBackStack() }, Icons.Rounded.ArrowBack)
 
-        Leaderboard(vm, modifier = Modifier.constrainAs(leaderBoard){
+        Leaderboard(statisticViewModel, modifier = Modifier.constrainAs(leaderBoard){
             top.linkTo(topBar.bottom, 20.dp)
         })
 
@@ -57,7 +60,7 @@ fun UserStatistics(vm: UserStatisticsViewModel){
 
 
 @Composable
-fun Leaderboard(vm: UserStatisticsViewModel, modifier: Modifier = Modifier){
+fun Leaderboard(vm: StatisticsViewModel, modifier: Modifier = Modifier){
     val leaderboardEntries: List<LeaderboardEntryObj>? = vm.userList
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
         Row() {

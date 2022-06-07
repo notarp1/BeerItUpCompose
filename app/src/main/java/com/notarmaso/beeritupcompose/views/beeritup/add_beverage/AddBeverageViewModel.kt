@@ -1,23 +1,21 @@
-package com.notarmaso.db_access_setup.views.beeritup.add_beverage
+package com.notarmaso.beeritupcompose.views.beeritup.add_beverage
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.capitalize
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
-import com.notarmaso.db_access_setup.StateHandler
-import com.notarmaso.db_access_setup.Service
-import com.notarmaso.db_access_setup.dal.repositories.KitchenRepository
-import com.notarmaso.db_access_setup.models.BeverageType
-import com.notarmaso.db_access_setup.views.beeritup.Category
+import com.notarmaso.beeritupcompose.Category
+import com.notarmaso.beeritupcompose.Pages
+import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.db.repositories.KitchenRepository
+import com.notarmaso.beeritupcompose.models.BeverageType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class AddBeverageViewModel(val navController: NavHostController, val service: Service, val stateHandler: StateHandler) : ViewModel() {
+class AddBeverageViewModel(val s: Service) : ViewModel() {
     private val kitchenRepo = KitchenRepository
 
     private var _beverageTypes by mutableStateOf<List<BeverageType>>(listOf())
@@ -42,7 +40,7 @@ class AddBeverageViewModel(val navController: NavHostController, val service: Se
         viewModelScope.launch {
             val res: Response<MutableList<BeverageType>>
             withContext(Dispatchers.IO){
-                val kitchenId: Int = stateHandler.appMode.kId
+                val kitchenId: Int = s.stateHandler.appMode.kId
 
                 res = kitchenRepo.getBeverageTypes(kitchenId, selectedCategory)
 
@@ -52,9 +50,9 @@ class AddBeverageViewModel(val navController: NavHostController, val service: Se
         }
     }
 
-    fun navToNextPage(location: String, beverageType: BeverageType){
-        service.setBeverageType(beverageType)
-        navController.navigate(location)
+    fun navToNextPage(location: Pages, beverageType: BeverageType){
+        s.setBeverageType(beverageType)
+        s.navigate(location)
     }
 
 
@@ -65,8 +63,8 @@ class AddBeverageViewModel(val navController: NavHostController, val service: Se
             200 -> {
                 response.body()?.let { _beverageTypes = it }
             }
-            500 -> service.makeToast(response.message())
-            else -> service.makeToast("Unknown error ${response.code()}: ${response.message()}")
+            500 -> s.makeToast(response.message())
+            else -> s.makeToast("Unknown error ${response.code()}: ${response.message()}")
         }
     }
 

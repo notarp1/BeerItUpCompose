@@ -23,8 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.notarmaso.db_access_setup.models.*
-import com.notarmaso.db_access_setup.ui.theme.components.TopBar
+import com.notarmaso.beeritupcompose.models.BeverageLogEntryObj
+import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
+
 
 
 @Composable
@@ -49,7 +50,7 @@ fun Logbook(vm: LogbookViewModel) {
 
         TopBar(Modifier.constrainAs(topBar) {
             top.linkTo(parent.top)
-        }, "logbook", goTo = { vm.nav.popBackStack() }, Icons.Rounded.ArrowBack)
+        }, "logbook", goTo = { vm.s.nav?.popBackStack() }, Icons.Rounded.ArrowBack)
 
         LogbookList(vm, modifier = Modifier.constrainAs(leaderBoard) {
             top.linkTo(topBar.bottom, 20.dp)

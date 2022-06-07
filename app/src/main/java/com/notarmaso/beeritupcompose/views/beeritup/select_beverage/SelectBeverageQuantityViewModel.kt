@@ -5,20 +5,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
-import com.notarmaso.db_access_setup.StateHandler
-import com.notarmaso.db_access_setup.MainActivity
-import com.notarmaso.db_access_setup.Service
-import com.notarmaso.db_access_setup.dal.repositories.KitchenRepository
-import com.notarmaso.db_access_setup.models.Beverage
-import com.notarmaso.db_access_setup.models.BeveragePurchaseConfigObj
-import com.notarmaso.db_access_setup.models.BeveragePurchaseReceiveObj
+import com.notarmaso.beeritupcompose.Pages
+import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.db.repositories.KitchenRepository
+import com.notarmaso.beeritupcompose.models.Beverage
+import com.notarmaso.beeritupcompose.models.BeveragePurchaseConfigObj
+import com.notarmaso.beeritupcompose.models.BeveragePurchaseReceiveObj
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class SelectBeverageQuantityViewModel(val navController: NavHostController, val service: Service, val stateHandler: StateHandler) : ViewModel() {
+class SelectBeverageQuantityViewModel(val s: Service) : ViewModel() {
 
     private var totalStock: Int = 1
 
@@ -51,8 +49,8 @@ class SelectBeverageQuantityViewModel(val navController: NavHostController, val 
 
             withContext(Dispatchers.IO){
 
-                val configObj = BeveragePurchaseConfigObj(service.selectedBeverage.name, qtySelected)
-                res = kitchenRepo.calculatePrice(stateHandler.appMode.kId, configObj)
+                val configObj = BeveragePurchaseConfigObj(s.selectedBeverage.name, qtySelected)
+                res = kitchenRepo.calculatePrice(s.stateHandler.appMode.kId, configObj)
             }
             handleError(res)
 
@@ -64,7 +62,7 @@ class SelectBeverageQuantityViewModel(val navController: NavHostController, val 
         val price: Float = bevObj.price/100
 
         for (beverage: Beverage in bevObj.beverages){
-            beverage.bevDrinkerId = stateHandler.appMode.uId
+            beverage.bevDrinkerId = s.stateHandler.appMode.uId
         }
 
 
@@ -72,21 +70,18 @@ class SelectBeverageQuantityViewModel(val navController: NavHostController, val 
             val res: Response<String>
 
             withContext(Dispatchers.IO){
-                res = kitchenRepo.acceptTransaction(stateHandler.appMode.kId,stateHandler.appMode.uId, bevObj.beverages)
+                res = kitchenRepo.acceptTransaction(s.stateHandler.appMode.kId, s.stateHandler.appMode.uId, bevObj.beverages)
             }
 
            when (res.code()) {
                200 -> {
-                   service.makeToast("Enjoy your beverage(s)!")
-                   navController.navigate(MainActivity.MAIN_MENU){
-                       popUpTo(MainActivity.SELECT_BEVERAGE_2){
-                           inclusive=true
-                       }}
+                   s.makeToast("Enjoy your beverage(s)!")
+                   s.navigatePopUpToInclusive(Pages.MAIN_MENU, Pages.SELECT_BEVERAGE_STAGE_2)
                    _qtySelected = 1
                }
-               406 -> service.makeToast("Kitchen ID not found: Try re-login")
-               500 -> service.makeToast(res.message())
-               else -> service.makeToast("Error: Unknown: ${res.message()}")
+               406 -> s.makeToast("Kitchen ID not found: Try re-login")
+               500 -> s.makeToast(res.message())
+               else -> s.makeToast("Error: Unknown: ${res.message()}")
            }
         }
     }
@@ -94,9 +89,9 @@ class SelectBeverageQuantityViewModel(val navController: NavHostController, val 
     private fun handleError(response:Response<BeveragePurchaseReceiveObj>) {
         when (response.code()) {
             200 -> response.body()?.let { handleOnAccept(it) }
-            406 -> service.makeToast("Kitchen ID not found: Try re-login")
-            500 -> service.makeToast(response.message())
-            else -> service.makeToast("Error: Unknown: ${response.message()}")
+            406 -> s.makeToast("Kitchen ID not found: Try re-login")
+            500 -> s.makeToast(response.message())
+            else -> s.makeToast("Error: Unknown: ${response.message()}")
         }
     }
 
