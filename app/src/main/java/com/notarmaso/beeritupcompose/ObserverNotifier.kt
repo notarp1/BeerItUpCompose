@@ -8,19 +8,19 @@ import com.notarmaso.beeritupcompose.interfaces.UserObserver
 
 class Observer: UserObserver<ViewModel> {
 
-    private val subscribers: ArrayList<ViewModelFunction> = arrayListOf()
+    private val subscribers: ArrayList<Observerable> = arrayListOf()
 
-    override fun register(subscriber: ViewModelFunction) {
+    override fun register(subscriber: Observerable) {
         subscribers.add(subscriber)
     }
 
-    override fun remove(subscriber: ViewModelFunction) {
+    override fun remove(subscriber: Observerable) {
         subscribers.remove(subscriber)
     }
 
-    override fun notifySubscribers(page: String) {
+    override fun notifySubscribers(funcToRun: FuncToRun) {
         subscribers.forEach {
-            it.update(page)
+            it.update(funcToRun)
         }
     }
 }

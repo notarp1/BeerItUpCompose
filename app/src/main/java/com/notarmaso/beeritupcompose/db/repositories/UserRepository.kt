@@ -1,123 +1,120 @@
 package com.notarmaso.beeritupcompose.db.repositories
 
-import android.app.Application
-import android.content.Context
-import androidx.lifecycle.LiveData
-import com.notarmaso.beeritupcompose.db.AppDatabase
-import com.notarmaso.beeritupcompose.db.UserDao
-import com.notarmaso.beeritupcompose.models.User
-import kotlinx.coroutines.*
 
+import com.notarmaso.beeritupcompose.models.*
+import com.notarmaso.db_access_setup.dal.DBInstance
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import retrofit2.Response
 
-class UserRepository(ctx: Context) {
+object UserRepository : IUserRepository {
 
-    private var userDao: UserDao
+    override suspend fun getUsers(): Response<MutableList<UserRecieve>> = coroutineScope {
+        val response = async(Dispatchers.IO) {
+            DBInstance.userApi.getUsers()
 
-
-    init {
-        val database =  AppDatabase.getDatabase(ctx)
-        userDao = database.userDao()
+        }
+        response.await()
     }
 
-    suspend fun getAllUsers(): MutableList<User> {
-        val userList: MutableList<User>
+    override suspend fun getUser(id: Int): Response<UserRecieve> = coroutineScope {
+        val response = async(Dispatchers.IO) {
+            DBInstance.userApi.getUser(id)
 
-        withContext(Dispatchers.IO){
-           userList = userDao.getAll()
+        }
+        response.await()
+    }
+
+
+    override suspend fun addUser(user: UserToPost): Response<String> = coroutineScope {
+        val response = async(Dispatchers.IO) {
+            DBInstance.userApi.addUser(user)
+        }
+        response.await()
+    }
+
+
+    override suspend fun updateUser(id: String, user: UserToPost): Response<String> =
+        coroutineScope {
+            val response = async(Dispatchers.IO) {
+                DBInstance.userApi.updateUser(user.name, user)
+            }
+            response.await()
         }
 
-        return userList
+    override suspend fun deleteUser(id: String): Response<String> = coroutineScope {
+        val response = async(Dispatchers.IO) {
+            DBInstance.userApi.deleteUser(id)
+        }
+        response.await()
     }
 
-
-    suspend fun getAllUsersReplace() : MutableList<User> = coroutineScope {
-        val userList = async(Dispatchers.IO) {
-            userDao.getAll()
+    override suspend fun login(userLoginObject: UserLoginObject): Response<UserRecieve> =
+        coroutineScope {
+            val response = async(Dispatchers.IO) {
+                DBInstance.userApi.login(userLoginObject)
+            }
+            response.await()
         }
 
-        userList.await()
-    }
-
-
-    suspend fun getUser(name: String): User {
-        val user: User
-        withContext(Dispatchers.IO){
-            user = userDao.getUser(name)
+    override suspend fun isAssigned(userId: Int): Response<UserLoginStatus> = coroutineScope {
+        val response = async(Dispatchers.IO) {
+            DBInstance.userApi.isAssigned(userId)
         }
-        return user
+        response.await()
     }
 
-    suspend fun getUserReplace(name: String): User = coroutineScope {
-        val user = async(Dispatchers.IO) {
-             userDao.getUser(name)
+    override suspend fun userOwed(userId: Int): Response<List<UserPaymentObject>> = coroutineScope {
+        val response = async(Dispatchers.IO) {
+            DBInstance.userApi.userOwed(userId)
         }
-
-        user.await()
+        response.await()
     }
 
-    suspend fun insertUser(user: User){
-        withContext(Dispatchers.IO){
-            userDao.insertUser(user)
+    override suspend fun userOwes(userId: Int): Response<List<UserPaymentObject>> = coroutineScope {
+        val response = async(Dispatchers.IO) {
+            DBInstance.userApi.userOwes(userId)
         }
+        response.await()
     }
 
-    suspend fun updateUser(user: User){
-        withContext(Dispatchers.IO){
-            userDao.updateUser(user)
+    override suspend fun makePayment(uId: Int, ownerId: Int): Response<String> = coroutineScope {
+        val response = async(Dispatchers.IO) {
+            DBInstance.userApi.makePayment(uId, ownerId)
         }
+        response.await()
     }
 
-    suspend fun deleteUser(user: User){
-        withContext(Dispatchers.IO){
-            userDao.deleteUser(user)
-        }
-    }
-
-    suspend fun deleteAll(){
-        withContext(Dispatchers.IO){
-            userDao.deleteAll()
+    override suspend fun boughtLogbook(uId: Int): Response<List<BeverageLogEntryObj>> =
+        coroutineScope {
+            val response = async(Dispatchers.IO) {
+                DBInstance.userApi.boughtLogbook(uId)
+            }
+            response.await()
         }
 
-    }
-
-    suspend fun getTotalBought(user: String): Float {
-        val totalBought: Float
-        withContext(Dispatchers.IO){
-           totalBought =  userDao.getTotalBought(user)
+    override suspend fun soldLogbook(uId: Int): Response<List<BeverageLogEntryObj>> =
+        coroutineScope {
+            val response = async(Dispatchers.IO) {
+                DBInstance.userApi.soldLogbook(uId)
+            }
+            response.await()
         }
-        return totalBought
-    }
-    suspend fun getTotalAdded(user: String): Float {
-        val totalAdded: Float
-        withContext(Dispatchers.IO){
-            totalAdded = userDao.getTotalAdded(user)
+
+    override suspend fun addedLogbook(uId: Int): Response<List<BeverageLogEntryObj>> =
+        coroutineScope {
+            val response = async(Dispatchers.IO) {
+                DBInstance.userApi.addedLogbook(uId)
+            }
+            response.await()
         }
-        return totalAdded
-    }
 
-    suspend fun getAddedLog(user: String): String {
-        val addedLog: String
-        withContext(Dispatchers.IO){
-            addedLog =  userDao.getBeersAdded(user)
+    override suspend fun consumedLogbook(uId: Int): Response<List<BeverageLogEntryObj>> =
+        coroutineScope {
+            val response = async(Dispatchers.IO) {
+                DBInstance.userApi.consumedLogbook(uId)
+            }
+            response.await()
         }
-        return addedLog
-    }
-
-    suspend fun getBoughtLog(user: String): String{
-       val boughtLog: String
-        withContext(Dispatchers.IO){
-            boughtLog = userDao.getBeersBought(user)
-        }
-        return boughtLog
-    }
-
-    suspend fun getTranscationsLog(user: String): String{
-        val transactionLog: String
-        withContext(Dispatchers.IO){
-           transactionLog = userDao.getTransactions(user)
-        }
-        return transactionLog
-    }
-
-
 }
