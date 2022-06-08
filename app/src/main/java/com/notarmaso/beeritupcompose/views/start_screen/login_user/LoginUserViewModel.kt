@@ -74,7 +74,7 @@ class LoginUserViewModel(val s: Service) : ViewModel(), Form {
                     }
                 }
             }
-            s.navigatePopUpToInclusive(Pages.MAIN_MENU, Pages.LOGIN_KITCHEN)
+            s.navigateAndClearBackstack(Pages.MAIN_MENU)
             _phone = ""
             _password = ""
 

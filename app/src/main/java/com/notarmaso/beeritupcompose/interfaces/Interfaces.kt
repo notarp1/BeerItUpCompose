@@ -13,7 +13,6 @@ import com.notarmaso.beeritupcompose.views.start_screen.add_kitchen.AddKitchenVi
 import com.notarmaso.beeritupcompose.views.start_screen.add_user.AddUserViewModel
 import com.notarmaso.beeritupcompose.views.start_screen.login_kitchen.LoginKitchenViewModel
 import com.notarmaso.beeritupcompose.views.start_screen.login_user.LoginUserViewModel
-import com.notarmaso.db_access_setup.views.beeritup.add_beverage.AddBeverageQuantity
 import com.notarmaso.db_access_setup.views.beeritup.add_beverage.AddBeverageQuantityViewModel
 import com.notarmaso.db_access_setup.views.beeritup.logbook.LogbookViewModel
 import com.notarmaso.db_access_setup.views.beeritup.select_beverage.SelectBeverageQuantityViewModel
@@ -24,11 +23,9 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 
-interface ViewModelFunction{
+interface Observerable{
 
-    fun navigate(location: Pages)
-    fun navigateBack(location: Pages)
-    fun update(page: String)
+    fun update(methodToRun: FuncToRun)
 
 }
 
@@ -41,9 +38,9 @@ val serviceModule = module {
 }
 
 val vmModule = module {
+    viewModel { BeerItUpMainActivityViewModel(get()) }
     viewModel { StartMenuViewModel(get()) }
     viewModel { MainMenuViewModel(get()) }
-    viewModel { BeerItUpMainActivityViewModel(get()) }
     viewModel { JoinKitchenViewModel(get())}
     viewModel { LoginKitchenViewModel(get()) }
     viewModel { LoginUserViewModel(get()) }
@@ -63,9 +60,9 @@ val vmModule = module {
 }
 
 internal interface UserObserver<T>{
-    fun register(subscriber: ViewModelFunction)
-    fun remove(subscriber: ViewModelFunction)
-    fun notifySubscribers(page: String)
+    fun register(subscriber: Observerable)
+    fun remove(subscriber: Observerable)
+    fun notifySubscribers(funcToRun: FuncToRun)
 }
 
 interface Form{

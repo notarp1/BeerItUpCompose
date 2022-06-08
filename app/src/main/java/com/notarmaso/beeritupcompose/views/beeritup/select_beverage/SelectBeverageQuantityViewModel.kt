@@ -76,7 +76,7 @@ class SelectBeverageQuantityViewModel(val s: Service) : ViewModel() {
            when (res.code()) {
                200 -> {
                    s.makeToast("Enjoy your beverage(s)!")
-                   s.navigatePopUpToInclusive(Pages.MAIN_MENU, Pages.SELECT_BEVERAGE_STAGE_2)
+                   s.navigateAndClearBackstack(Pages.MAIN_MENU)
                    _qtySelected = 1
                }
                406 -> s.makeToast("Kitchen ID not found: Try re-login")

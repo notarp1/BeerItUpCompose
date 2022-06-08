@@ -103,7 +103,7 @@ fun NavigationHost(service: Service){
     val statisticsViewModel = get<StatisticsViewModel>()
 
     AnimatedNavHost(navController = navController,
-        startDestination = Pages.MAIN_MENU.value,
+        startDestination = Pages.START_MENU.value,
         enterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(200)) },
         exitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(200)) },
         popEnterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(200))},

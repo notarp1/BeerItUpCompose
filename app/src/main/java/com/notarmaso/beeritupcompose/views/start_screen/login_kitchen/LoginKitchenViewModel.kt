@@ -58,7 +58,7 @@ class LoginKitchenViewModel(val s: Service) : ViewModel(), Form {
                     s.stateHandler.onKitchenSignInSuccess(kitchen)
                 }
             }
-            s.navigatePopUpToInclusive(Pages.MAIN_MENU, Pages.LOGIN_KITCHEN)
+            s.navigateAndClearBackstack(Pages.MAIN_MENU)
             _name = ""
             _password = ""
 

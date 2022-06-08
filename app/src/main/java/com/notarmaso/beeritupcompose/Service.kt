@@ -32,22 +32,10 @@ class Service(ctx: Context, val stateHandler: StateHandler, val observer: Observ
     nav?.navigate(location.value)
   }
 
-  /*TODO FIX BELOW*/
 
-  fun navigatePopUpToInclusive(location: Pages, popTo: Pages){
-    nav?.navigate(location.value){
-      popUpTo(popTo.value){
-        inclusive =true
-      }
-    }
-  }
-
-  fun navigateAndPopUpTo(location: Pages){
-    nav?.navigate(location.value){
-      popUpToRoute
-      nav?.popBackStack()
-      nav?.clearBackStack(location.value)
-    }
+  fun navigateAndClearBackstack(location: Pages){
+    nav?.backQueue?.clear()
+    nav?.navigate(location.value)
   }
 
 

@@ -36,9 +36,6 @@ import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
 fun SelectBeverage(selectBeverageViewModel: SelectBeverageViewModel) {
     val vm = selectBeverageViewModel
 
-    /*TODO: Remake this wuth obsver*/
-    vm.getBeverageTypes()
-
 
     ConstraintLayout(
         Modifier

@@ -23,7 +23,8 @@ class StatisticsViewModel(val s: Service) : ViewModel() {
     private var _currentMonth: Int by mutableStateOf(Clock.System.todayAt(TimeZone.currentSystemDefault()).monthNumber)
     private var _currentYear: Int by mutableStateOf(Clock.System.todayAt(TimeZone.currentSystemDefault()).year)
 
-
+    init {
+    }
     val currentMonth: String get() = getSelectedMonth(_currentMonth)
 
     private var _userList by mutableStateOf<List<LeaderboardEntryObj>?>(listOf())

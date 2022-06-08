@@ -32,9 +32,9 @@ import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
 @Composable
 fun MainMenu(mainMenuViewModel: MainMenuViewModel) {
     val vm = mainMenuViewModel
-    val configuration = LocalConfiguration.current
-    val height = configuration.screenHeightDp
-    val isUser by remember { mutableStateOf(mainMenuViewModel.isLoggedInAsUser()) }
+    val isKitchen by remember { mutableStateOf(vm.isLoggedInAsKitchen()) }
+
+
 
     ConstraintLayout(
         Modifier
@@ -53,12 +53,12 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel) {
         }, "menu", goTo = { /*TODO*/ }, Icons.Rounded.Settings)
 
 
-        LoginInformation(mainMenuViewModel = mainMenuViewModel, isUser, modifier = Modifier.constrainAs(loginInfo) {
+        LoginInformation(mainMenuViewModel = vm, isKitchen, modifier = Modifier.constrainAs(loginInfo) {
             top.linkTo(topBar.bottom, 30.dp)
             centerHorizontallyTo(parent)
         })
 
-        if (!isUser) {
+        if (isKitchen) {
             /*TODO, add onclick*/
             ButtonMain(onClick = { /**/ },
                 text = "Add user",
@@ -71,7 +71,7 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel) {
                 })
         }
         ButtonMain(
-            onClick = { mainMenuViewModel.logout() },
+            onClick = { vm.logout() },
             text = "Log Out",
             isInverted = false,
             widthScale = 0.33, Modifier.constrainAs(logoutBtn) {
@@ -90,7 +90,7 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel) {
 @Composable
 private fun LoginInformation(
     mainMenuViewModel: MainMenuViewModel,
-    isUser: Boolean,
+    isKitchen: Boolean,
     modifier: Modifier = Modifier
 ) {
     val vm = mainMenuViewModel
@@ -105,7 +105,7 @@ private fun LoginInformation(
                     .background(Color.Transparent)
                     .fillMaxWidth()) {
 
-                if (user.isAssigned) LoggedIn(user.uName, isUser, vm)
+                if (user.isAssigned) LoggedIn(user.uName, isKitchen, vm)
                 else NotAssignedToKitchen(user, vm)
 
             }
@@ -117,14 +117,14 @@ private fun LoginInformation(
                 modifier
                     .background(Color.Transparent)
                     .fillMaxWidth()) {
-                LoggedIn(kitchen.kName, isUser, mainMenuViewModel)
+                LoggedIn(kitchen.kName, isKitchen, mainMenuViewModel)
             }
         }
 
         is StateHandler.AppMode.SignedOut -> {
-
-            vm.s.navigate(Pages.START_MENU)
-            mainMenuViewModel.logout()
+            /* TODO LOOK AT THIS */
+            //vm.s.navigate(Pages.START_MENU)
+            //mainMenuViewModel.logout()
 
         }
 
@@ -162,9 +162,9 @@ private fun ConstraintLayoutScope.NotAssignedToKitchen(
             top.linkTo(uWelcomeTXT.bottom, 20.dp)
         })
 
-    ButtonMain(onClick = { vm.s.navigate(Pages.JOIN_KITCHEN) },
+    ButtonMain(onClick = { vm.navigate(Pages.JOIN_KITCHEN) },
         text = "Join Kitchen",
-        isInverted = true,
+        isInverted = false,
         widthScale = 0.33,
         modifier = Modifier.constrainAs(joinBtn) {
             centerHorizontallyTo(uAssigned)
@@ -177,7 +177,7 @@ private fun ConstraintLayoutScope.NotAssignedToKitchen(
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-private fun ConstraintLayoutScope.LoggedIn(name: String, isUser: Boolean, mainMenuViewModel: MainMenuViewModel) {
+private fun ConstraintLayoutScope.LoggedIn(name: String, isKitchen: Boolean, mainMenuViewModel: MainMenuViewModel) {
     val vm = mainMenuViewModel
     val uWelcomeTXT = createRef()
     val (btnDrink, btnAdd, btnLog, btnStats, btnPayments) = createRefs()
@@ -186,7 +186,7 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isUser: Boolean, mainMe
 
 
    Text(text = "Welcome\n$name",
-       fontSize = 40.sp,
+       fontSize = 50.sp,
        style = MaterialTheme.typography.h1,
        textAlign = TextAlign.Center,
        modifier = Modifier.constrainAs(uWelcomeTXT) {
@@ -198,8 +198,8 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isUser: Boolean, mainMe
 
     ButtonMain(onClick = {
             vm.s.setCurrentPage(Pages.ADD_BEVERAGE_STAGE_1)
-            if(isUser) vm.s.navigate(Pages.ADD_BEVERAGE_STAGE_1)
-            else vm.s.navigate(Pages.USER_SELECTION)
+            if(!isKitchen) vm.navigate(Pages.ADD_BEVERAGE_STAGE_1)
+            else vm.navigate(Pages.USER_SELECTION)
         },
         text = "Add Beverage",
         isInverted = false,
@@ -212,7 +212,7 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isUser: Boolean, mainMe
     /* TODO STATISTICS FOR KITCHEN */
     ButtonMain(onClick = {
             vm.s.setCurrentPage(Pages.STATISTICS)
-            vm.s.navigate(Pages.STATISTICS)
+            vm.navigate(Pages.STATISTICS)
         },
         text = "Statistics",
         isInverted = false,
@@ -225,8 +225,8 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isUser: Boolean, mainMe
 
     ButtonMain(onClick = {
             vm.s.setCurrentPage(Pages.LOGBOOKS)
-            if(isUser) vm.s.navigate(Pages.LOGBOOKS)
-            else vm.s.navigate(Pages.USER_SELECTION)
+            if(!isKitchen) vm.navigate(Pages.LOGBOOKS)
+            else vm.navigate(Pages.USER_SELECTION)
         },
         text = "Logbook",
         isInverted = false,
@@ -239,8 +239,8 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isUser: Boolean, mainMe
 
     ButtonMain(onClick = {
             vm.s.setCurrentPage(Pages.PAYMENTS)
-            if(isUser) vm.s.navigate(Pages.PAYMENTS)
-            else vm.s.navigate(Pages.USER_SELECTION)
+            if(!isKitchen) vm.navigate(Pages.PAYMENTS)
+            else vm.navigate(Pages.USER_SELECTION)
         },
         text = "Payments",
         isInverted = false,
@@ -253,8 +253,8 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isUser: Boolean, mainMe
 
     ButtonMain(onClick = {
         vm.s.setCurrentPage(Pages.SELECT_BEVERAGE_STAGE_1)
-        if(isUser) vm.s.navigate(Pages.SELECT_BEVERAGE_STAGE_1)
-        else vm.s.navigate(Pages.USER_SELECTION)
+        if(!isKitchen) vm.navigate(Pages.SELECT_BEVERAGE_STAGE_1)
+        else vm.navigate(Pages.USER_SELECTION)
     },
         text = "Drink Beverage",
         isInverted = false,

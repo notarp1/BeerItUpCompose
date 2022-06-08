@@ -43,7 +43,7 @@ fun SelectUser(selectUserViewModel: SelectUserViewModel) {
 
 @Composable
 fun UserList(vm: SelectUserViewModel){
-    vm.getUsers()
+
     val users: List<UserRecieve>? = vm.userList
 
     Box(modifier = Modifier

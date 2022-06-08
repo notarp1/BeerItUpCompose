@@ -75,7 +75,7 @@ class AddBeverageQuantityViewModel(val s: Service) : ViewModel() {
 
                viewModelScope.launch(Dispatchers.Main) {
                    s.makeToast("Added Beers")
-                   s.navigatePopUpToInclusive(Pages.MAIN_MENU, Pages.ADD_BEVERAGE_STAGE_2)
+                   s.navigateAndClearBackstack(Pages.MAIN_MENU)
                }
                 _qtySelected = 24
 

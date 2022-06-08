@@ -6,25 +6,31 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.Category
+import com.notarmaso.beeritupcompose.FuncToRun
 import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.db.repositories.KitchenRepository
+import com.notarmaso.beeritupcompose.interfaces.Observerable
 import com.notarmaso.beeritupcompose.models.BeverageType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class AddBeverageViewModel(val s: Service) : ViewModel() {
+class AddBeverageViewModel(val s: Service) : ViewModel(), Observerable {
     private val kitchenRepo = KitchenRepository
 
     private var _beverageTypes by mutableStateOf<List<BeverageType>>(listOf())
     val beverageTypes: List<BeverageType> get() = _beverageTypes
 
 
-
     private var _selectedCategory by mutableStateOf(Category.BEERS)
     val selectedCategory: String get() = _selectedCategory.category
+
+
+    init {
+        s.observer.register(this)
+    }
 
     fun setCategory(category: Category) {
         _selectedCategory = category
@@ -68,7 +74,11 @@ class AddBeverageViewModel(val s: Service) : ViewModel() {
         }
     }
 
-
+    override fun update(funcToRun: FuncToRun) {
+        if(funcToRun == FuncToRun.GET_BEVERAGE_TYPES){
+            getBeverageTypes()
+        }
+    }
 
 
 }

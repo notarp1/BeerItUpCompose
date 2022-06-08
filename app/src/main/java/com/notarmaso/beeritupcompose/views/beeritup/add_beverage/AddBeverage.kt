@@ -36,11 +36,7 @@ import com.notarmaso.beeritupcompose.views.beeritup.add_beverage.AddBeverageView
 fun AddBeverage(addBeverageViewModel: AddBeverageViewModel) {
 
     val vm = addBeverageViewModel
-    /*TODO: Remake this with observer*/
-    if(!vm.hasrun) {
-        vm.getBeverageTypes()
-        vm.hasrun = true
-    }
+
     ConstraintLayout(
         Modifier
             .fillMaxSize()

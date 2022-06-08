@@ -20,6 +20,7 @@ class StateHandler(ctx: Context) {
 
 
     init {
+        println("initing statehandler")
         val activity: Activity = context as Activity
         sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
     }

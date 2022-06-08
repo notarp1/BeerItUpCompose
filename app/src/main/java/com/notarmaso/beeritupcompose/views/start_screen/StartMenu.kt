@@ -20,9 +20,6 @@ import com.notarmaso.beeritupcompose.ui.theme.components.SelectionHeader
 
 @Composable
 fun StartMenu(startMenuViewModel: StartMenuViewModel) {
-    /* TODO MAKE THIS IN INIT*/
-    startMenuViewModel.getStatus()
-
     val vm = startMenuViewModel
 
     val configuration = LocalConfiguration.current
