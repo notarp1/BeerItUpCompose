@@ -17,8 +17,11 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.notarmaso.beeritupcompose.R
 import com.notarmaso.beeritupcompose.models.UserRecieve
 import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
@@ -28,37 +31,49 @@ import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
 fun SelectUser(selectUserViewModel: SelectUserViewModel) {
     val vm = selectUserViewModel
 
-    Column {
 
-        TopBar(Modifier,"select user", goTo = { vm.s.nav?.popBackStack() }, Icons.Rounded.ArrowBack)
+    ConstraintLayout(
+        Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colors.background,
+                        MaterialTheme.colors.onPrimary
+                    )
+                ), alpha = 0.9f
+            )
+    ) {
+        val (userList, topBar) = createRefs()
 
-        Box(modifier = Modifier.weight(1f)){
-            UserList(selectUserViewModel)}
+        TopBar(Modifier.constrainAs(topBar){
+            top.linkTo(parent.top)
+        },"select user", goTo = { vm.s.nav?.popBackStack() }, Icons.Rounded.ArrowBack,)
 
+
+        UserList(selectUserViewModel, modifier = Modifier.constrainAs(userList){
+            top.linkTo(topBar.bottom)
+        })
 
     }
+
+
 
 }
 
 
 @Composable
-fun UserList(vm: SelectUserViewModel){
+fun UserList(vm: SelectUserViewModel, modifier: Modifier = Modifier){
 
     val users: List<UserRecieve>? = vm.userList
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(
-            brush = Brush.verticalGradient(
-                colors = listOf(
-                    MaterialTheme.colors.background,
-                    MaterialTheme.colors.onPrimary
-                )
-            )
-        ),
-        contentAlignment = Alignment.TopCenter){
+    Box(modifier = modifier
+        .background(Color.Transparent)
+        .height((height-70).dp)){
 
-        LazyColumn(modifier = Modifier.padding(top = 20.dp)){
+        LazyColumn(contentPadding = PaddingValues(5.dp, 10.dp, 5.dp,10.dp)){
             if(users != null) {
                 items(users) { user ->
                     UserCard(user = user, vm)
@@ -75,12 +90,12 @@ fun UserCard(user: UserRecieve, vm: SelectUserViewModel){
     Surface(
         shape = RoundedCornerShape(50),
         elevation = 1.dp,
-        border = BorderStroke(4.dp, color = colorResource(id = R.color.colorLightGreen)),
+        border = BorderStroke(2.dp, color = colorResource(id = R.color.colorLightGreen)),
         color = MaterialTheme.colors.primary,
         modifier = Modifier
             .fillMaxWidth()
             .padding(5.dp)
-            .height(80.dp)
+            .height(50.dp)
     ) {
 
         Box(
@@ -88,7 +103,7 @@ fun UserCard(user: UserRecieve, vm: SelectUserViewModel){
                 .fillMaxHeight()
                 .fillMaxWidth()
                 .border(
-                    BorderStroke(4.dp, color = colorResource(id = R.color.colorLightGreen)))
+                    BorderStroke(2.dp, color = colorResource(id = R.color.colorLightGreen)))
                 .clickable { vm.navigateToPage(user)},
             contentAlignment = Alignment.CenterStart
         ) {

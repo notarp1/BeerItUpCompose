@@ -18,10 +18,8 @@ import retrofit2.Response
 
 class LoginUserViewModel(val s: Service) : ViewModel(), Form {
 
-    private val userRepo = UserRepository
 
-
-    private var _phone by mutableStateOf("22270704")
+    private var _phone by mutableStateOf("22270708")
     val phone: String get() = _phone
 
     private var _password by mutableStateOf("112233")
@@ -46,56 +44,16 @@ class LoginUserViewModel(val s: Service) : ViewModel(), Form {
 
     }
 
+    private fun resetTextFields(){
+        _phone = ""
+        _password = ""
+    }
+
     fun logInUser(){
-       viewModelScope.launch {
-           val res: Response<UserRecieve>
-           val userLoginObj = UserLoginObject(phone, password)
-           withContext(Dispatchers.IO){
-               res = userRepo.login(userLoginObj)
-           }
-           handleErrorUser(res)
-
-       }
+        s.logInUser(phone, password)
+        resetTextFields()
     }
 
-
-    private fun handleUser(res: Response<UserRecieve>){
-        viewModelScope.launch {
-            val user: UserRecieve? = res.body()
-
-            withContext(Dispatchers.IO){
-                if (user != null) {
-                   val userDetails = s.stateHandler.getAssignedDetails(user.id)
-
-                    if (userDetails != null) {
-
-
-                        s.stateHandler.onUserSignInSuccess(user, userDetails)
-                    }
-                }
-            }
-            s.navigateAndClearBackstack(Pages.MAIN_MENU)
-            _phone = ""
-            _password = ""
-
-
-        }
-    }
-
-
-
-    private fun handleErrorUser(response: Response<UserRecieve>) {
-        when(response.code()){
-            200 -> {
-                s.makeToast("Login Succesful!")
-                handleUser(response)
-            }
-            400 -> s.makeToast("Error: This User Does Not Exist")
-            401 -> s.makeToast("Error: Wrong password")
-            500 -> s.makeToast(response.message())
-            else -> s.makeToast("Error: Unknown")
-        }
-    }
 
 
 

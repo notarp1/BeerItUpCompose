@@ -39,7 +39,7 @@ fun TextFieldName(placeholder: String, modifier: Modifier = Modifier, vm: Form, 
         modifier = modifier.width(width).height(height),
 
         textStyle = TextStyle(color = MaterialTheme.colors.primary, textAlign = TextAlign.Center, fontSize = 18.sp),
-        colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.secondary),
+        colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.onPrimary),
         singleLine = true
     )
 }
@@ -64,7 +64,7 @@ fun TextFieldPhone(placeholder: String, modifier: Modifier = Modifier, vm: Form,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
 
         textStyle = TextStyle(color = MaterialTheme.colors.primary, textAlign = TextAlign.Center, fontSize = 18.sp),
-        colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.secondary),
+        colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.onPrimary),
         singleLine = true
     )
 }
@@ -88,7 +88,7 @@ fun TextFieldPassword(placeholder: String, modifier: Modifier = Modifier, vm: Fo
         modifier = modifier.width(width).height(height),
 
         textStyle = TextStyle(color = MaterialTheme.colors.primary, textAlign = TextAlign.Center, fontSize = 18.sp),
-        colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.secondary),
+        colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.onPrimary),
         singleLine = true
     )
 }
@@ -112,7 +112,7 @@ fun TextFieldPin(placeholder: String, modifier: Modifier = Modifier, vm: Form, w
         modifier = modifier.width(width).height(height),
 
         textStyle = TextStyle(color = MaterialTheme.colors.primary, textAlign = TextAlign.Center, fontSize = 18.sp),
-        colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.secondary),
+        colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.onPrimary),
         singleLine = true
     )
 }

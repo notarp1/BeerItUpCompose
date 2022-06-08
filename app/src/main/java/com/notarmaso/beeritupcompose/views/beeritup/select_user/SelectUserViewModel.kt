@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.FuncToRun
+import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.StateHandler
 import com.notarmaso.beeritupcompose.db.repositories.KitchenRepository
@@ -41,6 +42,11 @@ class SelectUserViewModel(val s: Service) : ViewModel(), Observerable {
     fun navigateToPage(user: UserRecieve){
         val appMode = s.stateHandler.appMode as StateHandler.AppMode.SignedInAsKitchen
         s.stateHandler.setAppMode(StateHandler.AppMode.SignedInAsKitchen(appMode.kId, appMode.kPass, appMode.kName, user.id, user.name))
+
+        when(s.currentPage){
+            Pages.PAYMENTS -> s.observer.notifySubscribers(FuncToRun.GET_PAYMENTS)
+            else -> println("else statement is run")
+        }
 
         s.navigate(s.currentPage)
 

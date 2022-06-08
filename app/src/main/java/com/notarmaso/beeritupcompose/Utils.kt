@@ -32,16 +32,20 @@ enum class Pages(val value: String) {
 
 enum class Category(val category: String){
     BEERS("beer"),
-    SOFT_DRINKS("soda")
+    SOFT_DRINKS("soda"),
+    MONEY_YOU_ARE_OWED("money_you_are_owed"),
+    MONEY_YOU_OWE("money_you_owe")
 }
 
 
 enum class FuncToRun(){
-    GET_LOGIN_STATE(),
-    GET_USERS(),
-    FINISHED_LOADING(),
-    GET_BEVERAGE_TYPES(),
-    GET_BEVERAGES_IN_STOCK()
+    GET_LOGIN_STATE,
+    GET_USERS,
+    FINISHED_LOADING,
+    GET_BEVERAGE_TYPES,
+    GET_BEVERAGES_IN_STOCK,
+    GET_PAYMENTS,
+    GET_LOGIN_STATE_2
 
 }
 

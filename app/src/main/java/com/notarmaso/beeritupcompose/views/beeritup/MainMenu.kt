@@ -24,6 +24,7 @@ import androidx.constraintlayout.compose.ConstraintLayoutScope
 import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.R
 import com.notarmaso.beeritupcompose.StateHandler
+import com.notarmaso.beeritupcompose.isSignedInAsKitchen
 import com.notarmaso.beeritupcompose.ui.theme.LightBlue
 import com.notarmaso.beeritupcompose.ui.theme.components.ButtonMain
 import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
@@ -31,9 +32,11 @@ import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
 
 @Composable
 fun MainMenu(mainMenuViewModel: MainMenuViewModel) {
-    val vm = mainMenuViewModel
-    val isKitchen by remember { mutableStateOf(vm.isLoggedInAsKitchen()) }
 
+
+    val vm = mainMenuViewModel
+
+    val loggedInAsKitchen = vm.loggedInAsKitchen
 
 
     ConstraintLayout(
@@ -53,12 +56,12 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel) {
         }, "menu", goTo = { /*TODO*/ }, Icons.Rounded.Settings)
 
 
-        LoginInformation(mainMenuViewModel = vm, isKitchen, modifier = Modifier.constrainAs(loginInfo) {
+        LoginInformation(mainMenuViewModel = vm, loggedInAsKitchen, modifier = Modifier.constrainAs(loginInfo) {
             top.linkTo(topBar.bottom, 30.dp)
             centerHorizontallyTo(parent)
         })
 
-        if (isKitchen) {
+        if (loggedInAsKitchen) {
             /*TODO, add onclick*/
             ButtonMain(onClick = { /**/ },
                 text = "Add user",
@@ -267,39 +270,3 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isKitchen: Boolean, mai
 }
 
 
-@Composable
-fun NavigationBar() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp)
-            .background(LightBlue)
-    ) {
-
-        Row(Modifier.fillMaxWidth(), Arrangement.SpaceEvenly) {
-            IconButton(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxHeight()) {
-                Icon(
-                    Icons.Rounded.Menu,
-                    contentDescription = "Localized description",
-                    tint = Color.White
-                )
-            }
-            IconButton(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxHeight()) {
-                Icon(
-                    Icons.Rounded.Home,
-                    contentDescription = "Localized description",
-                    tint = Color.White
-                )
-            }
-            IconButton(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxHeight()) {
-                Icon(
-                    Icons.Rounded.Settings,
-                    contentDescription = "Localized description",
-                    tint = Color.White
-                )
-            }
-
-        }
-
-    }
-}

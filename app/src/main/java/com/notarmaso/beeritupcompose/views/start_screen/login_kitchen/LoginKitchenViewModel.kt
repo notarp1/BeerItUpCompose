@@ -35,48 +35,18 @@ class LoginKitchenViewModel(val s: Service) : ViewModel(), Form {
         _name = newText
     }
 
+    private fun resetTextFields(){
+        _name = ""
+        _password = ""
+    }
 
     fun logInKitchen() {
-        viewModelScope.launch {
-            val res: Response<Kitchen>
-            val kitchenLoginObj = KitchenLoginObject(name, password)
-            withContext(Dispatchers.IO) {
-                res = kitchenRepo.login(kitchenLoginObj)
-            }
-            handleErrorKitchen(res)
-
-        }
+        s.logInKitchen(name, password)
+        resetTextFields()
     }
 
 
-    private fun handleKitchen(res: Response<Kitchen>) {
-        viewModelScope.launch {
-            val kitchen: Kitchen? = res.body()
 
-            withContext(Dispatchers.IO) {
-                if (kitchen != null) {
-                    s.stateHandler.onKitchenSignInSuccess(kitchen)
-                }
-            }
-            s.navigateAndClearBackstack(Pages.MAIN_MENU)
-            _name = ""
-            _password = ""
-
-        }
-    }
-
-    private fun handleErrorKitchen(response: Response<Kitchen>) {
-        when (response.code()) {
-            200 -> {
-                s.makeToast("Login Succesful!")
-                handleKitchen(response)
-            }
-            400 -> s.makeToast("Error: This Kitchen Does Not Exist")
-            401 -> s.makeToast("Error: Wrong password")
-            500 -> s.makeToast(response.message())
-            else -> s.makeToast("Error: Unknown: ${response.message()}")
-        }
-    }
 
 
     override fun setPin(newText: String) {

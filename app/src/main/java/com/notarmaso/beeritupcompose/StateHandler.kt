@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
-class StateHandler(ctx: Context) {
+class StateHandler(ctx: Context, val observer: Observer) {
 
     var sharedPref: SharedPreferences
     val context = ctx
@@ -62,13 +62,18 @@ class StateHandler(ctx: Context) {
 
         /*This needs to be run to save details with an app close*/
         saveUserDetailsInPrefs(user.id)
+
+        observer.notifySubscribers(FuncToRun.GET_LOGIN_STATE_2)
+
     }
 
     fun onKitchenSignInSuccess(kitchen: Kitchen) {
-        _appMode = AppMode.SignedInAsKitchen(kitchen.id, kitchen.pass, kitchen.name, -1, "")
 
+        _appMode = AppMode.SignedInAsKitchen(kitchen.id, kitchen.pass, kitchen.name, -1, "")
         /*This needs to be run to save details with an app close*/
         saveKitchenDetailsInPrefs(kitchen.id)
+        observer.notifySubscribers(FuncToRun.GET_LOGIN_STATE_2)
+
     }
 
 
@@ -105,6 +110,8 @@ class StateHandler(ctx: Context) {
                 val uStatus = user?.let { getAssignedDetails(it.id) }
                 if (uStatus != null) {
                     _appMode = AppMode.SignedInAsUser(user.id, user.name, user.pin, uStatus.isAssigned, uStatus.kId)
+                    observer.notifySubscribers(FuncToRun.GET_LOGIN_STATE_2)
+
                 }
 
             } else{
@@ -124,6 +131,8 @@ class StateHandler(ctx: Context) {
 
                 if (kitchen != null) {
                     _appMode = AppMode.SignedInAsKitchen(kitchen.id, kitchen.pass, kitchen.name, -1, "")
+                    observer.notifySubscribers(FuncToRun.GET_LOGIN_STATE_2)
+
                 }
             } else logOut()
         }

@@ -21,7 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.notarmaso.beeritupcompose.Category
 import com.notarmaso.beeritupcompose.models.UserPaymentObject
+import com.notarmaso.beeritupcompose.ui.theme.components.ButtonMain
 import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
 import com.notarmaso.beeritupcompose.views.beeritup.payments.PaymentsViewModel
 
@@ -31,8 +33,6 @@ fun Payments(paymentsViewModel: PaymentsViewModel) {
 
     val vm = paymentsViewModel
 
-    /* TODO do with observer!!*/
-    vm.loadLists()
 
 
     ConstraintLayout(
@@ -47,14 +47,50 @@ fun Payments(paymentsViewModel: PaymentsViewModel) {
                 ), alpha = 0.9f
             )
     ) {
-        val (payments, topBar) = createRefs()
+        val (payments, topBar, selectionRow, divider) = createRefs()
 
-        TopBar(Modifier.constrainAs(topBar){
+        TopBar(Modifier.constrainAs(topBar) {
             top.linkTo(parent.top)
         }, "Payments", goTo = { vm.s.nav?.popBackStack() }, Icons.Rounded.ArrowBack)
 
-        PaymentsPage(payVm = vm, modifier = Modifier.constrainAs(payments){
-            top.linkTo(topBar.bottom)
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .constrainAs(selectionRow) {
+                    top.linkTo(topBar.bottom, 10.dp)
+                },
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ButtonMain(
+                onClick = { vm.setCategory(Category.MONEY_YOU_OWE) },
+                text = "$ you owe",
+                isInverted = vm.selectedCategory == Category.MONEY_YOU_OWE.category,
+                height = 40.dp,
+                widthScale = 0.40
+            )
+
+            ButtonMain(
+                onClick = { vm.setCategory(Category.MONEY_YOU_ARE_OWED) },
+                text = "$ you are owed",
+                isInverted = vm.selectedCategory == Category.MONEY_YOU_ARE_OWED.category,
+                height = 40.dp, widthScale = 0.40
+            )
+
+        }
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(2.dp)
+                .background(MaterialTheme.colors.onPrimary)
+                .constrainAs(divider) {
+                    top.linkTo(selectionRow.bottom, 10.dp)
+                })
+
+
+        PaymentsPage(payVm = vm, modifier = Modifier.constrainAs(payments) {
+            top.linkTo(divider.bottom)
             centerHorizontallyTo(parent)
         })
 
@@ -63,26 +99,34 @@ fun Payments(paymentsViewModel: PaymentsViewModel) {
 }
 
 
-
 @Composable
-fun PaymentsPage(payVm: PaymentsViewModel, modifier: Modifier = Modifier){
+fun PaymentsPage(payVm: PaymentsViewModel, modifier: Modifier = Modifier) {
     val configuration = LocalConfiguration.current
-    val maxHeight = configuration.screenHeightDp / 2
+    val height = configuration.screenHeightDp
 
     Column(modifier = modifier) {
-        payVm.owesTo?.let { OwesToList(payVm = payVm, it) }
-        payVm.owedFrom?.let { OwedFromList(payVm = payVm, it) }
+        if (payVm.selectedCategory == Category.MONEY_YOU_OWE.category) {
+            payVm.owesTo?.let { OwesToList(payVm = payVm, it, height) }
+        } else {
+            payVm.owedFrom?.let { OwedFromList(payVm = payVm, it, height) }
+        }
     }
 
 }
 
 
 @Composable
-fun OwesToList(payVm: PaymentsViewModel, paymentObjectList: List<UserPaymentObject>){
+fun OwesToList(payVm: PaymentsViewModel, paymentObjectList: List<UserPaymentObject>, height: Int) {
 
-    LazyColumn(modifier = Modifier.padding(top = 20.dp)) {
+    LazyColumn(
+        modifier = Modifier.height((height - 140).dp),
+        contentPadding = PaddingValues(5.dp)
+    ) {
         items(paymentObjectList) { user ->
-            UserPaymentCard(user, payVm = payVm, modifier = Modifier.clickable{payVm.makePayment(user.uId)})
+            UserPaymentCard(
+                user,
+                payVm = payVm,
+                modifier = Modifier.clickable { payVm.makePayment(user.uId) })
 
         }
     }
@@ -90,12 +134,18 @@ fun OwesToList(payVm: PaymentsViewModel, paymentObjectList: List<UserPaymentObje
 }
 
 @Composable
-fun OwedFromList(payVm: PaymentsViewModel, paymentObjectList: List<UserPaymentObject>){
+fun OwedFromList(
+    payVm: PaymentsViewModel,
+    paymentObjectList: List<UserPaymentObject>,
+    height: Int
+) {
 
-    LazyColumn(modifier = Modifier.padding(top = 20.dp)) {
+    LazyColumn(modifier = Modifier
+        .padding(top = 20.dp)
+        .height((height - 90).dp)) {
 
         items(paymentObjectList) { user ->
-          UserPaymentCard(user, payVm)
+            UserPaymentCard(user, payVm)
 
         }
     }
@@ -103,36 +153,59 @@ fun OwedFromList(payVm: PaymentsViewModel, paymentObjectList: List<UserPaymentOb
 }
 
 
-
-
 @Composable
-fun UserPaymentCard(user: UserPaymentObject ,payVm: PaymentsViewModel, modifier: Modifier = Modifier){
+fun UserPaymentCard(
+    user: UserPaymentObject,
+    payVm: PaymentsViewModel,
+    modifier: Modifier = Modifier
+) {
 
-    Surface(modifier = Modifier
-        .width(360.dp)
-        .height(45.dp)
-        .padding(start = 5.dp)
-        .padding(end = 5.dp)
-        .background(Color.Transparent), shape = RoundedCornerShape(20.dp)
-    ){
+    Surface(
+        modifier = Modifier
+            .width(360.dp)
+            .height(45.dp)
+            .padding(start = 5.dp)
+            .padding(end = 5.dp)
+            .background(Color.Transparent), shape = RoundedCornerShape(20.dp)
+    ) {
 
-        Box(modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.primary),
-            contentAlignment = Alignment.CenterStart) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.primary),
+            contentAlignment = Alignment.CenterStart
+        ) {
 
             Row(
                 Modifier
                     .padding(start = 20.dp)
                     .fillMaxWidth()
-                    .padding(end = 20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(end = 20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
 
             ) {
 
 
-                Text(text = "${(user.total/100).toFloat()}", style = MaterialTheme.typography.h4, modifier = Modifier.width(60.dp))
-                Text(text = user.name, style = MaterialTheme.typography.h4, fontWeight = FontWeight.Normal, modifier = Modifier.width(140.dp), textAlign = TextAlign.Center)
-                Text(text = user.phone, style = MaterialTheme.typography.h4, fontWeight = FontWeight.Normal, modifier = Modifier.width(160.dp), textAlign = TextAlign.Center)
+                Text(
+                    text = "${(user.total / 100).toFloat()}",
+                    style = MaterialTheme.typography.h4,
+                    modifier = Modifier.width(60.dp)
+                )
+                Text(
+                    text = user.name,
+                    style = MaterialTheme.typography.h4,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.width(140.dp),
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = user.phone,
+                    style = MaterialTheme.typography.h4,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.width(160.dp),
+                    textAlign = TextAlign.Center
+                )
             }
 
         }

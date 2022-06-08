@@ -6,16 +6,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.db.repositories.KitchenRepository
 import com.notarmaso.beeritupcompose.interfaces.Form
+import com.notarmaso.db_access_setup.models.Kitchen
+import com.notarmaso.db_access_setup.models.KitchenLoginObject
 import com.notarmaso.db_access_setup.models.KitchenToPost
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class AddKitchenViewModel(private val service: Service) : ViewModel(), Form {
+class AddKitchenViewModel(private val s: Service) : ViewModel(), Form {
 
     private val kitchenRepo = KitchenRepository
 
@@ -45,7 +48,7 @@ class AddKitchenViewModel(private val service: Service) : ViewModel(), Form {
                 }
 
             } catch (e: Exception) {
-                service.makeToast("Error: Only digits is allowed")
+                s.makeToast("Error: Only digits is allowed")
             }
 
         }
@@ -78,7 +81,7 @@ class AddKitchenViewModel(private val service: Service) : ViewModel(), Form {
 
     private fun passValidation(): Boolean {
         if (password.length < 6) {
-            Toast.makeText(service.context, "Password must be at least 6 digits!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(s.context, "Password must be at least 6 digits!", Toast.LENGTH_SHORT).show()
             return  false
         }
         return true
@@ -86,7 +89,7 @@ class AddKitchenViewModel(private val service: Service) : ViewModel(), Form {
 
     private fun nameValidation(): Boolean {
         if (name.length < 4) {
-            Toast.makeText(service.context, "Name must be longer than 4 characters!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(s.context, "Name must be longer than 4 characters!", Toast.LENGTH_SHORT).show()
             return  false
         }
         return true
@@ -96,23 +99,30 @@ class AddKitchenViewModel(private val service: Service) : ViewModel(), Form {
         if (pin.length in 4..8) {
             return true
         }
-        Toast.makeText(service.context, "Pin must be between 4 and 8 digits!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(s.context, "Pin must be between 4 and 8 digits!", Toast.LENGTH_SHORT).show()
         return  false
     }
+
+
 
 
     private fun handleErrorUser(response: Response<String>) {
         when(response.code()){
             201 -> {
-                service.makeToast("Kitchen Created!")
+                s.makeToast("Kitchen Created!")
+                s.logInKitchen(name, password)
                 resetTextFields()
-                service.nav?.popBackStack()
+
             }
 
-            400 -> service.makeToast("Error: This User Does Not Exist")
-            409 -> service.makeToast("Error: This User Already Exist")
-            500 -> service.makeToast(response.message())
-            else -> service.makeToast("Error: Unknown")
+            400 -> s.makeToast("Error: This User Does Not Exist")
+            409 -> s.makeToast("Error: This User Already Exist")
+            500 -> s.makeToast(response.message())
+            else -> s.makeToast("Error: Unknown")
         }
     }
+
+
+
+
 }

@@ -108,7 +108,7 @@ fun AddUser(addUserViewModel: AddUserViewModel) {
             bottom.linkTo(parent.bottom)
             start.linkTo(g1)
             end.linkTo(g2)
-        }, stringResource(R.string.createUser), height(0.15).dp) { addUserViewModel.createUser(1) }
+        }, stringResource(R.string.createUser), height(0.15).dp) { addUserViewModel.createUser() }
 
     }
 

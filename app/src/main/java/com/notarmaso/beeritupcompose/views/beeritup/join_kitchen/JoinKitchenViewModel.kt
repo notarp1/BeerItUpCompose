@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.Response
 
 class JoinKitchenViewModel(
-    private val s: Service
+    val s: Service
 ) : ViewModel(), Form {
 
     private val kitchenRepo = KitchenRepository

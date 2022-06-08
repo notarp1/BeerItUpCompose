@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -30,6 +31,7 @@ import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
 
 @Composable
 fun Logbook(vm: LogbookViewModel) {
+
     /*TODO: Remake this with observer*/
     //vm.reloadHighScores()
     vm.getLogs()
@@ -53,7 +55,7 @@ fun Logbook(vm: LogbookViewModel) {
         }, "logbook", goTo = { vm.s.nav?.popBackStack() }, Icons.Rounded.ArrowBack)
 
         LogbookList(vm, modifier = Modifier.constrainAs(leaderBoard) {
-            top.linkTo(topBar.bottom, 20.dp)
+            top.linkTo(topBar.bottom)
         })
 
     }
@@ -64,45 +66,69 @@ fun Logbook(vm: LogbookViewModel) {
 @Composable
 fun LogbookList(vm: LogbookViewModel, modifier: Modifier = Modifier) {
     val beverageLogEntries: List<BeverageLogEntryObj>? = vm.logs
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp
+
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
         Row() {
 
-            Box(Modifier.fillMaxWidth()) {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.colors.background,
+                                MaterialTheme.colors.background
+                            )
+                        )
+                    )) {
 
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    Alignment.CenterVertically
-                ) {
+                Column() {
 
-                    Icon(Icons.Rounded.ArrowBack,
-                        contentDescription = "Reload Highscores",
-                        modifier = Modifier
-                            .clickable(enabled = vm.selectedOptionInt != 0) { vm.decrementOption() }
-                            .size(40.dp), tint = if(vm.selectedOptionInt == 0)Color.Transparent else MaterialTheme.colors.onPrimary)
 
-                    /*Month*/
-                    Text(
-                        text = vm.selectedOption,
-                        style = MaterialTheme.typography.h2,
-                        modifier = Modifier.width(200.dp),
-                        textAlign = TextAlign.Center
-                    )
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .fillMaxHeight(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
 
-                    Icon(Icons.Rounded.ArrowForward,
-                        contentDescription = "Reload Highscores",
-                        modifier = Modifier
-                            .clickable(enabled = vm.selectedOptionInt != 3) { vm.incrementOption() }
-                            .size(40.dp),
-                        tint = if(vm.selectedOptionInt == 3)Color.Transparent else MaterialTheme.colors.onPrimary)
+                        Icon(Icons.Rounded.ArrowBack,
+                            contentDescription = "Reload Highscores",
+                            modifier = Modifier
+                                .clickable(enabled = vm.selectedOptionInt != 0) { vm.decrementOption() }
+                                .size(40.dp),
+                            tint = if (vm.selectedOptionInt == 0) Color.Transparent else MaterialTheme.colors.onPrimary)
+
+                        /*Month*/
+                        Text(
+                            text = vm.selectedOption,
+                            style = MaterialTheme.typography.h2,
+                            modifier = Modifier.width(200.dp),
+                            textAlign = TextAlign.Center
+                        )
+
+                        Icon(Icons.Rounded.ArrowForward,
+                            contentDescription = "Reload Highscores",
+                            modifier = Modifier
+                                .clickable(enabled = vm.selectedOptionInt != 3) { vm.incrementOption() }
+                                .size(40.dp),
+                            tint = if (vm.selectedOptionInt == 3) Color.Transparent else MaterialTheme.colors.onPrimary)
+                    }
+                    Box(Modifier.fillMaxWidth().weight(0.05f).background(MaterialTheme.colors.onPrimary))
+
                 }
 
             }
 
 
         }
-        Spacer(modifier = Modifier.height(20.dp))
-        LazyColumn(modifier = Modifier.padding(top = 5.dp)) {
+
+        LazyColumn(modifier = Modifier.height((height - 150).dp), contentPadding = PaddingValues(5.dp)) {
             if (beverageLogEntries != null) {
 
                 items(beverageLogEntries) { entry ->

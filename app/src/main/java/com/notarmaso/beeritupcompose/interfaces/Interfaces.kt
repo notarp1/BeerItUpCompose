@@ -32,7 +32,7 @@ interface Observerable{
 val serviceModule = module {
 
     single { Observer() }
-    single { params -> StateHandler(ctx = params.get())}
+    single { params -> StateHandler(ctx = params.get(), get())}
     single { params -> Service( ctx = params.get(), get(), get()) }
 
 }

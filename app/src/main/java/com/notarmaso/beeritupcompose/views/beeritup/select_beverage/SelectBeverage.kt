@@ -78,14 +78,13 @@ fun SelectBeverage(selectBeverageViewModel: SelectBeverageViewModel) {
                 height = 40.dp, widthScale = 0.30 )
 
         }
-        Divider(Modifier.height(3.dp).constrainAs(divider){
+        Box(Modifier.fillMaxWidth().height(2.dp).background(MaterialTheme.colors.onPrimary).constrainAs(divider){
             top.linkTo(selectionRow.bottom, 10.dp)
         })
 
         BeverageList(vm = selectBeverageViewModel,
             Modifier.constrainAs(beverageList) {
                     top.linkTo(divider.bottom)
-
                 })
 
     }
@@ -100,10 +99,11 @@ private fun BeverageList(vm: SelectBeverageViewModel, modifier: Modifier = Modif
     val height = configuration.screenHeightDp
 
     Box(modifier = modifier
-        .background(Color.Transparent).height(height.dp - 140.dp)
+        .background(Color.Transparent)
+        .height(height.dp - 130.dp)
         ) {
 
-        LazyColumn(){
+        LazyColumn(contentPadding = PaddingValues(5.dp, 10.dp, 5.dp,10.dp)){
             items(beverageTypes){beverage ->
                 BeverageCard(vm = vm, beverageType = beverage)
             }

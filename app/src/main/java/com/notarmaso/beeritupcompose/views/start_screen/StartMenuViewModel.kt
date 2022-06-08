@@ -17,19 +17,14 @@ class StartMenuViewModel(val s: Service) : ViewModel(), Observerable {
     }
      private fun getStatus() {
 
-        viewModelScope.launch(Dispatchers.Main) {
-            if (s.stateHandler.wasLoggedInUser()) {
-                s.stateHandler.onUserWasLoggedIn()
-                s.navigateAndClearBackstack(Pages.MAIN_MENU)
+        if (s.stateHandler.wasLoggedInUser()) {
+            s.stateHandler.onUserWasLoggedIn()
+            s.navigateAndClearBackstack(Pages.MAIN_MENU)
 
-            } else if (s.stateHandler.wasLoggedInKitchen()) {
-                s.stateHandler.onKitchenWasLoggedIn()
-                s.navigateAndClearBackstack(Pages.MAIN_MENU)
-            }
-
-            s.observer.notifySubscribers(FuncToRun.FINISHED_LOADING)
+        } else if (s.stateHandler.wasLoggedInKitchen()) {
+            s.stateHandler.onKitchenWasLoggedIn()
+            s.navigateAndClearBackstack(Pages.MAIN_MENU)
         }
-
     }
 
 
