@@ -108,7 +108,7 @@ fun PaymentsPage(payVm: PaymentsViewModel, modifier: Modifier = Modifier) {
         if (payVm.selectedCategory == Category.MONEY_YOU_OWE.category) {
             payVm.owesTo?.let { OwesToList(payVm = payVm, it, height) }
         } else {
-            payVm.owedFrom?.let { OwedFromList(payVm = payVm, it, height) }
+            payVm.owedFrom?.let { OwedFromList(it, height) }
         }
     }
 
@@ -118,16 +118,22 @@ fun PaymentsPage(payVm: PaymentsViewModel, modifier: Modifier = Modifier) {
 @Composable
 fun OwesToList(payVm: PaymentsViewModel, paymentObjectList: List<UserPaymentObject>, height: Int) {
 
-    LazyColumn(
-        modifier = Modifier.height((height - 140).dp),
-        contentPadding = PaddingValues(5.dp)
-    ) {
-        items(paymentObjectList) { user ->
-            UserPaymentCard(
-                user,
-                payVm = payVm,
-                modifier = Modifier.clickable { payVm.makePayment(user.uId) })
+    if(paymentObjectList.isEmpty()){
+        Box(modifier = Modifier.height((height - 140).dp), contentAlignment = Alignment.Center){
+            Text(text = "Congrats!\nYou are all settled up!", style = MaterialTheme.typography.h3, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
 
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.height((height - 140).dp),
+            contentPadding = PaddingValues(5.dp)
+        ) {
+            items(paymentObjectList) { user ->
+                UserPaymentCard(
+                    user,
+                    modifier = Modifier.clickable { payVm.makePayment(user.uId) })
+
+            }
         }
     }
 
@@ -135,18 +141,24 @@ fun OwesToList(payVm: PaymentsViewModel, paymentObjectList: List<UserPaymentObje
 
 @Composable
 fun OwedFromList(
-    payVm: PaymentsViewModel,
     paymentObjectList: List<UserPaymentObject>,
     height: Int
 ) {
+    if(paymentObjectList.isEmpty()){
+        Box(modifier = Modifier.height((height - 140).dp), contentAlignment = Alignment.Center){
+            Text(text = "Congrats!\nEveryone has paid up!", style = MaterialTheme.typography.h3, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .height((height - 90).dp)
+        ) {
 
-    LazyColumn(modifier = Modifier
-        .padding(top = 20.dp)
-        .height((height - 90).dp)) {
+            items(paymentObjectList) { user ->
+                UserPaymentCard(user)
 
-        items(paymentObjectList) { user ->
-            UserPaymentCard(user, payVm)
-
+            }
         }
     }
 
@@ -156,7 +168,6 @@ fun OwedFromList(
 @Composable
 fun UserPaymentCard(
     user: UserPaymentObject,
-    payVm: PaymentsViewModel,
     modifier: Modifier = Modifier
 ) {
 

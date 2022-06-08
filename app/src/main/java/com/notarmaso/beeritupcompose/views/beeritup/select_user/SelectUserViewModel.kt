@@ -10,14 +10,14 @@ import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.StateHandler
 import com.notarmaso.beeritupcompose.db.repositories.KitchenRepository
-import com.notarmaso.beeritupcompose.interfaces.Observerable
+import com.notarmaso.beeritupcompose.interfaces.Observable
 import com.notarmaso.beeritupcompose.models.UserRecieve
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class SelectUserViewModel(val s: Service) : ViewModel(), Observerable {
+class SelectUserViewModel(val s: Service) : ViewModel(), Observable {
     private val kitchenRepo = KitchenRepository
 
     private var _users by mutableStateOf<List<UserRecieve>?>(listOf())
@@ -54,8 +54,8 @@ class SelectUserViewModel(val s: Service) : ViewModel(), Observerable {
 
 
 
-    override fun update(methodToRun: FuncToRun) {
-        if(methodToRun == FuncToRun.GET_USERS){
+    override fun update(funcToRun: FuncToRun) {
+        if(funcToRun == FuncToRun.GET_USERS){
             getUsers()
         }
 

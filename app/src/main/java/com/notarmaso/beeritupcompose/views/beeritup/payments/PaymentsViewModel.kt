@@ -9,14 +9,14 @@ import com.notarmaso.beeritupcompose.Category
 import com.notarmaso.beeritupcompose.FuncToRun
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
-import com.notarmaso.beeritupcompose.interfaces.Observerable
+import com.notarmaso.beeritupcompose.interfaces.Observable
 import com.notarmaso.beeritupcompose.models.UserPaymentObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class PaymentsViewModel(val s: Service): ViewModel(), Observerable {
+class PaymentsViewModel(val s: Service): ViewModel(), Observable {
 
     private var _owedFrom by mutableStateOf<List<UserPaymentObject>?>(listOf())
     val owedFrom: List<UserPaymentObject>? get() = _owedFrom
@@ -61,20 +61,18 @@ class PaymentsViewModel(val s: Service): ViewModel(), Observerable {
         loadLists()
     }
 
+    /*TODO: Payments*/
     fun makePayment(ownerId: Int) {
         viewModelScope.launch {
-            val res: Response<String>
 
             withContext(Dispatchers.IO) {
-
-                res = userRepo.makePayment(s.stateHandler.appMode.uId, ownerId)
-
+                userRepo.makePayment(s.stateHandler.appMode.uId, ownerId)
             }
         }
     }
 
-    override fun update(methodToRun: FuncToRun) {
-       if(methodToRun == FuncToRun.GET_PAYMENTS){
+    override fun update(funcToRun: FuncToRun) {
+       if(funcToRun == FuncToRun.GET_PAYMENTS){
            loadLists()
        }
     }

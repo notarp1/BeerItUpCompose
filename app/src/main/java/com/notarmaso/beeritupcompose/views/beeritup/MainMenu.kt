@@ -5,14 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -24,8 +21,6 @@ import androidx.constraintlayout.compose.ConstraintLayoutScope
 import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.R
 import com.notarmaso.beeritupcompose.StateHandler
-import com.notarmaso.beeritupcompose.isSignedInAsKitchen
-import com.notarmaso.beeritupcompose.ui.theme.LightBlue
 import com.notarmaso.beeritupcompose.ui.theme.components.ButtonMain
 import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
 
@@ -48,7 +43,7 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel) {
                     MaterialTheme.colors.onPrimary
                 )))
     ) {
-        val (logoutBtn, loginInfo, topBar, btnAddUser, highscores) = createRefs()
+        val (logoutBtn, loginInfo, topBar, btnAddUser) = createRefs()
 
         /*TODO ADD SETTINGS*/
         TopBar(Modifier.constrainAs(topBar) {
@@ -62,8 +57,8 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel) {
         })
 
         if (loggedInAsKitchen) {
-            /*TODO, add onclick*/
-            ButtonMain(onClick = { /**/ },
+
+            ButtonMain(onClick = { vm.navigate(Pages.ADD_USER) },
                 text = "Add user",
                 isInverted = false,
                 widthScale = 0.33,

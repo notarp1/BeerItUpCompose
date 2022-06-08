@@ -10,14 +10,14 @@ import com.notarmaso.beeritupcompose.FuncToRun
 import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.db.repositories.KitchenRepository
-import com.notarmaso.beeritupcompose.interfaces.Observerable
+import com.notarmaso.beeritupcompose.interfaces.Observable
 import com.notarmaso.beeritupcompose.models.BeverageType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class AddBeverageViewModel(val s: Service) : ViewModel(), Observerable {
+class AddBeverageViewModel(val s: Service) : ViewModel(), Observable {
     private val kitchenRepo = KitchenRepository
 
     private var _beverageTypes by mutableStateOf<List<BeverageType>>(listOf())

@@ -1,13 +1,10 @@
 package com.notarmaso.beeritupcompose.views.beeritup
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.notarmaso.beeritupcompose.*
-import com.notarmaso.beeritupcompose.interfaces.Observerable
+import com.notarmaso.beeritupcompose.interfaces.Observable
 
-class MainMenuViewModel(val s: Service) : ViewModel(), Observerable {
+class MainMenuViewModel(val s: Service) : ViewModel(), Observable {
 
 
     private var _loggedInAsKitchen: Boolean = false
@@ -23,7 +20,6 @@ class MainMenuViewModel(val s: Service) : ViewModel(), Observerable {
 
 
     fun isLoggedInAsKitchen(){
-        println("HAHA:" + logInState().isSignedInAsKitchen())
         if(logInState().isSignedInAsKitchen()) {
             s.observer.notifySubscribers(FuncToRun.GET_USERS)
         }
@@ -53,8 +49,8 @@ class MainMenuViewModel(val s: Service) : ViewModel(), Observerable {
         s.navigate(Pages.START_MENU)
     }
 
-    override fun update(methodToRun: FuncToRun) {
-        if(methodToRun == FuncToRun.GET_LOGIN_STATE_2){
+    override fun update(funcToRun: FuncToRun) {
+        if(funcToRun == FuncToRun.GET_LOGIN_STATE_2){
             isLoggedInAsKitchen()
             s.observer.notifySubscribers(FuncToRun.FINISHED_LOADING)
         }

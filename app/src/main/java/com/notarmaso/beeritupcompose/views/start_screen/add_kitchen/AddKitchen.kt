@@ -50,7 +50,7 @@ fun AddKitchen(addKitchenViewModel: AddKitchenViewModel) {
         Text(text = stringResource(R.string.createKitchenHeader), fontSize = 34.sp, textDecoration = TextDecoration.Underline, style =  MaterialTheme.typography.h1,
             modifier = Modifier.constrainAs(header){
                 centerHorizontallyTo(parent)
-                top.linkTo(parent.top, 40.dp)
+                top.linkTo(parent.top, 80.dp)
             })
 
         SelectionHeader(text = stringResource(R.string.createKitchenName), true, modifier = Modifier.constrainAs(usernameTxt){

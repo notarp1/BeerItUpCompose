@@ -1,6 +1,5 @@
 package com.notarmaso.beeritupcompose.views.start_screen
 
-import android.app.Service
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -22,10 +21,11 @@ import com.notarmaso.beeritupcompose.ui.theme.components.SelectionHeader
 fun StartMenu(startMenuViewModel: StartMenuViewModel) {
     val vm = startMenuViewModel
 
+    /*TODO REMOVE THIS AND MAKE FUNCITON PRIVATE*/
+    //vm.getStatus()
+
     val configuration = LocalConfiguration.current
-    fun width(widthScale: Double): Double {
-        return configuration.screenWidthDp * widthScale
-    }
+
     fun height(widthScale: Double): Double {
         return configuration.screenHeightDp * widthScale
     }
@@ -39,7 +39,6 @@ fun StartMenu(startMenuViewModel: StartMenuViewModel) {
                     MaterialTheme.colors.onPrimary
                 ))) ) {
         // Create references for the composables to constrain
-        val (button, text) = createRefs()
         val divider = createRef()
         val titleBox = createRef()
         val (kSignBtn, uSignBtn, kLogBtn, uLogBtn) = createRefs()
@@ -53,7 +52,7 @@ fun StartMenu(startMenuViewModel: StartMenuViewModel) {
         Text(text = "Login & Signup", fontSize = 34.sp,
             textDecoration = TextDecoration.Underline, style =  MaterialTheme.typography.h1, modifier = Modifier.constrainAs(header){
             centerHorizontallyTo(parent)
-            top.linkTo(parent.top, 40.dp)
+            top.linkTo(parent.top, 80.dp)
         })
        /* HEADER */
 

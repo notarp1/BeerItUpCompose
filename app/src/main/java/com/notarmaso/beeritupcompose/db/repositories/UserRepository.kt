@@ -27,9 +27,9 @@ object UserRepository : IUserRepository {
     }
 
 
-    override suspend fun addUser(user: UserToPost): Response<String> = coroutineScope {
+    override suspend fun addUser(userToPost: UserToPost): Response<UserRecieve> = coroutineScope {
         val response = async(Dispatchers.IO) {
-            DBInstance.userApi.addUser(user)
+            DBInstance.userApi.addUser(userToPost)
         }
         response.await()
     }

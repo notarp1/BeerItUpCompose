@@ -49,7 +49,7 @@ fun LoginUser(loginUserViewModel: LoginUserViewModel) {
         Text(text = stringResource(R.string.userSignIn), fontSize = 34.sp, textDecoration = TextDecoration.Underline, style =  MaterialTheme.typography.h1,
             modifier = Modifier.constrainAs(header){
                 centerHorizontallyTo(parent)
-                top.linkTo(parent.top, 40.dp)
+                top.linkTo(parent.top, 80.dp)
             })
 
         SelectionHeader(text = stringResource(R.string.yourPhone), true, modifier = Modifier.constrainAs(usernameTxt){

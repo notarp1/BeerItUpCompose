@@ -23,9 +23,9 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 
-interface Observerable{
+interface Observable{
 
-    fun update(methodToRun: FuncToRun)
+    fun update(funcToRun: FuncToRun)
 
 }
 
@@ -60,8 +60,8 @@ val vmModule = module {
 }
 
 internal interface UserObserver<T>{
-    fun register(subscriber: Observerable)
-    fun remove(subscriber: Observerable)
+    fun register(subscriber: Observable)
+    fun remove(subscriber: Observable)
     fun notifySubscribers(funcToRun: FuncToRun)
 }
 

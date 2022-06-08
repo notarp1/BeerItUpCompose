@@ -10,12 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.notarmaso.beeritupcompose.ui.theme.LightBlue
 import com.notarmaso.beeritupcompose.ui.theme.components.ButtonMain
 import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
 import com.notarmaso.beeritupcompose.views.beeritup.join_kitchen.JoinKitchenViewModel
@@ -46,9 +44,9 @@ fun JoinKitchen(joinKitchenViewModel: JoinKitchenViewModel) {
 
         JoinKitchenForm(joinKitchenViewModel, Modifier.constrainAs(forms){
 
-            top.linkTo(topBar.bottom)
+            top.linkTo(topBar.bottom, 80.dp)
             centerHorizontallyTo(parent)
-            centerVerticallyTo(parent)
+
         })
 
     }
@@ -65,7 +63,6 @@ fun JoinKitchenForm(jkVm: JoinKitchenViewModel, modifier: Modifier = Modifier){
     val configuration = LocalConfiguration.current
 
     fun width(widthScale: Double): Double { return configuration.screenWidthDp * widthScale }
-    fun height(widthScale: Double): Double { return configuration.screenHeightDp * widthScale }
 
 
     Box(modifier = modifier){

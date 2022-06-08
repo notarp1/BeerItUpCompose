@@ -1,7 +1,6 @@
 package com.notarmaso.beeritupcompose.db.repositories
 
 import com.notarmaso.beeritupcompose.models.*
-import com.notarmaso.db_access_setup.models.*
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -14,7 +13,7 @@ interface IUserRepository {
     suspend fun getUser(@Path("id") id:Int): Response<UserRecieve>
 
     @POST("users")
-    suspend fun addUser(@Body userToPost: UserToPost): Response<String>
+    suspend fun addUser(@Body userToPost: UserToPost): Response<UserRecieve>
 
     @PUT("users/{id}")
     suspend fun updateUser(@Path("id") id:String, @Body user: UserToPost): Response<String>

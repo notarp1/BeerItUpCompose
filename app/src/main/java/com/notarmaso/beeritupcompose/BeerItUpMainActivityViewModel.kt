@@ -2,13 +2,13 @@ package com.notarmaso.beeritupcompose
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.notarmaso.beeritupcompose.interfaces.Observerable
+import com.notarmaso.beeritupcompose.interfaces.Observable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class BeerItUpMainActivityViewModel(service: Service): ViewModel(), Observerable {
+class BeerItUpMainActivityViewModel(service: Service): ViewModel(), Observable {
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
@@ -20,7 +20,7 @@ class BeerItUpMainActivityViewModel(service: Service): ViewModel(), Observerable
         viewModelScope.launch {
             //Delay for insuring other viewmodels have been initialized
 
-            delay(50)
+            delay(100)
             service.observer.notifySubscribers(FuncToRun.GET_LOGIN_STATE)
 
 

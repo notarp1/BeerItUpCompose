@@ -6,11 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.notarmaso.beeritupcompose.Pages
+import com.notarmaso.beeritupcompose.FuncToRun
 import com.notarmaso.beeritupcompose.Service
+import com.notarmaso.beeritupcompose.StateHandler
+import com.notarmaso.beeritupcompose.db.repositories.KitchenRepository
 import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.interfaces.Form
-import com.notarmaso.beeritupcompose.models.UserLoginObject
 import com.notarmaso.beeritupcompose.models.UserRecieve
 import com.notarmaso.beeritupcompose.models.UserToPost
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,8 @@ import retrofit2.Response
 class AddUserViewModel(private val s: Service) : ViewModel(), Form {
 
     private val userRepo = UserRepository
+    private val kitchenRepo = KitchenRepository
+
     private var _name by mutableStateOf("")
     val name: String get() = _name
 
@@ -110,7 +113,7 @@ class AddUserViewModel(private val s: Service) : ViewModel(), Form {
 
     /*USER CREATION*/
 
-    fun createUser(number: Int = 0) {
+    fun createUser() {
 
         if (nameValidation() && passValidation() && pinValidation()) {
             filterWhitespaces()
@@ -136,7 +139,7 @@ class AddUserViewModel(private val s: Service) : ViewModel(), Form {
 
     private fun onSubmit(user: UserToPost) {
         viewModelScope.launch() {
-            val res: Response<String>
+            val res: Response<UserRecieve>
             withContext(Dispatchers.IO) { res = userRepo.addUser(user) }
             handleErrorUser(res)
 
@@ -145,19 +148,19 @@ class AddUserViewModel(private val s: Service) : ViewModel(), Form {
         // service.createAlertBoxAddUser(user){submitUser(user)}
     }
 
-    private fun handleErrorUser(response: Response<String>) {
+    private fun handleErrorUser(response: Response<UserRecieve>) {
         when (response.code()) {
             201 -> {
                 s.makeToast("User Created!")
-                logInUser()
-            }
-            204 -> {
-                s.makeToast("User Updated!")
-                //   navController.popBackStack()
-            }
-            205 -> {
-                s.makeToast("User Deleted!¨")
-                //    navController.popBackStack()
+                when(s.stateHandler.appMode){
+                    is StateHandler.AppMode.SignedInAsKitchen -> {
+                        response.body()?.let { addUserToKitchen(it.id) }
+                    }
+                    is StateHandler.AppMode.SignedOut -> logInUser()
+                    else -> {
+                        println("Else statement run")
+                    }
+                }
             }
             400 -> s.makeToast(response.message())
             409 -> s.makeToast("Error: A user with this number already exist")
@@ -166,7 +169,12 @@ class AddUserViewModel(private val s: Service) : ViewModel(), Form {
         }
     }
 
+    private fun addUserToKitchen(id: Int) {
+        val state = s.stateHandler.appMode as StateHandler.AppMode.SignedInAsKitchen
+        handleKitchenRegistration(state, id)
 
+
+    }
     /*LOGIN AUTOMATICALLY*/
 
     private fun logInUser() {
@@ -174,5 +182,29 @@ class AddUserViewModel(private val s: Service) : ViewModel(), Form {
         resetTextFields()
     }
 
+    /* JOIN KITCHEN IF USER IS CREATED FROM KITCHEN ACC*/
+    private fun handleKitchenRegistration(state: StateHandler.AppMode.SignedInAsKitchen, id: Int){
+        viewModelScope.launch {
+            val response: Response<String>
+            withContext(Dispatchers.IO) {
+                response = kitchenRepo.addKitchenUser(state.kId, id)
+            }
+            handleErrorJoined(response)
+        }
+    }
+
+
+    private fun handleErrorJoined(response: Response<String>) {
+        when(response.code()){
+            201 -> {
+                s.makeToast("Successfully Joined!")
+                s.observer.notifySubscribers(FuncToRun.GET_USERS)
+                s.nav?.popBackStack()
+            }
+            500 -> s.makeToast(response.message())
+            else -> s.makeToast(response.message())
+        }
+    }
 
 }
+

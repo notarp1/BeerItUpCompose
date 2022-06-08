@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.annotation.ExperimentalCoilApi
@@ -94,21 +95,30 @@ fun SelectBeverage(selectBeverageViewModel: SelectBeverageViewModel) {
 
 @Composable
 private fun BeverageList(vm: SelectBeverageViewModel, modifier: Modifier = Modifier) {
-    val beverageTypes = vm.beverageTypes
+    val beverageTypes = vm.beveragesInStock
     val configuration = LocalConfiguration.current
     val height = configuration.screenHeightDp
 
-    Box(modifier = modifier
-        .background(Color.Transparent)
-        .height(height.dp - 130.dp)
+    if(vm.beveragesInStock.isEmpty()){
+
+        Box(modifier = Modifier.height((height - 140).dp), contentAlignment = Alignment.Center){
+            Text(text = "Hmmm... It seems empty here!\nAdd some beverages to get going!", style = MaterialTheme.typography.h3, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+
+        }
+    } else {
+        Box(
+            modifier = modifier
+                .background(Color.Transparent)
+                .height(height.dp - 130.dp)
         ) {
 
-        LazyColumn(contentPadding = PaddingValues(5.dp, 10.dp, 5.dp,10.dp)){
-            items(beverageTypes){beverage ->
-                BeverageCard(vm = vm, beverageType = beverage)
+            LazyColumn(contentPadding = PaddingValues(5.dp, 10.dp, 5.dp, 10.dp)) {
+                items(beverageTypes) { beverage ->
+                    BeverageCard(vm = vm, beverageType = beverage)
+                }
             }
-        }
 
+        }
     }
 }
 
@@ -171,7 +181,7 @@ fun BeerRowImage(beverageType: BeverageType){
     val painterState = painter.state
     ConstraintLayout(Modifier.rotate(90f)) {
 
-        val (picture, topBar) = createRefs()
+        val picture = createRef()
 
         Image(painter = painter, contentDescription = beverageType.name, modifier = Modifier.constrainAs(picture){
 
