@@ -16,9 +16,7 @@ import com.notarmaso.beeritupcompose.ui.theme.components.SelectionHeader
 import com.notarmaso.beeritupcompose.ui.theme.components.SubmitButton
 import com.notarmaso.beeritupcompose.views.start_screen.add_user.AddUserViewModel
 import com.notarmaso.db_access_setup.ui.theme.components.TextFieldName
-import com.notarmaso.db_access_setup.ui.theme.components.TextFieldPassword
 import com.notarmaso.db_access_setup.ui.theme.components.TextFieldPhone
-import com.notarmaso.db_access_setup.ui.theme.components.TextFieldPin
 
 
 @Composable
@@ -37,8 +35,8 @@ fun AddUser(addUserViewModel: AddUserViewModel) {
                 ))) ) {
 
         val submitButton = createRef()
-        val (uNameTF, uPhoneTF, uPassTF, uPinTF) = createRefs()
-        val (usernameTxt, phoneTxt, passTxt, uPinTxt) = createRefs()
+        val (uNameTF, uPhoneTF, uPassTF, uPinTF, uEmailTF) = createRefs()
+        val (usernameTxt, phoneTxt, passTxt, uPinTxt, uEmailTxt) = createRefs()
         val header = createRef()
 
         val g1 = createGuidelineFromStart(10.dp)
@@ -46,6 +44,8 @@ fun AddUser(addUserViewModel: AddUserViewModel) {
         val txtMargin = 20.dp
         val tfMargin = 5.dp
         val tfHeight = 60.dp
+
+
 
         Text(text = stringResource(R.string.createUserTitle),
             fontSize = 34.sp, textDecoration = TextDecoration.Underline, style =  MaterialTheme.typography.h1,
@@ -67,39 +67,28 @@ fun AddUser(addUserViewModel: AddUserViewModel) {
         }, addUserViewModel, width(0.66).dp, tfHeight)
 
 
-        SelectionHeader(text = stringResource(R.string.yourPhone), true, modifier = Modifier.constrainAs(phoneTxt){
+        SelectionHeader(text = stringResource(R.string.yourEmail), true, modifier = Modifier.constrainAs(uEmailTxt){
             top.linkTo(uNameTF.bottom, margin = txtMargin)
             centerHorizontallyTo(parent)
 
         })
 
-        TextFieldPhone(stringResource(R.string.phone_placerholder), Modifier.constrainAs(uPhoneTF){
+        TextFieldName(stringResource(R.string.email_placeholder), Modifier.constrainAs(uEmailTF){
+            centerHorizontallyTo(parent)
+            top.linkTo(uEmailTxt.bottom, tfMargin)
+        }, addUserViewModel, width(0.66).dp, tfHeight, true )
+
+        SelectionHeader(text = stringResource(R.string.yourPhone), true, modifier = Modifier.constrainAs(phoneTxt){
+            top.linkTo(uEmailTF.bottom, margin = txtMargin)
+            centerHorizontallyTo(parent)
+
+        })
+
+
+        TextFieldPhone(stringResource(R.string.phone_placeholder), Modifier.constrainAs(uPhoneTF){
             centerHorizontallyTo(parent)
             top.linkTo(phoneTxt.bottom, tfMargin)
         }, addUserViewModel, width(0.66).dp, tfHeight )
-
-        SelectionHeader(text = stringResource(R.string.c8UserPassword), true, modifier = Modifier.constrainAs(passTxt){
-            top.linkTo(uPhoneTF.bottom, margin = txtMargin)
-            centerHorizontallyTo(parent)
-
-        })
-
-        TextFieldPassword(stringResource(R.string.min6chars_placeholder), Modifier.constrainAs(uPassTF){
-            centerHorizontallyTo(parent)
-            top.linkTo(passTxt.bottom, tfMargin)
-        }, addUserViewModel, width(0.66).dp, tfHeight)
-
-
-        SelectionHeader(text = stringResource(R.string.youPin), true, modifier = Modifier.constrainAs(uPinTxt){
-            top.linkTo(uPassTF.bottom, margin = txtMargin)
-            centerHorizontallyTo(parent)
-
-        })
-
-        TextFieldPin(stringResource(R.string.minPinChars_placeholer), Modifier.constrainAs(uPinTF){
-            centerHorizontallyTo(parent)
-            top.linkTo(uPinTxt.bottom, tfMargin)
-        }, addUserViewModel, width(0.66).dp, tfHeight)
 
 
 
@@ -108,7 +97,7 @@ fun AddUser(addUserViewModel: AddUserViewModel) {
             bottom.linkTo(parent.bottom)
             start.linkTo(g1)
             end.linkTo(g2)
-        }, stringResource(R.string.createUser), height(0.15).dp) { addUserViewModel.createUser() }
+        }, stringResource(R.string.next), height(0.15).dp) { addUserViewModel.onPressedNext() }
 
     }
 

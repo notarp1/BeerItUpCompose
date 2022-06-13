@@ -1,10 +1,7 @@
 package com.notarmaso.beeritupcompose.models
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import java.sql.Date
+
 data class User(
     @SerializedName("_id")
     var name: String,
@@ -27,7 +24,9 @@ data class UserToPost(
     @SerializedName("uPass")
     var password: String,
     @SerializedName("uPin")
-    var pin: Int
+    var pin: Int,
+    @SerializedName("uEmail")
+    var email: String
 
 )
 
@@ -39,12 +38,14 @@ data class UserRecieve(
     @SerializedName("uPhone")
     var phone: String,
     @SerializedName("uPin")
-    var pin: Int
+    var pin: Int,
+    @SerializedName("uEmail")
+    var email: String
 )
 
 
 data class UserLoginStatus(val isAssigned: Boolean, val kId: Int)
-data class UserLoginObject(val uPhone: String, val uPass: String)
+data class UserLoginObject(val uEmail: String, val uPass: String)
 data class UserPaymentObject(val name: String, val phone: String, val uId: Int, val total: Int)
 
 data class LeaderboardEntryObj(val name: String, val count: Int)

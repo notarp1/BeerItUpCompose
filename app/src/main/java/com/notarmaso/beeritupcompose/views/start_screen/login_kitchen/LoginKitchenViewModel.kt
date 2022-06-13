@@ -20,18 +20,18 @@ class LoginKitchenViewModel(val s: Service) : ViewModel(), Form {
 
     val kitchenRepo = KitchenRepository
 
-    private var _name by mutableStateOf("st-lige")
+    private var _name by mutableStateOf("ST-Lige")
     val name: String get() = _name
 
     private var _password by mutableStateOf("112233")
     val password: String get() = _password
 
 
-    override fun setPass(newText: String) {
+    override fun setPass(newText: String, isPasswordConfirm: Boolean) {
         _password = newText
     }
 
-    override fun setName(newText: String) {
+    override fun setName(newText: String, isEmail: Boolean) {
         _name = newText
     }
 
@@ -56,6 +56,8 @@ class LoginKitchenViewModel(val s: Service) : ViewModel(), Form {
     override fun setPhone(newText: String) {
         TODO("Not yet implemented")
     }
+
+
 
 
 }

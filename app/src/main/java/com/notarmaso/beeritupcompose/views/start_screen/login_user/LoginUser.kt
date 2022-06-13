@@ -52,16 +52,16 @@ fun LoginUser(loginUserViewModel: LoginUserViewModel) {
                 top.linkTo(parent.top, 80.dp)
             })
 
-        SelectionHeader(text = stringResource(R.string.yourPhone), true, modifier = Modifier.constrainAs(usernameTxt){
+        SelectionHeader(text = stringResource(R.string.yourEmail), true, modifier = Modifier.constrainAs(usernameTxt){
             top.linkTo(header.bottom, margin = 30.dp)
             centerHorizontallyTo(parent)
 
         })
 
-        TextFieldPhone(stringResource(R.string.phone_placerholder), Modifier.constrainAs(uNameTF){
+        TextFieldName(stringResource(R.string.email_placeholder), Modifier.constrainAs(uNameTF){
             centerHorizontallyTo(parent)
             top.linkTo(usernameTxt.bottom,tfMargin)
-        }, loginUserViewModel, width(0.66).dp, tfHeight)
+        }, loginUserViewModel, width(0.66).dp, tfHeight, true)
 
 
         SelectionHeader(text = stringResource(R.string.c8UserPassword), true, modifier = Modifier.constrainAs(phoneTxt){

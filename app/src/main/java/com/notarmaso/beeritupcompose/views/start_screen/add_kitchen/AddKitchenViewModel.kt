@@ -1,5 +1,7 @@
 package com.notarmaso.beeritupcompose.views.start_screen.add_kitchen
 
+import android.text.TextUtils
+import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,9 +11,8 @@ import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.Service
 import com.notarmaso.beeritupcompose.db.repositories.KitchenRepository
+import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.interfaces.Form
-import com.notarmaso.db_access_setup.models.Kitchen
-import com.notarmaso.db_access_setup.models.KitchenLoginObject
 import com.notarmaso.db_access_setup.models.KitchenToPost
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,51 +22,36 @@ import retrofit2.Response
 class AddKitchenViewModel(private val s: Service) : ViewModel(), Form {
 
     private val kitchenRepo = KitchenRepository
+    private val userRepo = UserRepository
 
     private var _name by mutableStateOf("")
     val name: String get() = _name
 
     private var _password by mutableStateOf("")
-    val password: String get() = _password
+    private val password: String get() = _password
 
     private var _pin by mutableStateOf("")
-    val pin: String get() = _pin
+    private val pin: String get() = _pin
+
+    private var _email by mutableStateOf("")
+    private val email: String get() = _email
+
+    private var _passwordConfirmation by mutableStateOf("")
+    private val passwordConfirmation: String get() = _passwordConfirmation
 
 
-
-    fun addKitchen(){
-        if(nameValidation() && passValidation() && pinValidation() ) {
-            try {
-                val pinToPost = pin.toInt()
-
-                val kitchen = KitchenToPost(name, password, pinToPost)
-                viewModelScope.launch() {
-                    val res: Response<String>
-                    withContext(Dispatchers.IO) { res = kitchenRepo.addKitchen(kitchen) }
-                    handleErrorUser(res)
-
-
-                }
-
-            } catch (e: Exception) {
-                s.makeToast("Error: Only digits is allowed")
-            }
-
-        }
+    override fun setName(newText: String, isEmail: Boolean) {
+        if (isEmail) _email = newText
+        else _name = newText
     }
 
-
-
-    override fun setName(newText: String) {
-      _name = newText
-    }
-
-    override fun setPass(newText: String) {
-        _password = newText
+    override fun setPass(newText: String, isConfirm: Boolean) {
+        if (isConfirm) _passwordConfirmation = newText
+        else _password = newText
     }
 
     override fun setPin(newText: String) {
-       _pin = newText
+        _pin = newText
     }
 
     override fun setPhone(newText: String) {
@@ -73,41 +59,67 @@ class AddKitchenViewModel(private val s: Service) : ViewModel(), Form {
     }
 
 
-    private fun resetTextFields(){
-        _name = ""
-        _password = ""
-        _pin = ""
+    /*First stage of creating user*/
+
+    fun onPressedNext() {
+        confirmAndGoToNextStep()
     }
 
-    private fun passValidation(): Boolean {
-        if (password.length < 6) {
-            Toast.makeText(s.context, "Password must be at least 6 digits!", Toast.LENGTH_SHORT).show()
-            return  false
+
+    private fun confirmAndGoToNextStep() {
+        viewModelScope.launch {
+            if (!nameValidation()) return@launch
+            if (!passValidation()) return@launch
+
+
+            withContext(Dispatchers.IO) {
+
+                val res = kitchenRepo.isNameAvailable(name)
+                println("HAHA " + name + "HAHA " + res.body())
+
+                if (res.body() == true) {
+                    s.navigate(Pages.ADD_KITCHEN_STEP2)
+                } else {
+                    s.makeToast("Name aready taken")
+                }
+            }
+
+
         }
-        return true
     }
 
-    private fun nameValidation(): Boolean {
-        if (name.length < 4) {
-            Toast.makeText(s.context, "Name must be longer than 4 characters!", Toast.LENGTH_SHORT).show()
-            return  false
+    /*First stage of creating user*/
+
+    fun onConfirm() {
+        viewModelScope.launch() {
+            addKitchen()
         }
-        return true
     }
 
-    private fun pinValidation(): Boolean {
-        if (pin.length in 4..8) {
-            return true
+    private suspend fun addKitchen() {
+
+        if (!pinValidation()) return
+        if (!isValidEmail(email)) return
+        try {
+            filterWhitespaces()
+            val pinToPost = pin.toInt()
+            val kitchen = KitchenToPost(name, password, pinToPost, email)
+
+            val res: Response<String>
+            withContext(Dispatchers.IO) { res = kitchenRepo.addKitchen(kitchen) }
+            errorHandlingCreateKitchen(res)
+
+
+        } catch (e: Exception) {
+            s.makeToast("Error: Only digits is allowed")
         }
-        Toast.makeText(s.context, "Pin must be between 4 and 8 digits!", Toast.LENGTH_SHORT).show()
-        return  false
+
+
     }
 
 
-
-
-    private fun handleErrorUser(response: Response<String>) {
-        when(response.code()){
+    private fun errorHandlingCreateKitchen(response: Response<String>) {
+        when (response.code()) {
             201 -> {
                 s.makeToast("Kitchen Created!")
                 s.logInKitchen(name, password)
@@ -122,6 +134,61 @@ class AddKitchenViewModel(private val s: Service) : ViewModel(), Form {
         }
     }
 
+
+    private fun filterWhitespaces() {
+        _email.filter { !it.isWhitespace() }
+        _name.filter {  !it.isWhitespace() }
+
+    }
+
+    /*VALIDATIONS*/
+    private fun resetTextFields() {
+        _name = ""
+        _password = ""
+        _passwordConfirmation = ""
+        _pin = ""
+        _email = ""
+    }
+
+
+    private fun isValidEmail(target: CharSequence?): Boolean {
+        if (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches()) {
+            return true
+        } else {
+            s.makeToast("Please enter a valid email")
+            return false
+        }
+    }
+
+
+    private fun passValidation(): Boolean {
+        if (password.length < 6) {
+            Toast.makeText(s.context, "Password must be at least 6 digits!", Toast.LENGTH_SHORT)
+                .show()
+            return false
+        }
+        if (password != passwordConfirmation) {
+            s.makeToast("Passwords are not the same!")
+            return false
+        }
+        return true
+    }
+
+    private fun nameValidation(): Boolean {
+        if (name.length < 4) {
+            s.makeToast("Name must be longer than 4 characters!")
+            return false
+        }
+        return true
+    }
+
+    private fun pinValidation(): Boolean {
+        if (pin.length in 4..8) {
+            return true
+        }
+        Toast.makeText(s.context, "Pin must be between 4 and 8 digits!", Toast.LENGTH_SHORT).show()
+        return false
+    }
 
 
 

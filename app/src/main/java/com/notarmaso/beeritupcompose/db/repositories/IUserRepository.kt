@@ -12,6 +12,9 @@ interface IUserRepository {
     @GET("users/{id}")
     suspend fun getUser(@Path("id") id:Int): Response<UserRecieve>
 
+    @GET("users/email_check/{email}")
+    suspend fun isEmailAvailable(@Path("email") email:String): Response<Boolean>
+
     @POST("users")
     suspend fun addUser(@Body userToPost: UserToPost): Response<UserRecieve>
 

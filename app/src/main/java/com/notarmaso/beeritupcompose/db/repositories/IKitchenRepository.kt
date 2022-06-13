@@ -21,6 +21,9 @@ interface IKitchenRepository {
     @GET("kitchens/{id}")
     suspend fun getKitchen(@Path("id") id:Int): Response<Kitchen>
 
+    @GET("kitchens/name_check/{name}")
+    suspend fun isNameAvailable(@Path("name") name:String): Response<Boolean>
+
     @POST("kitchens/{id}/users/add/{uId}")
     suspend fun addKitchenUser(@Path("id") kId: Int, @Path("uId") uId: Int): Response<String>
 

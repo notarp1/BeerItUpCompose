@@ -4,33 +4,29 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.Service
-import com.notarmaso.beeritupcompose.db.repositories.UserRepository
 import com.notarmaso.beeritupcompose.interfaces.Form
-import com.notarmaso.beeritupcompose.models.UserLoginObject
-import com.notarmaso.beeritupcompose.models.UserRecieve
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Response
+
+
 
 class LoginUserViewModel(val s: Service) : ViewModel(), Form {
 
 
-    private var _phone by mutableStateOf("22270708")
+    private var _phone by mutableStateOf("22270704")
     val phone: String get() = _phone
 
     private var _password by mutableStateOf("112233")
     val password: String get() = _password
 
+    private var _email by mutableStateOf("slippen4@gmail.com")
+    private val email: String get() = _email
 
-    override fun setName(newText: String) {
-        TODO("Not yet implemented")
+
+    override fun setName(newText: String, isEmail: Boolean) {
+        if(isEmail) _email = newText
     }
 
-    override fun setPass(newText: String) {
+    override fun setPass(newText: String, isPasswordConfirm: Boolean) {
         _password = newText
     }
 
@@ -44,13 +40,15 @@ class LoginUserViewModel(val s: Service) : ViewModel(), Form {
 
     }
 
+
+
     private fun resetTextFields(){
-        _phone = ""
+        _email = ""
         _password = ""
     }
 
     fun logInUser(){
-        s.logInUser(phone, password)
+        s.logInUser(email, password)
         resetTextFields()
     }
 

@@ -25,6 +25,7 @@
     <string name="email_placeholder">mymail@gmail.com</string>
     <string name="yourPhone">Your Phone Number</string>
     <string name="yourEmail">Your Email</string>
+    <string name="kitchenEmail">Kitchen Master Email</string>
     <string name="name_placeholder">E.G. Sille T-42</string>
     <string name="username">Your Username</string>
     <string name="createUserTitle">Create Your Account</string>

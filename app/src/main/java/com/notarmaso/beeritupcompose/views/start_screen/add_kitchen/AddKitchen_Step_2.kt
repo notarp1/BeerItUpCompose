@@ -21,7 +21,7 @@ import com.notarmaso.beeritupcompose.views.start_screen.add_kitchen.AddKitchenVi
 import com.notarmaso.db_access_setup.ui.theme.components.*
 
 @Composable
-fun AddKitchen(addKitchenViewModel: AddKitchenViewModel) {
+fun AddKitchen_Step_2(addKitchenViewModel: AddKitchenViewModel) {
     val configuration = LocalConfiguration.current
     fun width(widthScale: Double): Double { return configuration.screenWidthDp * widthScale }
     fun height(widthScale: Double): Double { return configuration.screenHeightDp * widthScale }
@@ -36,8 +36,8 @@ fun AddKitchen(addKitchenViewModel: AddKitchenViewModel) {
                 ))) ) {
 
         val submitButton = createRef()
-        val (uNameTF, uPassTF, uPassTF2) = createRefs()
-        val (usernameTxt, passTxt, passTxt2) = createRefs()
+        val (kEmail, kPin) = createRefs()
+        val (kEmailTxt, kPinTxt) = createRefs()
         val header = createRef()
 
         val g1 = createGuidelineFromStart(10.dp)
@@ -53,42 +53,31 @@ fun AddKitchen(addKitchenViewModel: AddKitchenViewModel) {
                 top.linkTo(parent.top, 80.dp)
             })
 
-        SelectionHeader(text = stringResource(R.string.createKitchenName), true, modifier = Modifier.constrainAs(usernameTxt){
+
+
+        SelectionHeader(text = stringResource(R.string.kitchenEmail), true, modifier = Modifier.constrainAs(kEmail){
             top.linkTo(header.bottom, margin = 30.dp)
             centerHorizontallyTo(parent)
 
         })
 
-        TextFieldName(stringResource(R.string.createKitchenNamePlaceholder), Modifier.constrainAs(uNameTF){
+        TextFieldName(stringResource(R.string.email_placeholder), Modifier.constrainAs(kEmailTxt){
             centerHorizontallyTo(parent)
-            top.linkTo(usernameTxt.bottom, tfMargin)
-        }, addKitchenViewModel,  width(0.66).dp, tfHeight)
-
-
-        SelectionHeader(text = stringResource(R.string.sharedPassword), true, modifier = Modifier.constrainAs(passTxt){
-            top.linkTo(uNameTF.bottom, margin = txtMargin)
-            centerHorizontallyTo(parent)
-
-        })
-
-        TextFieldPassword(stringResource(R.string.min6chars_placeholder), Modifier.constrainAs(uPassTF){
-            centerHorizontallyTo(parent)
-            top.linkTo(passTxt.bottom, tfMargin)
-        }, addKitchenViewModel,  width(0.66).dp, tfHeight)
-
-
-        SelectionHeader(text = stringResource(R.string.repeatPass), true, modifier = Modifier.constrainAs(passTxt2){
-            top.linkTo(uPassTF.bottom, margin = txtMargin)
-            centerHorizontallyTo(parent)
-
-        })
-
-        TextFieldPassword(stringResource(R.string.min6chars_placeholder), Modifier.constrainAs(uPassTF2){
-            centerHorizontallyTo(parent)
-            top.linkTo(passTxt2.bottom, tfMargin)
+            top.linkTo(kEmail.bottom, tfMargin)
         }, addKitchenViewModel,  width(0.66).dp, tfHeight, true)
 
 
+
+        SelectionHeader(text = stringResource(R.string.adminPin), true, modifier = Modifier.constrainAs(kPin){
+            top.linkTo(kEmailTxt.bottom, margin = txtMargin)
+            centerHorizontallyTo(parent)
+
+        })
+
+        TextFieldPin(stringResource(R.string.minPinChars_placeholer), Modifier.constrainAs(kPinTxt){
+            centerHorizontallyTo(parent)
+            top.linkTo(kPin.bottom, tfMargin)
+        }, addKitchenViewModel, width(0.66).dp, tfHeight)
 
 
 
@@ -96,7 +85,7 @@ fun AddKitchen(addKitchenViewModel: AddKitchenViewModel) {
             bottom.linkTo(parent.bottom)
             start.linkTo(g1)
             end.linkTo(g2)
-        }, stringResource(R.string.next), height(0.15).dp) { addKitchenViewModel.onPressedNext() }
+        }, stringResource(R.string.createKithen), height(0.15).dp) { addKitchenViewModel.onConfirm() }
 
     }
 }

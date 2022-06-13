@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import com.notarmaso.beeritupcompose.interfaces.Form
 
 @Composable
-fun TextFieldName(placeholder: String, modifier: Modifier = Modifier, vm: Form, width: Dp, height: Dp = 60.dp) {
+fun TextFieldName(placeholder: String, modifier: Modifier = Modifier, vm: Form, width: Dp, height: Dp = 60.dp, isEmail: Boolean = false) {
     var input by remember { mutableStateOf("") }
 
     OutlinedTextField(
@@ -33,7 +33,7 @@ fun TextFieldName(placeholder: String, modifier: Modifier = Modifier, vm: Form, 
 
         onValueChange = {
                 newText -> input = newText
-                vm.setName(input) },
+                vm.setName(input, isEmail) },
 
         shape = RoundedCornerShape(20.dp),
         modifier = modifier.width(width).height(height),
@@ -70,7 +70,7 @@ fun TextFieldPhone(placeholder: String, modifier: Modifier = Modifier, vm: Form,
 }
 
 @Composable
-fun TextFieldPassword(placeholder: String, modifier: Modifier = Modifier, vm: Form, width: Dp, height: Dp = 60.dp) {
+fun TextFieldPassword(placeholder: String, modifier: Modifier = Modifier, vm: Form, width: Dp, height: Dp = 60.dp, isPasswordConfirm: Boolean = false) {
     var input by remember { mutableStateOf("") }
     OutlinedTextField(
         value = input,
@@ -81,7 +81,7 @@ fun TextFieldPassword(placeholder: String, modifier: Modifier = Modifier, vm: Fo
 
         onValueChange = {
                 newText -> input = newText
-                vm.setPass(input) },
+                vm.setPass(input, isPasswordConfirm) },
 
         shape = RoundedCornerShape(20.dp),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -92,6 +92,8 @@ fun TextFieldPassword(placeholder: String, modifier: Modifier = Modifier, vm: Fo
         singleLine = true
     )
 }
+
+
 
 @Composable
 fun TextFieldPin(placeholder: String, modifier: Modifier = Modifier, vm: Form, width: Dp, height: Dp = 60.dp) {

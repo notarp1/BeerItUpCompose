@@ -18,6 +18,14 @@ object KitchenRepository : IKitchenRepository {
         response.await()
     }
 
+    override suspend fun isNameAvailable(name: String): Response<Boolean> = coroutineScope {
+        val response = async(Dispatchers.IO) {
+            DBInstance.kitchenApi.isNameAvailable(name)
+        }
+
+        response.await()
+    }
+
     override suspend fun addKitchen(kitchenToPost: KitchenToPost): Response<String> =
         coroutineScope {
             val response = async(Dispatchers.IO) {

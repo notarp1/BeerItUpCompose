@@ -30,11 +30,11 @@ class JoinKitchenViewModel(
     val kPassword: String get() = _kPassword
 
 
-    override fun setName(newText: String) {
+    override fun setName(newText: String, isEmail: Boolean) {
         _kName = newText
     }
 
-    override fun setPass(newText: String) {
+    override fun setPass(newText: String, isConfirmation: Boolean) {
         _kPassword = newText
     }
 
@@ -45,6 +45,8 @@ class JoinKitchenViewModel(
     override fun setPhone(newText: String) {
         TODO("Not yet implemented")
     }
+
+
 
 
     fun authorizeKitchen(){

@@ -66,8 +66,9 @@ internal interface UserObserver<T>{
 }
 
 interface Form{
-    fun setName(newText: String)
-    fun setPass(newText: String)
+    fun setName(newText: String, isEmail: Boolean)
+    fun setPass(newText: String, isPasswordConfirm: Boolean)
     fun setPin(newText: String)
     fun setPhone(newText: String)
+
 }

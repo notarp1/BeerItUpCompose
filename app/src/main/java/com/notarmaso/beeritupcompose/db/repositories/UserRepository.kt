@@ -26,6 +26,13 @@ object UserRepository : IUserRepository {
         response.await()
     }
 
+    override suspend fun isEmailAvailable(email: String): Response<Boolean>  = coroutineScope  {
+        val response = async(Dispatchers.IO) {
+            DBInstance.userApi.isEmailAvailable(email)
+        }
+        response.await()
+    }
+
 
     override suspend fun addUser(userToPost: UserToPost): Response<UserRecieve> = coroutineScope {
         val response = async(Dispatchers.IO) {

@@ -41,7 +41,9 @@ class Service(ctx: Context, val stateHandler: StateHandler, val observer: Observ
   }
 
   fun navigate(location: Pages){
-    nav?.navigate(location.value)
+    CoroutineScope(Dispatchers.Main).launch{
+      nav?.navigate(location.value)
+    }
   }
 
 
@@ -57,10 +59,10 @@ class Service(ctx: Context, val stateHandler: StateHandler, val observer: Observ
  *
  */
 
-  fun logInUser(phone: String, password: String){
+  fun logInUser(email: String, password: String){
     CoroutineScope(Dispatchers.Main).launch {
       val res: Response<UserRecieve>
-      val userLoginObj = UserLoginObject(phone, password)
+      val userLoginObj = UserLoginObject(email, password)
       withContext(Dispatchers.IO){
         res = userRepo.login(userLoginObj)
       }

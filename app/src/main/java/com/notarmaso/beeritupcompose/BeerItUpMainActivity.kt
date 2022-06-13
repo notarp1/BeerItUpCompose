@@ -44,7 +44,9 @@ import com.notarmaso.db_access_setup.views.beeritup.select_beverage.SelectBevera
 import com.notarmaso.db_access_setup.views.beeritup.statistics.Statistics
 import com.notarmaso.db_access_setup.views.beeritup.statistics.StatisticsViewModel
 import com.notarmaso.db_access_setup.views.start_screen.add_kitchen.AddKitchen
+import com.notarmaso.db_access_setup.views.start_screen.add_kitchen.AddKitchen_Step_2
 import com.notarmaso.db_access_setup.views.start_screen.add_user.AddUser
+import com.notarmaso.db_access_setup.views.start_screen.add_user.Add_User_Step_2
 import com.notarmaso.db_access_setup.views.start_screen.login_user.LoginUser
 import org.koin.android.ext.android.get
 import org.koin.androidx.compose.get
@@ -128,11 +130,15 @@ fun NavigationHost(service: Service){
         composable(Pages.ADD_USER.value){
             AddUser(addUserViewModel)
         }
+        composable(Pages.ADD_USER_STEP2.value){
+            Add_User_Step_2(addUserViewModel)
+        }
         composable(Pages.ADD_KITCHEN.value){
             AddKitchen(addKitchenViewModel)
         }
-
-
+        composable(Pages.ADD_KITCHEN_STEP2.value){
+            AddKitchen_Step_2(addKitchenViewModel)
+        }
         composable(Pages.LOGBOOKS.value){
             Logbook(logbookViewModel)
         }

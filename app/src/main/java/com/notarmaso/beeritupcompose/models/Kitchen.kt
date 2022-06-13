@@ -11,7 +11,9 @@ data class KitchenToPost(
     @SerializedName("kPass")
     var pass: String,
     @SerializedName("kPin")
-    var pin: Int
+    var pin: Int,
+    @SerializedName("kEmail")
+    var email: String
     )
 
 
