@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+        android:opacity="opaque">
+
+    <!--
+
+        IF YOU DO ADJUSTMENTS IN THIS VIEW:
+
+        Also do the same adjustments in view_loading.xml
+
+     -->
+
+
+    <item android:drawable="@color/ic_launcher_background" />
+    <item
+        android:drawable="@drawable/logo_text"
+        android:right="0dp" />
+
+</layer-list>

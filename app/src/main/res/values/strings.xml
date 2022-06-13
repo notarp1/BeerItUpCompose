@@ -20,8 +20,11 @@
     <string name="createKitchenName">Your Unique Kitchen Name</string>
     <string name="createKitchenHeader">Create New Kitchen</string>
     <string name="c8UserPassword">Your Password</string>
-    <string name="phone_placerholder">22 XX XX XX</string>
+    <string name="repeatPass">Repeat Password</string>
+    <string name="phone_placeholder">22 XX XX XX</string>
+    <string name="email_placeholder">mymail@gmail.com</string>
     <string name="yourPhone">Your Phone Number</string>
+    <string name="yourEmail">Your Email</string>
     <string name="name_placeholder">E.G. Sille T-42</string>
     <string name="username">Your Username</string>
     <string name="createUserTitle">Create Your Account</string>
@@ -30,6 +33,7 @@
     <string name="userSignIn">User Sign In</string>
     <string name="createKithen">CREATE KITCHEN</string>
     <string name="createUser">CREATE USER</string>
+    <string name="next">NEXT</string>
     <string name="signIn">SIGN IN</string>
     <string name="KitchenSignIn">Kitchen Sign In</string>
     <string name="imgurl">https://beeritupstorage.blob.core.windows.net/</string>
