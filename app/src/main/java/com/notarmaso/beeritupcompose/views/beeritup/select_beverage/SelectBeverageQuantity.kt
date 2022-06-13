@@ -6,21 +6,21 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstrainedLayoutReference
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintLayoutScope
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.notarmaso.beeritupcompose.models.BeverageType
-import com.notarmaso.beeritupcompose.ui.theme.components.ButtonSelection
-import com.notarmaso.beeritupcompose.ui.theme.components.SubmitButton
-import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
+import com.notarmaso.beeritupcompose.ui.theme.components.*
 
 
 @Composable
@@ -32,8 +32,7 @@ fun SelectBeverageQuantity(bevQtyViewModel: SelectBeverageQuantityViewModel){
     vm.setup(bevType.stock)
 
 
-    val configuration = LocalConfiguration.current
-    fun height(widthScale: Double): Double { return configuration.screenHeightDp * widthScale }
+
 
 
     ConstraintLayout(
@@ -42,7 +41,7 @@ fun SelectBeverageQuantity(bevQtyViewModel: SelectBeverageQuantityViewModel){
             .background(brush = Brush.verticalGradient(
             colors = listOf(
                 MaterialTheme.colors.background,
-                MaterialTheme.colors.secondary
+                MaterialTheme.colors.onPrimary
             )), alpha = 0.9f)
     ) {
 
@@ -89,13 +88,34 @@ fun SelectBeverageQuantity(bevQtyViewModel: SelectBeverageQuantityViewModel){
 
 
 
-        SubmitButton(Modifier.constrainAs(confirmBtn) {
-            bottom.linkTo(parent.bottom)
-        }, "CONFIRM", height(0.15).dp) { vm.onConfirm() }
-
+        ConfirmButton(vm, confirmBtn)
 
 
     }
+}
+
+@Composable
+private fun ConstraintLayoutScope.ConfirmButton(
+    vm: SelectBeverageQuantityViewModel,
+    confirmBtn: ConstrainedLayoutReference
+) {
+    val configuration = LocalConfiguration.current
+    fun height(widthScale: Double): Double { return configuration.screenHeightDp * widthScale }
+
+    var openDialog by remember { mutableStateOf(false) }
+
+    CustomAlertDialog(
+        isOpened = openDialog,
+        onClose = { openDialog = !openDialog },
+        onConfirm = { vm.onConfirm() },
+        title = "Confirm Purchase, ${vm.s.stateHandler.appMode.uName}?",
+        text = "You are buying ${vm.qtySelected} ${vm.s.selectedBeverage.name} for ${vm.price} DKK",
+        onOpened = { vm.onClick() })
+
+
+    SubmitButton(Modifier.Companion.constrainAs(confirmBtn) {
+        bottom.linkTo(parent.bottom)
+    }, "CONFIRM", height(0.15).dp) { openDialog = true }
 }
 
 

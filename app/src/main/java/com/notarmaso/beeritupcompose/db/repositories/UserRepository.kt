@@ -86,10 +86,10 @@ object UserRepository : IUserRepository {
         response.await()
     }
 
-    override suspend fun boughtLogbook(uId: Int): Response<List<BeverageLogEntryObj>> =
+    override suspend fun paidLogbook(uId: Int): Response<List<BeverageLogEntryObj>> =
         coroutineScope {
             val response = async(Dispatchers.IO) {
-                DBInstance.userApi.boughtLogbook(uId)
+                DBInstance.userApi.paidLogbook(uId)
             }
             response.await()
         }

@@ -24,6 +24,10 @@ class AddBeverageQuantityViewModel(val s: Service) : ViewModel() {
     private var _pricePaid by mutableStateOf("120")
     val pricePaid: String get() = _pricePaid
 
+    private var _pricePerBeverage by mutableStateOf(0f)
+    val pricePerBeverage: Float get() = _pricePerBeverage
+
+
     private val kitchenRep = KitchenRepository
 
 
@@ -47,24 +51,34 @@ class AddBeverageQuantityViewModel(val s: Service) : ViewModel() {
         _pricePaid = string
     }
 
+    fun onClick(){
+        _pricePerBeverage = pricePaid.toFloat()/qtySelected
+    }
 
     fun onConfirm(){
-
-        viewModelScope.launch {
-            val priceToInt = (pricePaid.toFloat() * 100).toInt()
-            val pricePerBeer = priceToInt/(qtySelected)
-            val selectedBeer = s.selectedBeverage.name
-
-            val bevEntryObj = BeverageDBEntryObject(qtySelected, pricePerBeer, s.stateHandler.appMode.uId)
-
-            val res: Response<String>
-
-            withContext(Dispatchers.IO){
-                res = kitchenRep.addBeverages(bevEntryObj, s.stateHandler.appMode.kId, selectedBeer)
-            }
-            handleError(res)
-
+        viewModelScope.launch(){
+            addBeverages()
         }
+
+    }
+
+    private suspend fun addBeverages(){
+
+
+        val priceToInt = (pricePaid.toFloat() * 100).toInt()
+        val pricePerBeer = priceToInt/(qtySelected)
+        val selectedBeer = s.selectedBeverage.name
+
+        val bevEntryObj = BeverageDBEntryObject(qtySelected, pricePerBeer, s.stateHandler.appMode.uId)
+
+        val res: Response<String>
+
+        withContext(Dispatchers.IO){
+            res = kitchenRep.addBeverages(bevEntryObj, s.stateHandler.appMode.kId, selectedBeer)
+        }
+        handleError(res)
+
+
 
     }
 

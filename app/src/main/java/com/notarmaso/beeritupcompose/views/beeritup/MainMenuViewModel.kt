@@ -27,6 +27,7 @@ class MainMenuViewModel(val s: Service) : ViewModel(), Observable {
         _loggedInAsKitchen = logInState() is StateHandler.AppMode.SignedInAsKitchen
     }
 
+
     fun navigate(pages: Pages){
         when(s.currentPage){
             Pages.ADD_BEVERAGE_STAGE_1 -> s.observer.notifySubscribers(FuncToRun.GET_BEVERAGE_TYPES)

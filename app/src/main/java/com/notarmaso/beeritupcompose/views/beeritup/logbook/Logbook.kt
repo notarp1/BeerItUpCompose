@@ -176,29 +176,9 @@ fun LogBeveragesEntry(entry: BeverageLogEntryObj, vm: LogbookViewModel) {
                 val date = dateFromDb.substring(0..15)
 
                 when (vm.selectedOptionInt) {
+
+
                     0 -> {
-                        Column() {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(text = date, style = MaterialTheme.typography.h6)
-
-                                Text(
-                                    text = "${entry.counterpartPhone}",
-                                    style = MaterialTheme.typography.h6, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.End
-                                )
-                            }
-                            Text(
-                                text = "${entry.count} ${entry.bevName} for ${entry.price / 100}kr. from ${entry.counterpartName}",
-                                style = MaterialTheme.typography.h6,
-                                fontWeight = FontWeight.Normal
-                            )
-
-                        }
-                    }
-
-                    1 -> {
                         Column() {
                             Row(
                                 Modifier.fillMaxWidth(),
@@ -216,13 +196,35 @@ fun LogBeveragesEntry(entry: BeverageLogEntryObj, vm: LogbookViewModel) {
                             }
 
                             Text(
-                                text = "${entry.counterpartName} paid ${entry.price / 100}kr for  ${entry.count} ${entry.bevName}",
+                                text = "${entry.counterpartName} ${entry.counterpartPhone} paid ${entry.price / 100}kr",
                                 style = MaterialTheme.typography.h6, fontWeight = FontWeight.Normal
                             )
 
 
                         }
 
+                    }
+
+                    1 -> {
+                        Column() {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(text = date, style = MaterialTheme.typography.h6)
+
+                                Text(
+                                    text = "${entry.counterpartPhone}",
+                                    style = MaterialTheme.typography.h6, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.End
+                                )
+                            }
+                            Text(
+                                text = "You paid ${entry.price / 100}kr. to ${entry.counterpartName} ${entry.counterpartPhone}",
+                                style = MaterialTheme.typography.h6,
+                                fontWeight = FontWeight.Normal
+                            )
+
+                        }
                     }
 
                     2 -> {

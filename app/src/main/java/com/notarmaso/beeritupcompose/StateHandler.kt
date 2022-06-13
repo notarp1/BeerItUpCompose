@@ -33,32 +33,38 @@ class StateHandler(ctx: Context, val observer: Observer) {
     private var _appMode: AppMode = AppMode.SignedOut
     val appMode: AppMode get() = _appMode
 
-    sealed class AppMode(open val kId: Int, open val uId: Int) {
+    sealed class AppMode(open val kId: Int, open val uId: Int, open val uName: String?) {
 
         data class SignedInAsUser(
             override val uId: Int,
-            val uName: String,
+            override val uName: String,
             val uPin: Int,
             val isAssigned: Boolean,
-            override val kId: Int
-        ) : AppMode(kId, uId)
+            override val kId: Int,
+        ) : AppMode(kId, uId, uName)
 
-        data class SignedInAsKitchen(override val kId: Int, val kPass: String, val kName: String, override val uId: Int, val uName: String) : AppMode(kId, uId)
-        object SignedOut : AppMode(-1, -1)
+        data class SignedInAsKitchen(
+            override val kId: Int,
+            val kPass: String,
+            val kName: String,
+            override val uId: Int,
+            override val uName: String?
+        ) : AppMode(kId, uId, uName)
+
+        object SignedOut : AppMode(-1, -1, null)
     }
 
 
-    fun setAppMode(appMode: AppMode){
+    fun setAppMode(appMode: AppMode) {
         _appMode = appMode
 
     }
 
 
-
-
     /*When logged in successfully*/
     fun onUserSignInSuccess(user: UserRecieve, uStatus: UserLoginStatus) {
-        _appMode = AppMode.SignedInAsUser(user.id, user.name, user.pin, uStatus.isAssigned, uStatus.kId)
+        _appMode =
+            AppMode.SignedInAsUser(user.id, user.name, user.pin, uStatus.isAssigned, uStatus.kId)
 
         /*This needs to be run to save details with an app close*/
         saveUserDetailsInPrefs(user.id)
@@ -109,13 +115,20 @@ class StateHandler(ctx: Context, val observer: Observer) {
                 val user = response.body()
                 val uStatus = user?.let { getAssignedDetails(it.id) }
                 if (uStatus != null) {
-                    _appMode = AppMode.SignedInAsUser(user.id, user.name, user.pin, uStatus.isAssigned, uStatus.kId)
+                    _appMode = AppMode.SignedInAsUser(
+                        user.id,
+                        user.name,
+                        user.pin,
+                        uStatus.isAssigned,
+                        uStatus.kId
+                    )
                     observer.notifySubscribers(FuncToRun.GET_LOGIN_STATE_2)
 
                 }
 
-            } else{
-                logOut()}
+            } else {
+                logOut()
+            }
         }
     }
 
@@ -130,7 +143,8 @@ class StateHandler(ctx: Context, val observer: Observer) {
                 val kitchen = response.body()
 
                 if (kitchen != null) {
-                    _appMode = AppMode.SignedInAsKitchen(kitchen.id, kitchen.pass, kitchen.name, -1, "")
+                    _appMode =
+                        AppMode.SignedInAsKitchen(kitchen.id, kitchen.pass, kitchen.name, -1, null)
                     observer.notifySubscribers(FuncToRun.GET_LOGIN_STATE_2)
 
                 }
@@ -147,16 +161,13 @@ class StateHandler(ctx: Context, val observer: Observer) {
     }
 
 
-
     /*When user joins kitchen*/
     fun onUserJoinedKitchen(kId: Int) {
         val currentUser = _appMode as AppMode.SignedInAsUser
-        _appMode = AppMode.SignedInAsUser(currentUser.uId, currentUser.uName, currentUser.uPin,true, kId)
+        _appMode =
+            AppMode.SignedInAsUser(currentUser.uId, currentUser.uName, currentUser.uPin, true, kId)
 
     }
-
-
-
 
 
     fun wasLoggedInUser(): Boolean {
@@ -198,17 +209,16 @@ class StateHandler(ctx: Context, val observer: Observer) {
     }
 
 
-
 }
 
-fun StateHandler.AppMode.isSignedInAsUser() = when(this){
+fun StateHandler.AppMode.isSignedInAsUser() = when (this) {
 
     is StateHandler.AppMode.SignedInAsKitchen -> false
-    is StateHandler.AppMode.SignedInAsUser ->  true
+    is StateHandler.AppMode.SignedInAsUser -> true
     StateHandler.AppMode.SignedOut -> false
 }
 
-fun StateHandler.AppMode.isSignedInAsKitchen() = when(this){
+fun StateHandler.AppMode.isSignedInAsKitchen() = when (this) {
     is StateHandler.AppMode.SignedInAsKitchen -> true
     is StateHandler.AppMode.SignedInAsUser -> false
     StateHandler.AppMode.SignedOut -> false

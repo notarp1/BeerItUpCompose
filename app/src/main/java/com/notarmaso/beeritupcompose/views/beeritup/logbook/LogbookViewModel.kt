@@ -19,7 +19,7 @@ class LogbookViewModel(
 
 
     private var _logs by mutableStateOf<List<BeverageLogEntryObj>?>(listOf())
-    val logs: List<BeverageLogEntryObj>? get() = _logs
+    val logs: List<BeverageLogEntryObj>? get() = _logs?.reversed()
 
     private var _selectedOption: Int by mutableStateOf(0)
     val selectedOption: String get() = getSelectedMonth(_selectedOption)
@@ -58,14 +58,15 @@ class LogbookViewModel(
 
             withContext(Dispatchers.IO) {
                 when (_selectedOption) {
+
                     0 -> {
-                        res = userRepo.boughtLogbook(uId)
-                        handleResponseCode(res)
-                    }
-                    1 -> {
                         res = userRepo.soldLogbook(uId)
                         handleResponseCode(res)
 
+                    }
+                    1 -> {
+                        res = userRepo.paidLogbook(uId)
+                        handleResponseCode(res)
                     }
                     2 -> {
                         res = userRepo.addedLogbook(uId)
@@ -89,8 +90,8 @@ class LogbookViewModel(
 
     private fun getSelectedMonth(number: Int): String {
         return when (number) {
-            0 -> "bought"
-            1 -> "sold"
+            0 -> "sold"
+            1 -> "paid"
             2 -> "added"
             3 -> "consumed"
 

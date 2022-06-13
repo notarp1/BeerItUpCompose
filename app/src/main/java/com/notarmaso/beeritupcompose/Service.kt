@@ -212,7 +212,9 @@ class Service(ctx: Context, val stateHandler: StateHandler, val observer: Observ
   }
 
   fun makeToast(msg: String){
-    Toast.makeText(context,msg, Toast.LENGTH_SHORT).show()
+    CoroutineScope(Dispatchers.Main).launch {
+      Toast.makeText(context,msg, Toast.LENGTH_SHORT).show()
+    }
   }
 
 

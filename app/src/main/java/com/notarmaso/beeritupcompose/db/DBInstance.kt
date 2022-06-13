@@ -16,6 +16,11 @@ object DBInstance {
 
 
         /*Retrofit.Builder()
+            .baseUrl("http://192.168.0.110:3000/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()*/
+
+        /*Retrofit.Builder()
             .baseUrl("http://172.20.10.7:3000/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()*/

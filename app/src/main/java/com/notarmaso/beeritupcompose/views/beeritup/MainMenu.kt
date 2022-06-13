@@ -16,11 +16,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstrainedLayoutReference
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintLayoutScope
 import com.notarmaso.beeritupcompose.Pages
 import com.notarmaso.beeritupcompose.R
 import com.notarmaso.beeritupcompose.StateHandler
+import com.notarmaso.beeritupcompose.ui.theme.components.CustomAlertDialog
 import com.notarmaso.beeritupcompose.ui.theme.components.ButtonMain
 import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
 
@@ -37,11 +39,14 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel) {
     ConstraintLayout(
         Modifier
             .fillMaxSize()
-            .background(brush = Brush.verticalGradient(
-                colors = listOf(
-                    MaterialTheme.colors.background,
-                    MaterialTheme.colors.onPrimary
-                )))
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colors.background,
+                        MaterialTheme.colors.onPrimary
+                    )
+                )
+            )
     ) {
         val (logoutBtn, loginInfo, topBar, btnAddUser) = createRefs()
 
@@ -51,10 +56,13 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel) {
         }, "menu", goTo = { /*TODO*/ }, Icons.Rounded.Settings)
 
 
-        LoginInformation(mainMenuViewModel = vm, loggedInAsKitchen, modifier = Modifier.constrainAs(loginInfo) {
-            top.linkTo(topBar.bottom, 30.dp)
-            centerHorizontallyTo(parent)
-        })
+        LoginInformation(
+            mainMenuViewModel = vm,
+            loggedInAsKitchen,
+            modifier = Modifier.constrainAs(loginInfo) {
+                top.linkTo(topBar.bottom, 30.dp)
+                centerHorizontallyTo(parent)
+            })
 
         if (loggedInAsKitchen) {
 
@@ -68,22 +76,40 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel) {
 
                 })
         }
-        ButtonMain(
-            onClick = { vm.logout() },
-            text = "Log Out",
-            isInverted = false,
-            widthScale = 0.33, Modifier.constrainAs(logoutBtn) {
-                bottom.linkTo(parent.bottom, 20.dp)
-                centerHorizontallyTo(parent, 0.90f)
 
-
-            }
-        )
+        LogOutButton(logoutBtn) { vm.logout() }
     }
 
-
-
 }
+
+@Composable
+private fun ConstraintLayoutScope.LogOutButton(
+    logoutBtn: ConstrainedLayoutReference,
+    onConfirm: () -> Unit
+) {
+    var openDialog by remember { mutableStateOf(false) }
+
+    CustomAlertDialog(
+        isOpened = openDialog,
+        onClose = { openDialog = !openDialog },
+        onConfirm = { onConfirm() },
+        title = "You are logging out!",
+        text ="Do you want to proceed?"
+    )
+
+    ButtonMain(
+        onClick = { openDialog = true },
+        text = "Log Out",
+        isInverted = false,
+        widthScale = 0.33, Modifier.Companion.constrainAs(logoutBtn) {
+            bottom.linkTo(parent.bottom, 20.dp)
+            centerHorizontallyTo(parent, 0.90f)
+
+
+        }
+    )
+}
+
 
 @Composable
 private fun LoginInformation(
@@ -101,7 +127,8 @@ private fun LoginInformation(
             ConstraintLayout(
                 modifier
                     .background(Color.Transparent)
-                    .fillMaxWidth()) {
+                    .fillMaxWidth()
+            ) {
 
                 if (user.isAssigned) LoggedIn(user.uName, isKitchen, vm)
                 else NotAssignedToKitchen(user, vm)
@@ -114,7 +141,8 @@ private fun LoginInformation(
             ConstraintLayout(
                 modifier
                     .background(Color.Transparent)
-                    .fillMaxWidth()) {
+                    .fillMaxWidth()
+            ) {
                 LoggedIn(kitchen.kName, isKitchen, mainMenuViewModel)
             }
         }
@@ -141,12 +169,16 @@ private fun ConstraintLayoutScope.NotAssignedToKitchen(
 
 
 
-    Text(text = "Welcome\n${user.uName}", style = MaterialTheme.typography.h1, textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth().constrainAs(uWelcomeTXT) {
-            centerHorizontallyTo(parent)
-            centerVerticallyTo(parent)
+    Text(text = "Welcome\n${user.uName}",
+        style = MaterialTheme.typography.h1,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .constrainAs(uWelcomeTXT) {
+                centerHorizontallyTo(parent)
+                centerVerticallyTo(parent)
 
-        })
+            })
 
 
 
@@ -175,30 +207,33 @@ private fun ConstraintLayoutScope.NotAssignedToKitchen(
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-private fun ConstraintLayoutScope.LoggedIn(name: String, isKitchen: Boolean, mainMenuViewModel: MainMenuViewModel) {
+private fun ConstraintLayoutScope.LoggedIn(
+    name: String,
+    isKitchen: Boolean,
+    mainMenuViewModel: MainMenuViewModel
+) {
     val vm = mainMenuViewModel
     val uWelcomeTXT = createRef()
     val (btnDrink, btnAdd, btnLog, btnStats, btnPayments) = createRefs()
     //nav.navigate(MainActivity.STATISTICS)
 
 
-
-   Text(text = "Welcome\n$name",
-       fontSize = 50.sp,
-       style = MaterialTheme.typography.h1,
-       textAlign = TextAlign.Center,
-       modifier = Modifier.constrainAs(uWelcomeTXT) {
-           centerHorizontallyTo(parent)
-       })
+    Text(text = "Welcome\n$name",
+        fontSize = 50.sp,
+        style = MaterialTheme.typography.h1,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.constrainAs(uWelcomeTXT) {
+            centerHorizontallyTo(parent)
+        })
 
 
 
 
     ButtonMain(onClick = {
-            vm.s.setCurrentPage(Pages.ADD_BEVERAGE_STAGE_1)
-            if(!isKitchen) vm.navigate(Pages.ADD_BEVERAGE_STAGE_1)
-            else vm.navigate(Pages.USER_SELECTION)
-        },
+        vm.s.setCurrentPage(Pages.ADD_BEVERAGE_STAGE_1)
+        if (!isKitchen) vm.navigate(Pages.ADD_BEVERAGE_STAGE_1)
+        else vm.navigate(Pages.USER_SELECTION)
+    },
         text = "Add Beverage",
         isInverted = false,
         widthScale = 0.35,
@@ -209,9 +244,9 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isKitchen: Boolean, mai
         })
     /* TODO STATISTICS FOR KITCHEN */
     ButtonMain(onClick = {
-            vm.s.setCurrentPage(Pages.STATISTICS)
-            vm.navigate(Pages.STATISTICS)
-        },
+        vm.s.setCurrentPage(Pages.STATISTICS)
+        vm.navigate(Pages.STATISTICS)
+    },
         text = "Statistics",
         isInverted = false,
         widthScale = 0.35,
@@ -222,10 +257,10 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isKitchen: Boolean, mai
         })
 
     ButtonMain(onClick = {
-            vm.s.setCurrentPage(Pages.LOGBOOKS)
-            if(!isKitchen) vm.navigate(Pages.LOGBOOKS)
-            else vm.navigate(Pages.USER_SELECTION)
-        },
+        vm.s.setCurrentPage(Pages.LOGBOOKS)
+        if (!isKitchen) vm.navigate(Pages.LOGBOOKS)
+        else vm.navigate(Pages.USER_SELECTION)
+    },
         text = "Logbook",
         isInverted = false,
         widthScale = 0.35,
@@ -236,10 +271,10 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isKitchen: Boolean, mai
         })
 
     ButtonMain(onClick = {
-            vm.s.setCurrentPage(Pages.PAYMENTS)
-            if(!isKitchen) vm.navigate(Pages.PAYMENTS)
-            else vm.navigate(Pages.USER_SELECTION)
-        },
+        vm.s.setCurrentPage(Pages.PAYMENTS)
+        if (!isKitchen) vm.navigate(Pages.PAYMENTS)
+        else vm.navigate(Pages.USER_SELECTION)
+    },
         text = "Payments",
         isInverted = false,
         widthScale = 0.35,
@@ -249,11 +284,12 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isKitchen: Boolean, mai
 
         })
 
-    ButtonMain(onClick = {
-        vm.s.setCurrentPage(Pages.SELECT_BEVERAGE_STAGE_1)
-        if(!isKitchen) vm.navigate(Pages.SELECT_BEVERAGE_STAGE_1)
-        else vm.navigate(Pages.USER_SELECTION)
-    },
+    ButtonMain(
+        onClick = {
+            vm.s.setCurrentPage(Pages.SELECT_BEVERAGE_STAGE_1)
+            if (!isKitchen) vm.navigate(Pages.SELECT_BEVERAGE_STAGE_1)
+            else vm.navigate(Pages.USER_SELECTION)
+        },
         text = "Drink Beverage",
         isInverted = false,
         widthScale = 0.75,
@@ -261,7 +297,8 @@ private fun ConstraintLayoutScope.LoggedIn(name: String, isKitchen: Boolean, mai
             centerHorizontallyTo(parent)
             top.linkTo(btnLog.bottom, 30.dp)
 
-        }, 65.dp, true)
+        }, 65.dp, true
+    )
 }
 
 

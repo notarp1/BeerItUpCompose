@@ -37,7 +37,7 @@ interface IUserRepository {
     suspend fun makePayment(@Path("uId") uId: Int, @Path("id") ownerId: Int): Response<String>
 
     @GET("users/{id}/logs/beverages/bought")
-    suspend fun boughtLogbook(@Path("id") uId: Int) : Response<List<BeverageLogEntryObj>>
+    suspend fun paidLogbook(@Path("id") uId: Int) : Response<List<BeverageLogEntryObj>>
 
     @GET("users/{id}/logs/beverages/sold")
     suspend fun soldLogbook(@Path("id") uId: Int) : Response<List<BeverageLogEntryObj>>

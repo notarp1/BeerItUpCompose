@@ -61,14 +61,20 @@ class PaymentsViewModel(val s: Service): ViewModel(), Observable {
         loadLists()
     }
 
-    /*TODO: Payments*/
-    fun makePayment(ownerId: Int) {
-        viewModelScope.launch {
-
-            withContext(Dispatchers.IO) {
-                userRepo.makePayment(s.stateHandler.appMode.uId, ownerId)
-            }
+    fun onAccept(ownerId: Int){
+        viewModelScope.launch(){
+            makePayment(ownerId)
         }
+    }
+
+    /*TODO: Payments*/
+    private suspend fun makePayment(ownerId: Int) {
+
+        withContext(Dispatchers.IO) {
+            userRepo.makePayment(s.stateHandler.appMode.uId, ownerId)
+            loadLists()
+        }
+
     }
 
     override fun update(funcToRun: FuncToRun) {

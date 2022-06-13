@@ -1,5 +1,6 @@
 package com.notarmaso.db_access_setup.views.beeritup.payments
 
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,7 +12,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -24,6 +25,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.notarmaso.beeritupcompose.Category
 import com.notarmaso.beeritupcompose.models.UserPaymentObject
 import com.notarmaso.beeritupcompose.ui.theme.components.ButtonMain
+import com.notarmaso.beeritupcompose.ui.theme.components.CustomAlertDialog
+import com.notarmaso.beeritupcompose.ui.theme.components.SubmitButton
 import com.notarmaso.beeritupcompose.ui.theme.components.TopBar
 import com.notarmaso.beeritupcompose.views.beeritup.payments.PaymentsViewModel
 
@@ -124,15 +127,22 @@ fun OwesToList(payVm: PaymentsViewModel, paymentObjectList: List<UserPaymentObje
 
         }
     } else {
+
+        var openDialog by remember { mutableStateOf(false) }
+
         LazyColumn(
             modifier = Modifier.height((height - 140).dp),
             contentPadding = PaddingValues(5.dp)
         ) {
             items(paymentObjectList) { user ->
-                UserPaymentCard(
-                    user,
-                    modifier = Modifier.clickable { payVm.makePayment(user.uId) })
-
+                CustomAlertDialog(
+                    isOpened = openDialog,
+                    onClose = { openDialog = !openDialog },
+                    onConfirm = {payVm.onAccept(user.uId)},
+                    title = "Make payment to ${user.phone} ",
+                    text = "You have to pay ${user.name}\n${user.total/100} DKK on phone ${user.phone} ",
+                    onOpened = {})
+                UserPaymentCard(user, modifier = Modifier.clickable { openDialog = true  })
             }
         }
     }
