@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.views.start_screen.add_kitchen
+package com.notarmaso.beeritup.views.start_screen.add_kitchen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,9 +16,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.notarmaso.beeritup.R
 import com.notarmaso.beeritup.ui.theme.components.SelectionHeader
 import com.notarmaso.beeritup.ui.theme.components.SubmitButton
-import com.notarmaso.beeritup.views.start_screen.add_kitchen.AddKitchenViewModel
 
-import com.notarmaso.db_access_setup.ui.theme.components.*
+import com.notarmaso.beeritup.ui.theme.components.*
 
 @Composable
 fun AddKitchen_Step_2(addKitchenViewModel: AddKitchenViewModel) {

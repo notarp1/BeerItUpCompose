@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.views.beeritup.select_beverage
+package com.notarmaso.beeritup.views.beeritup.select_beverage
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,35 +41,25 @@ class SelectBeverageViewModel(val s: Service, private val kitchenRepo: KitchenRe
 
     private fun getBeveragesInStock(){
         viewModelScope.launch {
-            val res: Response<MutableList<BeverageType>>
+            val res: Response<List<BeverageType>>
 
             withContext(Dispatchers.IO){
                 res = kitchenRepo.getBeveragesInStock(s.stateHandler.appMode.kId, selectedCategory)
             }
 
-            handleErrorKitchen(res)
-
-
+            if(res.isSuccessful){
+                res.body()?.let { _beveragesInStock = it }
+            }else s.makeToast("Error: " + res.message())
         }
     }
 
     fun navToNextPage(location: Pages, beverageType: BeverageType){
         s.setBeverageType(beverageType)
+        s.observer.notifySubscribers(FuncToRun.GET_SPECIFIC_BEV_STOCK)
         s.navigate(location)
     }
 
 
-    private fun handleErrorKitchen(response: Response<MutableList<BeverageType>>) {
-
-        when (response.code()) {
-            200 -> {
-                response.body()?.let { _beveragesInStock = it }
-
-            }
-            500 -> s.makeToast(response.message())
-            else -> s.makeToast("Error: Unknown: ${response.message()}")
-        }
-    }
 
     override fun update(funcToRun: FuncToRun) {
         if(funcToRun == FuncToRun.GET_BEVERAGES_IN_STOCK){

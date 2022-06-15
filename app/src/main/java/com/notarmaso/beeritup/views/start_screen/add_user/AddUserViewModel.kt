@@ -108,17 +108,26 @@ class AddUserViewModel(
             try {
                 val pinToPost = pin.toInt()
                 if (phoneValidation()) {
-                    val user = UserToPost(
-                        name,
-                        phone,
-                        password,
-                        pinToPost,
-                        email
-                    )
+                    val user = UserToPost(name, phone, password, pinToPost, email)
 
                     val res: Response<UserRecieve>
+
                     withContext(Dispatchers.IO) { res = userRepo.addUser(user) }
-                    errorHandlingCreateUser(res)
+
+                    if(res.isSuccessful){
+
+                        /*If Signed in as kitchen, add the user directly, otherwise login*/
+                        when (s.stateHandler.appMode) {
+                            is StateHandler.AppMode.SignedInAsKitchen -> {
+                                res.body()?.let { addUserToKitchen(it.id) }
+
+                            }
+                            is StateHandler.AppMode.SignedOut -> logInUser()
+
+                            else -> {}
+                        }
+
+                    }else s.makeToast("Error: " + res.message())
 
                 }
 
@@ -129,62 +138,42 @@ class AddUserViewModel(
     }
 
 
-    private fun errorHandlingCreateUser(response: Response<UserRecieve>) {
-        when (response.code()) {
-            201 -> {
-                s.makeToast("User Created!")
-                when (s.stateHandler.appMode) {
-                    is StateHandler.AppMode.SignedInAsKitchen -> {
-                        response.body()?.let { addUserToKitchen(it.id) }
-                    }
-                    is StateHandler.AppMode.SignedOut -> logInUser()
-                    else -> {
-                        println("Else statement run")
-                    }
-                }
-            }
-            400 -> s.makeToast(response.message())
-            409 -> s.makeToast("Error: A user with this email already exist")
-            500 -> s.makeToast(response.message())
-            else -> s.makeToast("Error: Unknown")
-        }
-    }
+
 
     private fun logInUser() {
-        s.logInUser(email, password)
+        viewModelScope.launch {
+            s.logInUser(email, password)
+        }
         resetTextFields()
     }
 
     private fun addUserToKitchen(id: Int) {
         val state = s.stateHandler.appMode as StateHandler.AppMode.SignedInAsKitchen
-        handleKitchenRegistration(state, id)
+        viewModelScope.launch {
+            handleKitchenRegistration(state, id)
+
+        }
 
     }
 
 
     /* JOIN KITCHEN IF USER IS CREATED FROM KITCHEN ACC*/
-    private fun handleKitchenRegistration(state: StateHandler.AppMode.SignedInAsKitchen, id: Int) {
-        viewModelScope.launch {
-            val response: Response<String>
-            withContext(Dispatchers.IO) {
-                response = kitchenRepo.addKitchenUser(state.kId, id)
-            }
-            handleErrorJoined(response)
+    private suspend fun handleKitchenRegistration(state: StateHandler.AppMode.SignedInAsKitchen, id: Int) {
+        val res: Response<String>
+
+        withContext(Dispatchers.IO) {
+            res = kitchenRepo.addKitchenUser(state.kId, id)
         }
-    }
+
+        if(res.isSuccessful){
+            s.makeToast("Successfully Joined!")
+            s.observer.notifySubscribers(FuncToRun.GET_USERS)
+            s.navigateAndClearBackstack(Pages.MAIN_MENU)
+        } else {s.makeToast("Error: " + res.message())}
 
 
-    private fun handleErrorJoined(response: Response<String>) {
-        when (response.code()) {
-            201 -> {
-                s.makeToast("Successfully Joined!")
-                s.observer.notifySubscribers(FuncToRun.GET_USERS)
-                s.navigateAndClearBackstack(Pages.MAIN_MENU)
-            }
-            500 -> s.makeToast(response.message())
-            else -> s.makeToast(response.message())
-        }
     }
+
 
 
     /* VALIDATION */

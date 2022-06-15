@@ -4,9 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritup.Service
 import com.notarmaso.beeritup.interfaces.Form
-
+import kotlinx.coroutines.launch
 
 
 class LoginUserViewModel(val s: Service) : ViewModel(), Form {
@@ -48,7 +49,9 @@ class LoginUserViewModel(val s: Service) : ViewModel(), Form {
     }
 
     fun logInUser(){
-        s.logInUser(email, password)
+        viewModelScope.launch() {
+            s.logInUser(email, password)
+        }
         resetTextFields()
     }
 

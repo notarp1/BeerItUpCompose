@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.views.beeritup.add_beverage
+package com.notarmaso.beeritup.views.beeritup.add_beverage
 
 
 import androidx.compose.foundation.*
@@ -27,8 +27,6 @@ import com.notarmaso.beeritup.R
 import com.notarmaso.beeritup.models.BeverageType
 import com.notarmaso.beeritup.ui.theme.components.ButtonMain
 import com.notarmaso.beeritup.ui.theme.components.TopBar
-import com.notarmaso.beeritup.views.beeritup.add_beverage.AddBeverageViewModel
-
 
 
 @Composable
@@ -134,7 +132,7 @@ private fun BeverageCard(vm: AddBeverageViewModel, beverageType: BeverageType, m
                 .height(80.dp)
                 .clickable(onClick = {
                     vm.navToNextPage(Pages.ADD_BEVERAGE_STAGE_2, beverageType)
-                    vm.hasrun = false
+
                 }
                 ), verticalAlignment = Alignment.CenterVertically
         ) {

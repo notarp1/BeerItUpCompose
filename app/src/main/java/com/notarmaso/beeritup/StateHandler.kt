@@ -7,7 +7,7 @@ import com.notarmaso.beeritup.db.repositories.KitchenRepository
 import com.notarmaso.beeritup.db.repositories.UserRepository
 import com.notarmaso.beeritup.models.UserLoginStatus
 import com.notarmaso.beeritup.models.UserRecieve
-import com.notarmaso.db_access_setup.models.Kitchen
+import com.notarmaso.beeritup.models.Kitchen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -145,8 +145,10 @@ class StateHandler(
                 val kitchen = response.body()
 
                 if (kitchen != null) {
+                    println("WOLOLO 2")
                     _appMode =
                         AppMode.SignedInAsKitchen(kitchen.id, kitchen.pass, kitchen.name, -1, null)
+
                     observer.notifySubscribers(FuncToRun.GET_LOGIN_STATE_2)
 
                 }

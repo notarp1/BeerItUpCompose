@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.views.beeritup.add_beverage
+package com.notarmaso.beeritup.views.beeritup.add_beverage
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,9 +26,6 @@ class AddBeverageQuantityViewModel(val s: Service, private val kitchenRep: Kitch
 
     private var _pricePerBeverage by mutableStateOf(0f)
     val pricePerBeverage: Float get() = _pricePerBeverage
-
-
-
 
 
 
@@ -76,36 +73,18 @@ class AddBeverageQuantityViewModel(val s: Service, private val kitchenRep: Kitch
         withContext(Dispatchers.IO){
             res = kitchenRep.addBeverages(bevEntryObj, s.stateHandler.appMode.kId, selectedBeer)
         }
-        handleError(res)
 
+        if(res.isSuccessful){
+            s.makeToast("Added Beers")
+            s.navigateAndClearBackstack(Pages.MAIN_MENU)
+            _qtySelected = 24
+
+        }else s.makeToast("Error: " + res.message())
 
 
     }
 
-    private fun handleError(response: Response<String>) {
 
-        when (response.code()) {
-            200 -> {
-
-               viewModelScope.launch(Dispatchers.Main) {
-                   s.makeToast("Added Beers")
-                   s.navigateAndClearBackstack(Pages.MAIN_MENU)
-               }
-                _qtySelected = 24
-
-
-            }
-            406 ->{
-                viewModelScope.launch {
-                  s.makeToast("Kitchen ID not found: Try re-login")
-                }
-
-
-            }
-            500 -> s.makeToast(response.message())
-            else -> s.makeToast("Error: Unknown: ${response.message()}")
-        }
-    }
 
 
 }

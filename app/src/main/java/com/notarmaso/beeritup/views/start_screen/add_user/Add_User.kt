@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.views.start_screen.add_user
+package com.notarmaso.beeritup.views.start_screen.add_user
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -14,9 +14,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.notarmaso.beeritup.R
 import com.notarmaso.beeritup.ui.theme.components.SelectionHeader
 import com.notarmaso.beeritup.ui.theme.components.SubmitButton
-import com.notarmaso.beeritup.views.start_screen.add_user.AddUserViewModel
-import com.notarmaso.db_access_setup.ui.theme.components.TextFieldName
-import com.notarmaso.db_access_setup.ui.theme.components.TextFieldPhone
+import com.notarmaso.beeritup.ui.theme.components.TextFieldName
+import com.notarmaso.beeritup.ui.theme.components.TextFieldPhone
 
 
 @Composable

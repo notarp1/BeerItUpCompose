@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.views.beeritup.select_beverage
+package com.notarmaso.beeritup.views.beeritup.select_beverage
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -31,6 +31,7 @@ import com.notarmaso.beeritup.R
 import com.notarmaso.beeritup.models.BeverageType
 import com.notarmaso.beeritup.ui.theme.components.ButtonMain
 import com.notarmaso.beeritup.ui.theme.components.TopBar
+import com.notarmaso.beeritup.views.beeritup.select_beverage.SelectBeverageViewModel
 
 
 @Composable

@@ -1,5 +1,6 @@
 package com.notarmaso.beeritup.views.beeritup.select_user
 
+import android.graphics.pdf.PdfDocument.Page
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -27,7 +28,7 @@ class SelectUserViewModel(val s: Service, private val kitchenRepo: KitchenReposi
         s.observer.register(this)
     }
 
-    fun getUsers(){
+    private fun getUsers(){
 
         viewModelScope.launch() {
             val res: Response<List<UserRecieve>>
@@ -45,6 +46,7 @@ class SelectUserViewModel(val s: Service, private val kitchenRepo: KitchenReposi
 
         when(s.currentPage){
             Pages.PAYMENTS -> s.observer.notifySubscribers(FuncToRun.GET_PAYMENTS)
+            Pages.LOGBOOKS -> s.observer.notifySubscribers(FuncToRun.GET_LOGS)
             else -> println("else statement is run")
         }
 
@@ -55,10 +57,9 @@ class SelectUserViewModel(val s: Service, private val kitchenRepo: KitchenReposi
 
 
     override fun update(funcToRun: FuncToRun) {
-        if(funcToRun == FuncToRun.GET_USERS){
+        if (funcToRun == FuncToRun.GET_USERS) {
             getUsers()
         }
-
     }
 
 

@@ -33,32 +33,38 @@ class PaymentsViewModel(val s: Service, private val userRepo: UserRepository): V
         s.observer.register(this)
     }
 
-    private fun loadLists() {
-        viewModelScope.launch {
-            val resOwed: Response<List<UserPaymentObject>>
-            val resOwes: Response<List<UserPaymentObject>>
+    private suspend fun loadLists() {
 
-            withContext(Dispatchers.IO){
-                when(_selectedCategory){
-                    Category.MONEY_YOU_OWE -> {
-                        resOwes = userRepo.userOwes(s.stateHandler.appMode.uId)
-                        _owesTo = resOwes.body()
-                    }
-                    Category.MONEY_YOU_ARE_OWED -> {
-                        println("GAGAAG")
-                        resOwed = userRepo.userOwed(s.stateHandler.appMode.uId)
-                        _owedFrom = resOwed.body()
-                    }
-                    else -> { println("Else statement is run") }
+        val resOwed: Response<List<UserPaymentObject>>
+        val resOwes: Response<List<UserPaymentObject>>
+
+        withContext(Dispatchers.IO){
+
+            when(_selectedCategory){
+                Category.MONEY_YOU_OWE -> {
+                    resOwes = userRepo.userOwes(s.stateHandler.appMode.uId)
+                    _owesTo = resOwes.body()
                 }
+                Category.MONEY_YOU_ARE_OWED -> {
+                    println("GAGAAG")
+                    resOwed = userRepo.userOwed(s.stateHandler.appMode.uId)
+                    _owedFrom = resOwed.body()
+                }
+                else -> { println("Else statement is run") }
             }
-
         }
+
+
+
+
     }
 
     fun setCategory(category: Category) {
         _selectedCategory = category
-        loadLists()
+        viewModelScope.launch(){
+            loadLists()
+        }
+
     }
 
     fun onAccept(ownerId: Int){
@@ -79,7 +85,7 @@ class PaymentsViewModel(val s: Service, private val userRepo: UserRepository): V
 
     override fun update(funcToRun: FuncToRun) {
        if(funcToRun == FuncToRun.GET_PAYMENTS){
-           loadLists()
+           setCategory(Category.MONEY_YOU_OWE)
        }
     }
 

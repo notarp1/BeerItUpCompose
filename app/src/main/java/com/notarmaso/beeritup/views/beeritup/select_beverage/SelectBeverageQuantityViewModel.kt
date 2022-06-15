@@ -1,23 +1,24 @@
-package com.notarmaso.db_access_setup.views.beeritup.select_beverage
+package com.notarmaso.beeritup.views.beeritup.select_beverage
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.notarmaso.beeritup.FuncToRun
 import com.notarmaso.beeritup.Pages
 import com.notarmaso.beeritup.Service
+import com.notarmaso.beeritup.interfaces.Observable
 import com.notarmaso.beeritup.db.repositories.KitchenRepository
-import com.notarmaso.beeritup.models.Beverage
-import com.notarmaso.beeritup.models.BeveragePurchaseConfigObj
-import com.notarmaso.beeritup.models.BeveragePurchaseReceiveObj
-import com.notarmaso.beeritup.models.LeaderboardEntryObj
+import com.notarmaso.beeritup.models.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class SelectBeverageQuantityViewModel(val s: Service, private val kitchenRepo: KitchenRepository) : ViewModel() {
+
+class SelectBeverageQuantityViewModel(val s: Service, private val kitchenRepo: KitchenRepository) :
+    ViewModel(), Observable {
 
     private var totalStock: Int = 1
 
@@ -33,9 +34,10 @@ class SelectBeverageQuantityViewModel(val s: Service, private val kitchenRepo: K
 
     private var beveragePurchaseReceiveObj: BeveragePurchaseReceiveObj? = null
 
-    fun setup(stock: Int) {
-        totalStock = stock
+    init {
+        s.observer.register(this)
     }
+
 
     fun incrementCounter() {
         if (_qtySelected >= totalStock) _qtySelected = totalStock
@@ -49,23 +51,30 @@ class SelectBeverageQuantityViewModel(val s: Service, private val kitchenRepo: K
     }
 
 
-    fun onClick(){
+    fun getPriceClicked() {
         viewModelScope.launch {
-
             calculatePrice()
         }
     }
 
-    fun onConfirm(){
+    fun onConfirm() {
         viewModelScope.launch {
             makeTransaction()
         }
     }
 
-    fun getPricingList(){
+    private fun getPricingList() {
         viewModelScope.launch {
+            val res: Response<List<Beverage>>
 
+            withContext(Dispatchers.IO) {
+                res = kitchenRepo.getBeverageInStock(s.stateHandler.appMode.kId,
+                    s.selectedBeverage.beverageTypeId)
+            }
 
+            if (res.isSuccessful) {
+                res.body()?.let { _beveragePriceList = it }
+            }
         }
     }
 
@@ -74,63 +83,62 @@ class SelectBeverageQuantityViewModel(val s: Service, private val kitchenRepo: K
 
         val res: Response<BeveragePurchaseReceiveObj>
 
+
+        val configObj = BeveragePurchaseConfigObj(s.selectedBeverage.name, qtySelected)
         withContext(Dispatchers.IO) {
-
-            val configObj = BeveragePurchaseConfigObj(s.selectedBeverage.name, qtySelected)
             res = kitchenRepo.calculatePrice(s.stateHandler.appMode.kId, configObj)
+        }
 
-            if(handleError(res)) {
-                res.body()?.let {
-                    _price = it.price.div(100)
-                    beveragePurchaseReceiveObj = it
-                }
+        if (res.isSuccessful) {
+            res.body()?.let {
+                _price = it.price.div(100)
+                beveragePurchaseReceiveObj = it
             }
+            return
         }
+        s.makeToast("Error: " + res.message())
+
 
     }
 
-    private fun handleError(response: Response<BeveragePurchaseReceiveObj>): Boolean{
-
-        when (response.code()) {
-            200 -> return true
-            406 -> s.makeToast("Kitchen ID not found: Try re-login")
-            500 -> s.makeToast(response.message())
-            else -> s.makeToast("Error: Unknown: ${response.message()}")
-        }
-        return false
-    }
 
     private suspend fun makeTransaction() {
         val bevObj = beveragePurchaseReceiveObj
 
         if (bevObj != null) {
+
+            //Set drinker ID
             for (beverage: Beverage in bevObj.beverages) {
                 beverage.bevDrinkerId = s.stateHandler.appMode.uId
             }
 
+            val res: Response<String>
 
-            viewModelScope.launch(Dispatchers.Main) {
-                val res: Response<String>
 
-                withContext(Dispatchers.IO) {
-                    res = kitchenRepo.acceptTransaction(
-                        s.stateHandler.appMode.kId,
-                        s.stateHandler.appMode.uId,
-                        bevObj.beverages
-                    )
-                }
-
-                when (res.code()) {
-                    200 -> {
-                        s.makeToast("Enjoy your beverage(s)!")
-                        s.navigateAndClearBackstack(Pages.MAIN_MENU)
-                        _qtySelected = 1
-                    }
-                    406 -> s.makeToast("Kitchen ID not found: Try re-login")
-                    500 -> s.makeToast(res.message())
-                    else -> s.makeToast("Error: Unknown: ${res.message()}")
-                }
+            withContext(Dispatchers.IO) {
+                res = kitchenRepo.acceptTransaction(
+                    s.stateHandler.appMode.kId,
+                    s.stateHandler.appMode.uId,
+                    bevObj.beverages
+                )
             }
+
+            if (res.isSuccessful) {
+                s.makeToast("Enjoy your beverage!")
+                s.navigateAndClearBackstack(Pages.MAIN_MENU)
+                _qtySelected = 1
+
+            }else s.makeToast("Errasor: ${res.message()}")
+
+
+        }
+
+    }
+
+    override fun update(funcToRun: FuncToRun) {
+        if (funcToRun == FuncToRun.GET_SPECIFIC_BEV_STOCK) {
+            getPricingList()
+            totalStock = s.selectedBeverage.stock
         }
     }
 

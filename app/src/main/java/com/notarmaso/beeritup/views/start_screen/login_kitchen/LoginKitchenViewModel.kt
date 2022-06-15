@@ -4,8 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.notarmaso.beeritup.Service
 import com.notarmaso.beeritup.interfaces.Form
+import kotlinx.coroutines.launch
 
 class LoginKitchenViewModel(val s: Service) : ViewModel(), Form {
 
@@ -32,7 +34,9 @@ class LoginKitchenViewModel(val s: Service) : ViewModel(), Form {
     }
 
     fun logInKitchen() {
-        s.logInKitchen(name, password)
+        viewModelScope.launch {
+            s.logInKitchen(name, password)
+        }
         resetTextFields()
     }
 

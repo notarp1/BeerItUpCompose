@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.dal
+package com.notarmaso.beeritup.dal
 
 import android.content.Context
 import android.net.ConnectivityManager

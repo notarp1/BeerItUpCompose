@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.views.beeritup.statistics
+package com.notarmaso.beeritup.views.beeritup.statistics
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,7 +59,9 @@ class StatisticsViewModel(val s: Service, private val kitchenRepo: KitchenReposi
                 }
             }
 
-            handleResponseCode(res)
+            if(res.isSuccessful) _leaderboard = res.body()
+            else s.makeToast("Error: " + res.message())
+
 
 
 
@@ -85,17 +87,6 @@ class StatisticsViewModel(val s: Service, private val kitchenRepo: KitchenReposi
         }
     }
 
-    private fun handleResponseCode(response: Response<List<LeaderboardEntryObj>>) {
-        println(response.code())
-        when (response.code()) {
-
-            200 -> {
-              _leaderboard = response.body()
-            }
-            500 -> s.makeToast(response.message())
-            else -> s.makeToast("Unknown error ${response.code()}: ${response.message()}")
-        }
-    }
 
 
 }

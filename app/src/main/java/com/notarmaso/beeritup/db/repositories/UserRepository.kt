@@ -2,7 +2,7 @@ package com.notarmaso.beeritup.db.repositories
 
 
 import com.notarmaso.beeritup.models.*
-import com.notarmaso.db_access_setup.dal.DBInstance
+import com.notarmaso.beeritup.dal.DBInstance
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope

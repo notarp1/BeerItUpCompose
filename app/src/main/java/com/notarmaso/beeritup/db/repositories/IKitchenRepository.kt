@@ -1,7 +1,6 @@
 package com.notarmaso.beeritup.db.repositories
 
 import com.notarmaso.beeritup.models.*
-import com.notarmaso.db_access_setup.models.*
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -33,10 +32,10 @@ interface IKitchenRepository {
     suspend fun getBeverageTypes(@Path("id") kId: Int, @Path("type") type: String): Response<MutableList<BeverageType>>
 
     @GET("kitchens/{id}/beverages/stock/specific/{beverageId}")
-    suspend fun getBeverageInStock(@Path("id") kId: Int, @Path("beverageId") bevTypeId: Int): Result<MutableList<Beverage>>
+    suspend fun getBeverageInStock(@Path("id") kId: Int, @Path("beverageId") bevTypeId: Int): Response<List<Beverage>>
 
     @GET("kitchens/{id}/beverages/stock/all/{type}")
-    suspend fun getBeveragesInStock(@Path("id") kId: Int, @Path("type") type: String): Response<MutableList<BeverageType>>
+    suspend fun getBeveragesInStock(@Path("id") kId: Int, @Path("type") type: String): Response<List<BeverageType>>
 
     @POST("kitchens/{id}/beverages/add/{beverage}")
     suspend fun addBeverages(@Body beverage: BeverageDBEntryObject, @Path("id") kId: Int, @Path("beverage") name:String ): Response<String>

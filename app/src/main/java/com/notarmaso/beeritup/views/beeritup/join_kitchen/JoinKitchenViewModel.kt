@@ -9,8 +9,8 @@ import com.notarmaso.beeritup.Service
 import com.notarmaso.beeritup.StateHandler
 import com.notarmaso.beeritup.db.repositories.KitchenRepository
 import com.notarmaso.beeritup.interfaces.Form
-import com.notarmaso.db_access_setup.models.Kitchen
-import com.notarmaso.db_access_setup.models.KitchenLoginObject
+import com.notarmaso.beeritup.models.Kitchen
+import com.notarmaso.beeritup.models.KitchenLoginObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,7 +35,7 @@ class JoinKitchenViewModel(
         _kName = newText
     }
 
-    override fun setPass(newText: String, isConfirmation: Boolean) {
+    override fun setPass(newText: String, isPasswordConfirm: Boolean) {
         _kPassword = newText
     }
 
@@ -48,61 +48,54 @@ class JoinKitchenViewModel(
     }
 
 
+    fun onAssignPressed(){
+        viewModelScope.launch {
+            authorizeKitchen()
+        }
+    }
 
+    private  suspend fun authorizeKitchen(){
 
-    fun authorizeKitchen(){
-       viewModelScope.launch {
-           val res: Response<Kitchen>
-           val kitchenLoginObject = KitchenLoginObject(kName, kPassword)
-           withContext(Dispatchers.IO){
-               res = kitchenRepo.login(kitchenLoginObject)
-           }
-           handleErrorKitchen(res)
+       val res: Response<Kitchen>
+       val kitchenLoginObject = KitchenLoginObject(kName, kPassword)
 
-
+       withContext(Dispatchers.IO){
+           res = kitchenRepo.login(kitchenLoginObject)
        }
+
+       if(res.isSuccessful){
+           handleKitchenRegistration(res)
+           return
+       }
+
+       s.makeToast("Error: " + res.message())
+
+
     }
 
     /* Skal laves mere rigtig, nok uden sharedPrefs*/
-    private fun handleKitchenRegistration(res: Response<Kitchen>){
-        viewModelScope.launch {
-            val kitchen: Kitchen? = res.body()
-            val response: Response<String>
-            val currentUser = s.stateHandler.appMode as StateHandler.AppMode.SignedInAsUser
+    private suspend fun handleKitchenRegistration(res: Response<Kitchen>){
+        val kitchen: Kitchen? = res.body()
+        val response: Response<String>
+        val currentUser = s.stateHandler.appMode as StateHandler.AppMode.SignedInAsUser
 
-            if(kitchen != null) {
-                withContext(Dispatchers.IO) {
-                    response = kitchenRepo.addKitchenUser(kitchen.id, currentUser.uId)
-                }
-                handleErrorJoined(response, kitchen.id)
+        if(kitchen != null) {
+            withContext(Dispatchers.IO) {
+                response = kitchenRepo.addKitchenUser(kitchen.id, currentUser.uId)
             }
-
-
-        }
-    }
-    private fun handleErrorKitchen(response: Response<Kitchen>) {
-        when(response.code()){
-            200 -> {
-                handleKitchenRegistration(response)
-            }
-            400 -> s.makeToast("Error: This kitchen does not exist")
-            401 -> s.makeToast("Error: Wrong password")
-            500 -> s.makeToast(response.message())
-            else -> s.makeToast(response.message())
-        }
-    }
-
-    private fun handleErrorJoined(response: Response<String>, kId: Int) {
-        when(response.code()){
-            201 -> {
+            if(response.isSuccessful){
                 s.makeToast("Successfully Joined!")
-                s.stateHandler.onUserJoinedKitchen(kId)
+                s.stateHandler.onUserJoinedKitchen(kitchen.id)
                 s.nav?.popBackStack()
+                return
             }
-            500 -> s.makeToast(response.message())
-            else -> s.makeToast(response.message())
+            s.makeToast("Error: " + response.message())
         }
+
     }
+
+
+
 
 
 

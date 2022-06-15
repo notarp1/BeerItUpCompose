@@ -8,7 +8,7 @@ data class Beverage(
    val id: Int,
    @SerializedName("beverageTypeId")
    val bevId: Int,
-   val price: Int,
+   val price: Float,
    @SerializedName("kitchenId")
    val kId: Int,
    @SerializedName("beverageOwnerId")

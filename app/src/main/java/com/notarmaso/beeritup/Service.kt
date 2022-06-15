@@ -7,8 +7,8 @@ import androidx.navigation.NavHostController
 import com.notarmaso.beeritup.db.repositories.KitchenRepository
 import com.notarmaso.beeritup.db.repositories.UserRepository
 import com.notarmaso.beeritup.models.*
-import com.notarmaso.db_access_setup.models.Kitchen
-import com.notarmaso.db_access_setup.models.KitchenLoginObject
+import com.notarmaso.beeritup.models.Kitchen
+import com.notarmaso.beeritup.models.KitchenLoginObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,7 +21,7 @@ class Service(
     val stateHandler: StateHandler,
     val observer: Observer,
     private val kitchenRepo: KitchenRepository,
-    private val userRepo: UserRepository
+    private val userRepo: UserRepository,
 ) {
 
     var nav: NavHostController? = null
@@ -50,8 +50,10 @@ class Service(
 
 
     fun navigateAndClearBackstack(location: Pages) {
-        nav?.backQueue?.clear()
-        nav?.navigate(location.value)
+        CoroutineScope(Dispatchers.Main).launch {
+            nav?.backQueue?.clear()
+            nav?.navigate(location.value)
+        }
     }
 
 
@@ -61,47 +63,37 @@ class Service(
    *
    */
 
-    fun logInUser(email: String, password: String) {
-        CoroutineScope(Dispatchers.Main).launch {
-            val res: Response<UserRecieve>
-            val userLoginObj = UserLoginObject(email, password)
-            withContext(Dispatchers.IO) {
-                res = userRepo.login(userLoginObj)
-            }
-            handleErrorUser(res)
+    suspend fun logInUser(email: String, password: String) {
 
+        val res: Response<UserRecieve>
+        val userLoginObj = UserLoginObject(email, password)
+        withContext(Dispatchers.IO) { res = userRepo.login(userLoginObj) }
+
+        if (res.isSuccessful){
+            makeToast("Login Succesful!")
+            handleUser(res)
         }
+        else makeToast(res.message())
+
+
     }
 
-    private fun handleErrorUser(response: Response<UserRecieve>) {
-        when (response.code()) {
-            200 -> {
-                makeToast("Login Succesful!")
-                handleUser(response)
-            }
-            400 -> makeToast("Error: This User Does Not Exist")
-            401 -> makeToast("Error: Wrong password")
-            500 -> makeToast(response.message())
-            else -> makeToast("Error: Unknown")
-        }
-    }
 
-    private fun handleUser(res: Response<UserRecieve>) {
-        CoroutineScope(Dispatchers.Main).launch {
-            val user: UserRecieve? = res.body()
+    private suspend fun handleUser(res: Response<UserRecieve>) {
 
-            withContext(Dispatchers.IO) {
-                if (user != null) {
-                    val userDetails = stateHandler.getAssignedDetails(user.id)
-                    if (userDetails != null) {
+        val user: UserRecieve? = res.body()
 
-                        stateHandler.onUserSignInSuccess(user, userDetails)
-                    }
+        withContext(Dispatchers.IO) {
+            if (user != null) {
+                val userDetails = stateHandler.getAssignedDetails(user.id)
+
+                if (userDetails != null) {
+                    stateHandler.onUserSignInSuccess(user, userDetails)
                 }
             }
-            navigateAndClearBackstack(Pages.MAIN_MENU)
-
         }
+
+        navigateAndClearBackstack(Pages.MAIN_MENU)
     }
 
 
@@ -111,106 +103,43 @@ class Service(
     *
     */
 
-    fun logInKitchen(name: String, password: String) {
-        CoroutineScope(Dispatchers.Main).launch {
-            val res: Response<Kitchen>
-            val kitchenLoginObj = KitchenLoginObject(name, password)
+    suspend fun logInKitchen(name: String, password: String) {
+        val res: Response<Kitchen>
+        val kitchenLoginObj = KitchenLoginObject(name, password)
 
-            withContext(Dispatchers.IO) {
-                res = kitchenRepo.login(kitchenLoginObj)
+        withContext(Dispatchers.IO) {
+            res = kitchenRepo.login(kitchenLoginObj)
+        }
+
+        if(res.isSuccessful){
+            handleKitchen(res)
+            makeToast("Login Succesful!")
+
+        } else makeToast(res.message())
+
+
+
+
+    }
+
+
+
+
+    private suspend fun handleKitchen(res: Response<Kitchen>) {
+        val kitchen: Kitchen? = res.body()
+
+        withContext(Dispatchers.IO) {
+            if (kitchen != null) {
+                stateHandler.onKitchenSignInSuccess(kitchen)
             }
-            handleLoginErrorKitchen(res)
-
-        }
-    }
-
-    private fun handleLoginErrorKitchen(response: Response<Kitchen>) {
-        when (response.code()) {
-            200 -> {
-                makeToast("Login Succesful!")
-                handleKitchen(response)
-            }
-            400 -> makeToast("Error: This Kitchen Does Not Exist")
-            401 -> makeToast("Error: Wrong password")
-            500 -> makeToast(response.message())
-            else -> makeToast("Error: Unknown: ${response.message()}")
-        }
-    }
-
-
-    private fun handleKitchen(res: Response<Kitchen>) {
-        CoroutineScope(Dispatchers.Main).launch {
-            val kitchen: Kitchen? = res.body()
-
-            withContext(Dispatchers.IO) {
-                if (kitchen != null) {
-                    stateHandler.onKitchenSignInSuccess(kitchen)
-                }
-            }
-            navigateAndClearBackstack(Pages.MAIN_MENU)
-
-
-        }
-    }
-
-
-    /*INSERT IN CLASS WHERE IT SHOULD BE USED*/
-    fun createAlertBoxSelectBeer(beerQty: Int, price: Float, onAccept: () -> Unit) {
-        val alertDialogBuilder = AlertDialog.Builder(context)
-        alertDialogBuilder
-            .setTitle("FIXME you are selecting $beerQty beers")
-            .setMessage("For at total of $price DKK \nDo you really want to continue?")
-
-        alertDialogBuilder.setPositiveButton("OK") { _, _ ->
-            makeToast("Succesfully bought beers")
-            onAccept()
-
         }
 
-        alertDialogBuilder.setNegativeButton("Cancel") { _, _ ->
-
-        }
-        alertDialogBuilder.show()
-
-
-    }
-
-    fun createAlertBoxAddBeer(price: Float, onAccept: () -> Unit, qty: Int) {
-        val alertDialogBuilder = AlertDialog.Builder(context)
-        alertDialogBuilder
-            .setTitle("FIX ME you are adding $qty beers!")
-            .setMessage("For at price of $price DKK/pcs \nDo you really want to continue?")
-
-        alertDialogBuilder.setPositiveButton("OK") { _, _ ->
-            onAccept()
-            makeToast("Succesfully added beers")
-
-        }
-
-        alertDialogBuilder.setNegativeButton("Cancel") { _, _ ->
-            makeToast("Cancelled")
-        }
-        alertDialogBuilder.show()
+        navigateAndClearBackstack(Pages.MAIN_MENU)
 
 
     }
 
 
-    fun createAlertBoxAddUser(user: User, onAccept: () -> Unit) {
-        val alertDialogBuilder = AlertDialog.Builder(context)
-        alertDialogBuilder
-            .setTitle("Is this correct?")
-            .setMessage("Username: ${user.name} \nPhone: ${user.phone}")
-
-        alertDialogBuilder.setPositiveButton("Yes create user!") { _, _ ->
-            onAccept()
-        }
-
-        alertDialogBuilder.setNegativeButton("Wait, go back!!") { _, _ ->
-            makeToast("Cancelled")
-        }
-        alertDialogBuilder.show()
-    }
 
     fun makeToast(msg: String) {
         CoroutineScope(Dispatchers.Main).launch {

@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.views.beeritup.add_beverage
+package com.notarmaso.beeritup.views.beeritup.add_beverage
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -127,12 +127,14 @@ private fun ConstraintLayoutScope.AddBeerButton(
         onConfirm = { vm.onConfirm() },
         title = "Confirm your added beverages, ${vm.s.stateHandler.appMode.uName}?",
         text = "You are adding ${vm.qtySelected} ${vm.s.selectedBeverage.name} for ${vm.pricePerBeverage} DKK per beverage",
-        onOpened = { vm.onClick() })
+        onOpened = { })
 
 
     SubmitButton(Modifier.Companion.constrainAs(confirmBtn) {
         bottom.linkTo(parent.bottom)
-    }, "CONFIRM", height(0.15).dp) { openDialog = true }
+    }, "CONFIRM", height(0.15).dp) {
+        vm.onClick()
+        openDialog = true }
 }
 
 

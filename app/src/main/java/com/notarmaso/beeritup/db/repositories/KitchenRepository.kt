@@ -1,8 +1,7 @@
 package com.notarmaso.beeritup.db.repositories
 
+import com.notarmaso.beeritup.dal.DBInstance
 import com.notarmaso.beeritup.models.*
-import com.notarmaso.db_access_setup.dal.DBInstance
-import com.notarmaso.db_access_setup.models.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -62,6 +61,7 @@ class KitchenRepository(val dbInstance: DBInstance) : IKitchenRepository {
             }
 
             response.await()
+
         }
 
     override suspend fun getBeverageTypes(
@@ -78,18 +78,19 @@ class KitchenRepository(val dbInstance: DBInstance) : IKitchenRepository {
     override suspend fun getBeverageInStock(
         kId: Int,
         bevTypeId: Int
-    ): Result<MutableList<Beverage>> = coroutineScope{
+    ): Response<List<Beverage>> = coroutineScope{
 
             val response = async(Dispatchers.IO) {
                 dbInstance.kitchenApi.getBeverageInStock(kId, bevTypeId)
             }
+
             response.await()
     }
 
     override suspend fun getBeveragesInStock(
         kId: Int,
         type: String,
-    ): Response<MutableList<BeverageType>> =
+    ): Response<List<BeverageType>> =
         coroutineScope {
             val response = async(Dispatchers.IO) {
                 dbInstance.kitchenApi.getBeveragesInStock(kId, type)

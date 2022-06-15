@@ -12,7 +12,7 @@ import com.notarmaso.beeritup.Pages
 import com.notarmaso.beeritup.Service
 import com.notarmaso.beeritup.db.repositories.KitchenRepository
 import com.notarmaso.beeritup.interfaces.Form
-import com.notarmaso.db_access_setup.models.KitchenToPost
+import com.notarmaso.beeritup.models.KitchenToPost
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -106,7 +106,12 @@ class AddKitchenViewModel(private val s: Service, private val kitchenRepo: Kitch
 
             val res: Response<String>
             withContext(Dispatchers.IO) { res = kitchenRepo.addKitchen(kitchen) }
-            errorHandlingCreateKitchen(res)
+            if(res.isSuccessful){
+                s.makeToast("Kitchen Created!")
+                s.logInKitchen(name, password)
+                resetTextFields()
+
+            } else s.makeToast(res.message())
 
 
         } catch (e: Exception) {
@@ -117,21 +122,6 @@ class AddKitchenViewModel(private val s: Service, private val kitchenRepo: Kitch
     }
 
 
-    private fun errorHandlingCreateKitchen(response: Response<String>) {
-        when (response.code()) {
-            201 -> {
-                s.makeToast("Kitchen Created!")
-                s.logInKitchen(name, password)
-                resetTextFields()
-
-            }
-
-            400 -> s.makeToast("Error: This User Does Not Exist")
-            409 -> s.makeToast("Error: This User Already Exist")
-            500 -> s.makeToast(response.message())
-            else -> s.makeToast("Error: Unknown")
-        }
-    }
 
 
     private fun filterWhitespaces() {

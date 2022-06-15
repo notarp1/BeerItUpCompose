@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.views.beeritup.select_beverage
+package com.notarmaso.beeritup.views.beeritup.select_beverage
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstrainedLayoutReference
@@ -26,18 +25,14 @@ import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.notarmaso.beeritup.models.Beverage
 import com.notarmaso.beeritup.models.BeverageType
-import com.notarmaso.beeritup.models.LeaderboardEntryObj
+
 import com.notarmaso.beeritup.ui.theme.components.*
-import com.notarmaso.db_access_setup.views.beeritup.statistics.LeaderboardEntryCard
+
 
 
 @Composable
 fun SelectBeverageQuantity(bevQtyViewModel: SelectBeverageQuantityViewModel){
     val bevType: BeverageType = bevQtyViewModel.s.selectedBeverage
-    val vm = bevQtyViewModel
-
-    /*TODO run with observer*/
-    vm.setup(bevType.stock)
 
 
 
@@ -47,10 +42,10 @@ fun SelectBeverageQuantity(bevQtyViewModel: SelectBeverageQuantityViewModel){
         Modifier
             .fillMaxSize()
             .background(brush = Brush.verticalGradient(
-            colors = listOf(
-                MaterialTheme.colors.background,
-                MaterialTheme.colors.onPrimary
-            )), alpha = 0.9f)
+                colors = listOf(
+                    MaterialTheme.colors.background,
+                    MaterialTheme.colors.onPrimary
+                )), alpha = 0.9f)
     ) {
 
         val (bevImage, topBar, selectionRow, confirmBtn, latestBeers) = createRefs()
@@ -60,7 +55,7 @@ fun SelectBeverageQuantity(bevQtyViewModel: SelectBeverageQuantityViewModel){
                 top.linkTo(parent.top)
             },
             "select ${bevType.name}",
-            goTo = { vm.s.nav?.popBackStack()},
+            goTo = { bevQtyViewModel.s.nav?.popBackStack()},
             Icons.Rounded.ArrowBack
         )
 
@@ -87,22 +82,26 @@ fun SelectBeverageQuantity(bevQtyViewModel: SelectBeverageQuantityViewModel){
                 top.linkTo(titleText.bottom, 20.dp)
             }) {
             Spacer(modifier = Modifier.width(10.dp))
-            ButtonSelection(onClick = { vm.decrementCounter()},  widthScale = 0.33)
-            Text(text = vm.qtySelected.toString(), style = MaterialTheme.typography.h1, textAlign = TextAlign.Center, modifier = Modifier.width(80.dp))
-            ButtonSelection(onClick = { vm.incrementCounter() },  widthScale = 0.33, true)
+            ButtonSelection(onClick = { bevQtyViewModel.decrementCounter() },  widthScale = 0.33)
+            Text(text = bevQtyViewModel.qtySelected.toString(), style = MaterialTheme.typography.h1, textAlign = TextAlign.Center, modifier = Modifier.width(80.dp))
+            ButtonSelection(onClick = { bevQtyViewModel.incrementCounter() },  widthScale = 0.33, true)
             Spacer(modifier = Modifier.width(10.dp))
 
         }
 
-        LazyColumn(modifier = Modifier.padding(top = 5.dp).constrainAs(latestBeers){
-            top.linkTo(selectionRow.bottom)
-        }){
+        LazyColumn(modifier = Modifier
+            .height(150.dp)
+            .constrainAs(latestBeers) {
+                centerHorizontallyTo(parent)
+                bottom.linkTo(confirmBtn.top, 10.dp)
 
-            val priceList = vm.beveragePriceList
+            }, contentPadding = PaddingValues(5.dp, 10.dp, 5.dp,10.dp)){
 
-            if(priceList != null) {
+            val priceList = bevQtyViewModel.beveragePriceList
+
+            if (priceList != null) {
                 items(priceList) { entry ->
-                    BeverageEntryCard(beverage = entry)
+                    BeverageEntryCard(beverage = entry, bevType.name)
                 }
             }
 
@@ -110,11 +109,40 @@ fun SelectBeverageQuantity(bevQtyViewModel: SelectBeverageQuantityViewModel){
 
 
 
-        ConfirmButton(vm, confirmBtn)
+        ConfirmButton(bevQtyViewModel, confirmBtn)
 
 
     }
 }
+
+@Composable
+fun BeverageEntryCard(beverage: Beverage, name: String){
+    val price = beverage.price/100
+    val priceString = "$price DKK"
+
+    Surface(modifier = Modifier
+        .width(300.dp)
+        .height(30.dp)
+        .padding(start = 5.dp)
+        .padding(end = 5.dp)
+        .background(Color.Transparent), shape = RoundedCornerShape(10.dp)
+    ){
+
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.primary),
+            contentAlignment = Alignment.Center) {
+
+            Row{
+                Text(text = "$name $priceString", style = MaterialTheme.typography.h5, color = MaterialTheme.colors.onPrimary, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+            }
+
+        }
+    }
+    Spacer(modifier = Modifier.height(5.dp))
+
+}
+
 
 @Composable
 private fun ConstraintLayoutScope.ConfirmButton(
@@ -132,12 +160,14 @@ private fun ConstraintLayoutScope.ConfirmButton(
         onConfirm = { vm.onConfirm() },
         title = "Confirm Purchase, ${vm.s.stateHandler.appMode.uName}?",
         text = "You are buying ${vm.qtySelected} ${vm.s.selectedBeverage.name} for ${vm.price} DKK",
-        onOpened = { vm.onClick() })
+        onOpened = { })
 
 
     SubmitButton(Modifier.Companion.constrainAs(confirmBtn) {
         bottom.linkTo(parent.bottom)
-    }, "CONFIRM", height(0.15).dp) { openDialog = true }
+    }, "CONFIRM", height(0.15).dp) {
+        vm.getPriceClicked()
+        openDialog = true }
 }
 
 
@@ -153,7 +183,9 @@ fun BeerImage(beverageType: BeverageType, modifier: Modifier = Modifier){
     val painterState = painter.state
     ConstraintLayout(modifier = modifier) {
 
-            Image(painter = painter, contentDescription = beverageType.name, modifier = Modifier.fillMaxWidth().height(200.dp))
+            Image(painter = painter, contentDescription = beverageType.name, modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp))
 
             if (painterState is ImagePainter.State.Loading) {
                 CircularProgressIndicator()
@@ -163,35 +195,3 @@ fun BeerImage(beverageType: BeverageType, modifier: Modifier = Modifier){
 
 }
 
-@Composable
-fun BeverageEntryCard(beverage: Beverage){
-
-    Surface(modifier = Modifier
-        .width(360.dp)
-        .height(45.dp)
-        .padding(start = 5.dp)
-        .padding(end = 5.dp)
-        .background(Color.Transparent), shape = RoundedCornerShape(20.dp)
-    ){
-
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.primary),
-            contentAlignment = Alignment.CenterStart) {
-
-            Row(
-                Modifier
-                    .padding(start = 20.dp)
-                    .fillMaxWidth()
-                    .padding(end = 20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly
-
-            ) {
-                Text(text = beverage.price.toString(), style = MaterialTheme.typography.h4, fontWeight = FontWeight.Normal, modifier = Modifier.width(40.dp), textAlign = TextAlign.Start)
-
-            }
-
-        }
-    }
-    Spacer(modifier = Modifier.height(5.dp))
-
-}

@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.views.beeritup.statistics
+package com.notarmaso.beeritup.views.beeritup.statistics
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

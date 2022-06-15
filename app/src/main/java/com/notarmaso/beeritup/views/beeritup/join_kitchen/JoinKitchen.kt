@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.views.beeritup.join_kitchen
+package com.notarmaso.beeritup.views.beeritup.join_kitchen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,13 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.notarmaso.beeritup.ui.theme.components.ButtonMain
 import com.notarmaso.beeritup.ui.theme.components.TopBar
-import com.notarmaso.beeritup.views.beeritup.join_kitchen.JoinKitchenViewModel
-import com.notarmaso.db_access_setup.ui.theme.components.TextFieldName
-import com.notarmaso.db_access_setup.ui.theme.components.TextFieldPassword
+import com.notarmaso.beeritup.ui.theme.components.TextFieldName
+import com.notarmaso.beeritup.ui.theme.components.TextFieldPassword
 
 @Composable
 fun JoinKitchen(joinKitchenViewModel: JoinKitchenViewModel) {
-    val vm = joinKitchenViewModel
 
     ConstraintLayout(
         Modifier
@@ -40,7 +38,7 @@ fun JoinKitchen(joinKitchenViewModel: JoinKitchenViewModel) {
 
         TopBar(Modifier.constrainAs(topBar){
             top.linkTo(parent.top)
-        },"join kitchen", goTo = { vm.s.nav?.popBackStack() }, Icons.Rounded.ArrowBack,)
+        },"join kitchen", goTo = { joinKitchenViewModel.s.nav?.popBackStack() }, Icons.Rounded.ArrowBack,)
 
         JoinKitchenForm(joinKitchenViewModel, Modifier.constrainAs(forms){
 
@@ -61,7 +59,6 @@ fun JoinKitchen(joinKitchenViewModel: JoinKitchenViewModel) {
 @Composable
 fun JoinKitchenForm(jkVm: JoinKitchenViewModel, modifier: Modifier = Modifier){
     val configuration = LocalConfiguration.current
-
     fun width(widthScale: Double): Double { return configuration.screenWidthDp * widthScale }
 
 
@@ -75,7 +72,7 @@ fun JoinKitchenForm(jkVm: JoinKitchenViewModel, modifier: Modifier = Modifier){
             Spacer(modifier = Modifier.height(20.dp))
             TextFieldPassword(placeholder = "********", vm = jkVm, width =  width(0.66).dp)
             Spacer(modifier = Modifier.height(20.dp))
-            ButtonMain(onClick = { jkVm.authorizeKitchen() }, text = "Assign" , isInverted = false, widthScale = 0.66 )
+            ButtonMain(onClick = { jkVm.onAssignPressed() }, text = "Assign" , isInverted = false, widthScale = 0.66 )
           //  ButtonBeerItUp(onClick = { jkVm.authorizeKitchen()}, width = width.dp, txt = "Assign")
 
         }

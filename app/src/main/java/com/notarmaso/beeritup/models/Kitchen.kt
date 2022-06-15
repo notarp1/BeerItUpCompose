@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.models
+package com.notarmaso.beeritup.models
 
 import com.google.gson.annotations.SerializedName
 

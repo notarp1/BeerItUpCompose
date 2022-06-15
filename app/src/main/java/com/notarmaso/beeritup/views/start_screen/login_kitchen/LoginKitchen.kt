@@ -15,9 +15,8 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.notarmaso.beeritup.ui.theme.components.SelectionHeader
 import com.notarmaso.beeritup.ui.theme.components.SubmitButton
-import com.notarmaso.beeritup.views.start_screen.login_kitchen.LoginKitchenViewModel
-import com.notarmaso.db_access_setup.ui.theme.components.TextFieldName
-import com.notarmaso.db_access_setup.ui.theme.components.TextFieldPassword
+import com.notarmaso.beeritup.ui.theme.components.TextFieldName
+import com.notarmaso.beeritup.ui.theme.components.TextFieldPassword
 import com.notarmaso.beeritup.R
 
 @Composable

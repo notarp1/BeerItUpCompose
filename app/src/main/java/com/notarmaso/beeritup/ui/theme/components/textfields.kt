@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.ui.theme.components
+package com.notarmaso.beeritup.ui.theme.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height

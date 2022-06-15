@@ -33,26 +33,24 @@ class AddBeverageViewModel(val s: Service, private val kitchenRepo: KitchenRepos
 
     fun setCategory(category: Category) {
         _selectedCategory = category
-        getBeverageTypes()
+        viewModelScope.launch {
+            getBeverageTypes()
+        }
     }
 
 
-    //DELETE THIS
-    var hasrun: Boolean = false
+    private suspend fun getBeverageTypes(){
 
+        val res: Response<MutableList<BeverageType>>
 
-    fun getBeverageTypes(){
-        viewModelScope.launch {
-            val res: Response<MutableList<BeverageType>>
-            withContext(Dispatchers.IO){
-                val kitchenId: Int = s.stateHandler.appMode.kId
-
-                res = kitchenRepo.getBeverageTypes(kitchenId, selectedCategory)
-
-
-            }
-            handleErrorKitchen(res)
+        withContext(Dispatchers.IO){
+            val kitchenId: Int = s.stateHandler.appMode.kId
+            res = kitchenRepo.getBeverageTypes(kitchenId, selectedCategory)
         }
+
+        if(res.isSuccessful)res.body()?.let { _beverageTypes = it }
+        else s.makeToast("Error: " + res.message())
+
     }
 
     fun navToNextPage(location: Pages, beverageType: BeverageType){
@@ -61,21 +59,9 @@ class AddBeverageViewModel(val s: Service, private val kitchenRepo: KitchenRepos
     }
 
 
-    private fun handleErrorKitchen(response: Response<MutableList<BeverageType>>) {
-        println(response.code())
-        when (response.code()) {
-
-            200 -> {
-                response.body()?.let { _beverageTypes = it }
-            }
-            500 -> s.makeToast(response.message())
-            else -> s.makeToast("Unknown error ${response.code()}: ${response.message()}")
-        }
-    }
-
     override fun update(funcToRun: FuncToRun) {
         if(funcToRun == FuncToRun.GET_BEVERAGE_TYPES){
-            getBeverageTypes()
+            setCategory(Category.BEERS)
         }
     }
 

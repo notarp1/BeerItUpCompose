@@ -1,4 +1,4 @@
-package com.notarmaso.db_access_setup.views.beeritup.payments
+package com.notarmaso.beeritup.views.beeritup.payments
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,7 +26,6 @@ import com.notarmaso.beeritup.models.UserPaymentObject
 import com.notarmaso.beeritup.ui.theme.components.ButtonMain
 import com.notarmaso.beeritup.ui.theme.components.CustomAlertDialog
 import com.notarmaso.beeritup.ui.theme.components.TopBar
-import com.notarmaso.beeritup.views.beeritup.payments.PaymentsViewModel
 
 
 @Composable
@@ -125,22 +124,13 @@ fun OwesToList(payVm: PaymentsViewModel, paymentObjectList: List<UserPaymentObje
 
         }
     } else {
-
-        var openDialog by remember { mutableStateOf(false) }
-
         LazyColumn(
             modifier = Modifier.height((height - 140).dp),
             contentPadding = PaddingValues(5.dp)
         ) {
             items(paymentObjectList) { user ->
-                CustomAlertDialog(
-                    isOpened = openDialog,
-                    onClose = { openDialog = !openDialog },
-                    onConfirm = {payVm.onAccept(user.uId)},
-                    title = "Make payment to ${user.phone} ",
-                    text = "You have to pay ${user.name}\n${user.total/100} DKK on phone ${user.phone} ",
-                    onOpened = {})
-                UserPaymentCard(user, modifier = Modifier.clickable { openDialog = true  })
+
+                UserPaymentCardOwes(user, payVm)
             }
         }
     }
@@ -164,7 +154,7 @@ fun OwedFromList(
         ) {
 
             items(paymentObjectList) { user ->
-                UserPaymentCard(user)
+                UserPaymentCardOwed(user)
 
             }
         }
@@ -174,11 +164,12 @@ fun OwedFromList(
 
 
 @Composable
-fun UserPaymentCard(
+fun UserPaymentCardOwed(
     user: UserPaymentObject,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 
+    val price = (user.total/100f)
     Surface(
         modifier = Modifier
             .width(360.dp)
@@ -207,7 +198,78 @@ fun UserPaymentCard(
 
 
                 Text(
-                    text = "${(user.total / 100).toFloat()}",
+                    text = price.toString(),
+                    style = MaterialTheme.typography.h4,
+                    modifier = Modifier.width(60.dp)
+                )
+                Text(
+                    text = user.name,
+                    style = MaterialTheme.typography.h4,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.width(140.dp),
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = user.phone,
+                    style = MaterialTheme.typography.h4,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.width(160.dp),
+                    textAlign = TextAlign.Center
+                )
+            }
+
+        }
+    }
+    Spacer(modifier = Modifier.height(5.dp))
+
+}
+
+
+@Composable
+fun UserPaymentCardOwes(
+    user: UserPaymentObject,
+    payVm: PaymentsViewModel
+) {
+    var openDialog by remember { mutableStateOf(false) }
+    val price = (user.total/100f)
+    CustomAlertDialog(
+        isOpened = openDialog,
+        onClose = { openDialog = !openDialog },
+        onConfirm = {payVm.onAccept(user.uId)},
+        title = "Make payment to ${user.phone} ",
+        text = "You have to pay ${user.name}\n${price} DKK on phone ${user.phone} ",
+        onOpened = {})
+
+    Surface(
+        modifier = Modifier
+            .width(360.dp)
+            .height(45.dp)
+            .padding(start = 5.dp)
+            .padding(end = 5.dp)
+            .background(Color.Transparent), shape = RoundedCornerShape(20.dp)
+    ) {
+
+        Box(
+            modifier = Modifier
+                .clickable { openDialog=true }
+                .fillMaxSize()
+                .background(MaterialTheme.colors.primary),
+            contentAlignment = Alignment.CenterStart
+        ) {
+
+            Row(
+                Modifier
+                    .padding(start = 20.dp)
+                    .fillMaxWidth()
+                    .padding(end = 20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+
+            ) {
+
+
+                Text(
+                    text = price.toString(),
                     style = MaterialTheme.typography.h4,
                     modifier = Modifier.width(60.dp)
                 )

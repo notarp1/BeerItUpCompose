@@ -35,7 +35,6 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel) {
 
     val loggedInAsKitchen = vm.loggedInAsKitchen
 
-
     ConstraintLayout(
         Modifier
             .fillMaxSize()
@@ -58,7 +57,6 @@ fun MainMenu(mainMenuViewModel: MainMenuViewModel) {
 
         LoginInformation(
             mainMenuViewModel = vm,
-            loggedInAsKitchen,
             modifier = Modifier.constrainAs(loginInfo) {
                 top.linkTo(topBar.bottom, 30.dp)
                 centerHorizontallyTo(parent)
@@ -114,15 +112,11 @@ private fun ConstraintLayoutScope.LogOutButton(
 @Composable
 private fun LoginInformation(
     mainMenuViewModel: MainMenuViewModel,
-    isKitchen: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val vm = mainMenuViewModel
-    when (vm.logInState()) {
-
+    when (mainMenuViewModel.logInState()) {
         is StateHandler.AppMode.SignedInAsUser -> {
-            //nav.navigate(MainActivity.ADD_BEER)
-            val user = vm.logInState() as StateHandler.AppMode.SignedInAsUser
+            val user = mainMenuViewModel.logInState() as StateHandler.AppMode.SignedInAsUser
 
             ConstraintLayout(
                 modifier
@@ -130,8 +124,8 @@ private fun LoginInformation(
                     .fillMaxWidth()
             ) {
 
-                if (user.isAssigned) LoggedIn(user.uName, isKitchen, vm)
-                else NotAssignedToKitchen(user, vm)
+                if (user.isAssigned) LoggedIn(user.uName, false, mainMenuViewModel)
+                else NotAssignedToKitchen(user, mainMenuViewModel)
 
             }
         }
@@ -143,15 +137,11 @@ private fun LoginInformation(
                     .background(Color.Transparent)
                     .fillMaxWidth()
             ) {
-                LoggedIn(kitchen.kName, isKitchen, mainMenuViewModel)
+                LoggedIn(kitchen.kName, true, mainMenuViewModel)
             }
         }
 
         is StateHandler.AppMode.SignedOut -> {
-            /* TODO LOOK AT THIS */
-            //vm.s.navigate(Pages.START_MENU)
-            //mainMenuViewModel.logout()
-
         }
 
     }

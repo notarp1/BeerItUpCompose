@@ -1,6 +1,5 @@
-package com.notarmaso.db_access_setup.views.beeritup.logbook
+package com.notarmaso.beeritup.views.beeritup.logbook
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -32,10 +31,6 @@ import com.notarmaso.beeritup.ui.theme.components.TopBar
 @Composable
 fun Logbook(vm: LogbookViewModel) {
 
-    /*TODO: Remake this with observer*/
-    //vm.reloadHighScores()
-    vm.getLogs()
-
     ConstraintLayout(
         Modifier
             .fillMaxSize()
@@ -62,7 +57,6 @@ fun Logbook(vm: LogbookViewModel) {
 }
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LogbookList(vm: LogbookViewModel, modifier: Modifier = Modifier) {
     val beverageLogEntries: List<BeverageLogEntryObj>? = vm.logs
@@ -70,7 +64,7 @@ fun LogbookList(vm: LogbookViewModel, modifier: Modifier = Modifier) {
     val height = configuration.screenHeightDp
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
-        Row() {
+        Row{
 
             Box(
                 Modifier
@@ -85,7 +79,7 @@ fun LogbookList(vm: LogbookViewModel, modifier: Modifier = Modifier) {
                         )
                     )) {
 
-                Column() {
+                Column{
 
 
                     Row(
@@ -100,13 +94,13 @@ fun LogbookList(vm: LogbookViewModel, modifier: Modifier = Modifier) {
                         Icon(Icons.Rounded.ArrowBack,
                             contentDescription = "Reload Highscores",
                             modifier = Modifier
-                                .clickable(enabled = vm.selectedOptionInt != 0) { vm.decrementOption() }
+                                .clickable(enabled = vm.selectedOption != 0) { vm.decrementOption() }
                                 .size(40.dp),
-                            tint = if (vm.selectedOptionInt == 0) Color.Transparent else MaterialTheme.colors.onPrimary)
+                            tint = if (vm.selectedOption == 0) Color.Transparent else MaterialTheme.colors.onPrimary)
 
                         /*Month*/
                         Text(
-                            text = vm.selectedOption,
+                            text = vm.selectedOptionString,
                             style = MaterialTheme.typography.h2,
                             modifier = Modifier.width(200.dp),
                             textAlign = TextAlign.Center
@@ -115,9 +109,9 @@ fun LogbookList(vm: LogbookViewModel, modifier: Modifier = Modifier) {
                         Icon(Icons.Rounded.ArrowForward,
                             contentDescription = "Reload Highscores",
                             modifier = Modifier
-                                .clickable(enabled = vm.selectedOptionInt != 3) { vm.incrementOption() }
+                                .clickable(enabled = vm.selectedOption != 3) { vm.incrementOption() }
                                 .size(40.dp),
-                            tint = if (vm.selectedOptionInt == 3) Color.Transparent else MaterialTheme.colors.onPrimary)
+                            tint = if (vm.selectedOption == 3) Color.Transparent else MaterialTheme.colors.onPrimary)
                     }
                     Box(Modifier.fillMaxWidth().weight(0.05f).background(MaterialTheme.colors.onPrimary))
 
@@ -175,11 +169,11 @@ fun LogBeveragesEntry(entry: BeverageLogEntryObj, vm: LogbookViewModel) {
                 val dateFromDb = entry.date.toString()
                 val date = dateFromDb.substring(0..15)
 
-                when (vm.selectedOptionInt) {
+                when (vm.selectedOption) {
 
 
                     0 -> {
-                        Column() {
+                        Column{
                             Row(
                                 Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
@@ -206,7 +200,7 @@ fun LogBeveragesEntry(entry: BeverageLogEntryObj, vm: LogbookViewModel) {
                     }
 
                     1 -> {
-                        Column() {
+                        Column {
                             Row(
                                 Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
