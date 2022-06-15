@@ -23,10 +23,7 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.notarmaso.beeritup.models.BeverageType
-import com.notarmaso.beeritup.ui.theme.components.ButtonSelection
-import com.notarmaso.beeritup.ui.theme.components.CustomAlertDialog
-import com.notarmaso.beeritup.ui.theme.components.SubmitButton
-import com.notarmaso.beeritup.ui.theme.components.TopBar
+import com.notarmaso.beeritup.ui.theme.components.*
 
 
 @Composable
@@ -35,6 +32,7 @@ fun AddBeverageQuantity(bevQtyViewModel: AddBeverageQuantityViewModel){
 
     val bevType: BeverageType = bevQtyViewModel.s.selectedBeverage
 
+    LoadingIndicator(bevQtyViewModel.isLoading)
 
     ConstraintLayout(
         Modifier
@@ -119,11 +117,11 @@ private fun ConstraintLayoutScope.AddBeerButton(
     val configuration = LocalConfiguration.current
     fun height(widthScale: Double): Double { return configuration.screenHeightDp * widthScale }
 
-    var openDialog by remember { mutableStateOf(false) }
+
 
     CustomAlertDialog(
-        isOpened = openDialog,
-        onClose = { openDialog = !openDialog },
+        isOpened = vm.openDialog,
+        onClose = { vm.setDialog(!vm.openDialog) },
         onConfirm = { vm.onConfirm() },
         title = "Confirm your added beverages, ${vm.s.stateHandler.appMode.uName}?",
         text = "You are adding ${vm.qtySelected} ${vm.s.selectedBeverage.name} for ${vm.pricePerBeverage} DKK per beverage",
@@ -134,7 +132,7 @@ private fun ConstraintLayoutScope.AddBeerButton(
         bottom.linkTo(parent.bottom)
     }, "CONFIRM", height(0.15).dp) {
         vm.onClick()
-        openDialog = true }
+        vm.setDialog(true) }
 }
 
 

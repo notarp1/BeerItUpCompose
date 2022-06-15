@@ -13,17 +13,16 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.notarmaso.beeritup.ui.theme.components.SelectionHeader
-import com.notarmaso.beeritup.ui.theme.components.SubmitButton
-import com.notarmaso.beeritup.ui.theme.components.TextFieldName
-import com.notarmaso.beeritup.ui.theme.components.TextFieldPassword
 import com.notarmaso.beeritup.R
+import com.notarmaso.beeritup.ui.theme.components.*
 
 @Composable
 fun LoginKitchen(loginKitchenViewModel: LoginKitchenViewModel) {
     val configuration = LocalConfiguration.current
     fun width(widthScale: Double): Double { return configuration.screenWidthDp * widthScale }
     fun height(widthScale: Double): Double { return configuration.screenHeightDp * widthScale }
+
+    LoadingIndicator(loginKitchenViewModel.isLoading)
 
     ConstraintLayout(
         Modifier

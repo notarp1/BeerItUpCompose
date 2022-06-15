@@ -31,13 +31,21 @@ class SelectBeverageQuantityViewModel(val s: Service, private val kitchenRepo: K
     private var _beveragePriceList by mutableStateOf<List<Beverage>?>(listOf())
     val beveragePriceList: List<Beverage>? get() = _beveragePriceList
 
-
     private var beveragePurchaseReceiveObj: BeveragePurchaseReceiveObj? = null
+
+    val isLoading: Boolean get() = s.isLoading
+
+    private var _openDialog by  mutableStateOf(false)
+    val openDialog: Boolean get() = _openDialog
+
 
     init {
         s.observer.register(this)
     }
 
+    fun setDialog(bool: Boolean){
+        _openDialog = bool
+    }
 
     fun incrementCounter() {
         if (_qtySelected >= totalStock) _qtySelected = totalStock
@@ -53,12 +61,15 @@ class SelectBeverageQuantityViewModel(val s: Service, private val kitchenRepo: K
 
     fun getPriceClicked() {
         viewModelScope.launch {
+            s.setLoading(true)
             calculatePrice()
         }
     }
 
     fun onConfirm() {
         viewModelScope.launch {
+            s.setLoading(true)
+            _openDialog = false
             makeTransaction()
         }
     }
@@ -82,9 +93,8 @@ class SelectBeverageQuantityViewModel(val s: Service, private val kitchenRepo: K
     private suspend fun calculatePrice() {
 
         val res: Response<BeveragePurchaseReceiveObj>
-
-
         val configObj = BeveragePurchaseConfigObj(s.selectedBeverage.name, qtySelected)
+
         withContext(Dispatchers.IO) {
             res = kitchenRepo.calculatePrice(s.stateHandler.appMode.kId, configObj)
         }
@@ -94,10 +104,8 @@ class SelectBeverageQuantityViewModel(val s: Service, private val kitchenRepo: K
                 _price = it.price.div(100)
                 beveragePurchaseReceiveObj = it
             }
-            return
-        }
-        s.makeToast("Error: " + res.message())
-
+        } else s.makeToast("Error: " + res.message())
+        s.setLoading(false)
 
     }
 
@@ -130,6 +138,7 @@ class SelectBeverageQuantityViewModel(val s: Service, private val kitchenRepo: K
 
             }else s.makeToast("Errasor: ${res.message()}")
 
+            s.setLoading(false)
 
         }
 

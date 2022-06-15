@@ -34,9 +34,7 @@ import com.notarmaso.beeritup.ui.theme.components.*
 fun SelectBeverageQuantity(bevQtyViewModel: SelectBeverageQuantityViewModel){
     val bevType: BeverageType = bevQtyViewModel.s.selectedBeverage
 
-
-
-
+    LoadingIndicator(bevQtyViewModel.isLoading)
 
     ConstraintLayout(
         Modifier
@@ -152,11 +150,11 @@ private fun ConstraintLayoutScope.ConfirmButton(
     val configuration = LocalConfiguration.current
     fun height(widthScale: Double): Double { return configuration.screenHeightDp * widthScale }
 
-    var openDialog by remember { mutableStateOf(false) }
+
 
     CustomAlertDialog(
-        isOpened = openDialog,
-        onClose = { openDialog = !openDialog },
+        isOpened = vm.openDialog,
+        onClose = { vm.setDialog(!vm.openDialog) },
         onConfirm = { vm.onConfirm() },
         title = "Confirm Purchase, ${vm.s.stateHandler.appMode.uName}?",
         text = "You are buying ${vm.qtySelected} ${vm.s.selectedBeverage.name} for ${vm.price} DKK",
@@ -167,7 +165,7 @@ private fun ConstraintLayoutScope.ConfirmButton(
         bottom.linkTo(parent.bottom)
     }, "CONFIRM", height(0.15).dp) {
         vm.getPriceClicked()
-        openDialog = true }
+        vm.setDialog(true)}
 }
 
 

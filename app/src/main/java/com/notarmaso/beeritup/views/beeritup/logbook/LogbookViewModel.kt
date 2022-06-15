@@ -26,11 +26,18 @@ class LogbookViewModel(val s: Service, private val userRepo: UserRepository) : V
     val selectedOption: Int get() = _selectedOption
 
 
+    val isLoading: Boolean get() = s.isLoading
+
+
+    init {
+        s.observer.register(this)
+    }
+
     fun incrementOption() {
         if (_selectedOption >= 3) _selectedOption = 3
         else {
             _selectedOption++
-            getLogs()
+            getLogs(null)
         }
     }
 
@@ -38,19 +45,23 @@ class LogbookViewModel(val s: Service, private val userRepo: UserRepository) : V
         if (_selectedOption <= 0) _selectedOption = 0
         else {
             _selectedOption--
-            getLogs()
+            getLogs(null)
         }
 
     }
 
-    private fun getLogs() {
+    private fun getLogs(selectedOption: Int?) {
+
+        if (selectedOption != null) {
+            _selectedOption = selectedOption
+        }
         viewModelScope.launch(Dispatchers.Main) {
             var res: Response<List<BeverageLogEntryObj>>
             val uId = s.stateHandler.appMode.uId
 
             withContext(Dispatchers.IO) {
+                s.setLoading(true)
                 when (_selectedOption) {
-
                     0 -> {
                         res = userRepo.soldLogbook(uId)
                         handleResponseCode(res)
@@ -99,11 +110,12 @@ class LogbookViewModel(val s: Service, private val userRepo: UserRepository) : V
             200 ->  _logs = response.body()
             else -> s.makeToast("Error: ${response.message()}")
         }
+        s.setLoading(false)
     }
 
     override fun update(funcToRun: FuncToRun) {
         if(funcToRun == FuncToRun.GET_LOGS){
-            getLogs()
+            getLogs(0)
         }
     }
 

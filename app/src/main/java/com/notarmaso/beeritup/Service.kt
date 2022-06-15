@@ -3,6 +3,9 @@ package com.notarmaso.beeritup
 import android.app.AlertDialog
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import com.notarmaso.beeritup.db.repositories.KitchenRepository
 import com.notarmaso.beeritup.db.repositories.UserRepository
@@ -30,6 +33,13 @@ class Service(
 
     private var _currentPage: Pages = Pages.MAIN_MENU
     val currentPage: Pages get() = _currentPage
+
+    private var _isLoading by mutableStateOf(false)
+    val isLoading: Boolean get() = _isLoading
+
+    fun setLoading(state: Boolean){
+        _isLoading = state
+    }
 
     private lateinit var _selectedBeverage: BeverageType
     val selectedBeverage: BeverageType get() = _selectedBeverage
@@ -72,9 +82,10 @@ class Service(
         if (res.isSuccessful){
             makeToast("Login Succesful!")
             handleUser(res)
+
         }
         else makeToast(res.message())
-
+        setLoading(false)
 
     }
 
@@ -117,7 +128,7 @@ class Service(
 
         } else makeToast(res.message())
 
-
+        setLoading(false)
 
 
     }

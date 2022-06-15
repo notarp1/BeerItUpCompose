@@ -2,6 +2,7 @@ package com.notarmaso.beeritup.views.beeritup.add_beverage
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,10 +28,16 @@ class AddBeverageQuantityViewModel(val s: Service, private val kitchenRep: Kitch
     private var _pricePerBeverage by mutableStateOf(0f)
     val pricePerBeverage: Float get() = _pricePerBeverage
 
+    val isLoading: Boolean get() = s.isLoading
 
+    private var _openDialog by  mutableStateOf(false)
+    val openDialog: Boolean get() = _openDialog
 
+    fun setDialog(bool: Boolean){
+        _openDialog = bool
+    }
 
-    fun incrementCounter(){
+   fun incrementCounter(){
         if(_qtySelected >= 48) _qtySelected = 48
         else _qtySelected++
 
@@ -53,7 +60,10 @@ class AddBeverageQuantityViewModel(val s: Service, private val kitchenRep: Kitch
     }
 
     fun onConfirm(){
+
         viewModelScope.launch(){
+            s.setLoading(true)
+            _openDialog = false
             addBeverages()
         }
 
@@ -80,6 +90,8 @@ class AddBeverageQuantityViewModel(val s: Service, private val kitchenRep: Kitch
             _qtySelected = 24
 
         }else s.makeToast("Error: " + res.message())
+
+        s.setLoading(false)
 
 
     }

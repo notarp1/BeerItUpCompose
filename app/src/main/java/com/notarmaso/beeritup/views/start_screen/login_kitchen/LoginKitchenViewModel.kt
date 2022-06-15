@@ -19,6 +19,7 @@ class LoginKitchenViewModel(val s: Service) : ViewModel(), Form {
     private var _password by mutableStateOf("112233")
     val password: String get() = _password
 
+    val isLoading: Boolean get() = s.isLoading
 
     override fun setPass(newText: String, isPasswordConfirm: Boolean) {
         _password = newText
@@ -34,6 +35,7 @@ class LoginKitchenViewModel(val s: Service) : ViewModel(), Form {
     }
 
     fun logInKitchen() {
+        s.setLoading(true)
         viewModelScope.launch {
             s.logInKitchen(name, password)
         }

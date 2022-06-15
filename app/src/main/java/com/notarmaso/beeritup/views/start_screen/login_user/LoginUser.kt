@@ -25,6 +25,8 @@ fun LoginUser(loginUserViewModel: LoginUserViewModel) {
     fun width(widthScale: Double): Double { return configuration.screenWidthDp * widthScale }
     fun height(widthScale: Double): Double { return configuration.screenHeightDp * widthScale }
 
+    LoadingIndicator(loginUserViewModel.isLoading)
+
     ConstraintLayout(
         Modifier
             .fillMaxSize()
@@ -76,7 +78,7 @@ fun LoginUser(loginUserViewModel: LoginUserViewModel) {
         }, loginUserViewModel,  width(0.66).dp, tfHeight)
 
 
-        LoadingIndicator(loginUserViewModel.isLoading)
+
 
 
 

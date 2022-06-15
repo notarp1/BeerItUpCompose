@@ -24,13 +24,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.notarmaso.beeritup.models.BeverageLogEntryObj
+import com.notarmaso.beeritup.ui.theme.components.LoadingIndicator
 import com.notarmaso.beeritup.ui.theme.components.TopBar
 
 
 
 @Composable
 fun Logbook(vm: LogbookViewModel) {
-
+    LoadingIndicator(vm.isLoading)
     ConstraintLayout(
         Modifier
             .fillMaxSize()
@@ -173,6 +174,7 @@ fun LogBeveragesEntry(entry: BeverageLogEntryObj, vm: LogbookViewModel) {
 
 
                     0 -> {
+                        val price = entry.price /  100f
                         Column{
                             Row(
                                 Modifier.fillMaxWidth(),
@@ -190,7 +192,7 @@ fun LogBeveragesEntry(entry: BeverageLogEntryObj, vm: LogbookViewModel) {
                             }
 
                             Text(
-                                text = "${entry.counterpartName} ${entry.counterpartPhone} paid ${entry.price / 100}kr",
+                                text = "${entry.counterpartName} ${entry.counterpartPhone} paid $price kr",
                                 style = MaterialTheme.typography.h6, fontWeight = FontWeight.Normal
                             )
 
@@ -200,6 +202,8 @@ fun LogBeveragesEntry(entry: BeverageLogEntryObj, vm: LogbookViewModel) {
                     }
 
                     1 -> {
+
+                        val price = entry.price /  100f
                         Column {
                             Row(
                                 Modifier.fillMaxWidth(),
@@ -213,7 +217,7 @@ fun LogBeveragesEntry(entry: BeverageLogEntryObj, vm: LogbookViewModel) {
                                 )
                             }
                             Text(
-                                text = "You paid ${entry.price / 100}kr. to ${entry.counterpartName} ${entry.counterpartPhone}",
+                                text = "You paid $price kr. to ${entry.counterpartName} ${entry.counterpartPhone}",
                                 style = MaterialTheme.typography.h6,
                                 fontWeight = FontWeight.Normal
                             )
@@ -222,15 +226,16 @@ fun LogBeveragesEntry(entry: BeverageLogEntryObj, vm: LogbookViewModel) {
                     }
 
                     2 -> {
-
+                        val price_pr = (entry.price / entry.count) / 100f
+                        val price = entry.price /  100f
                         Row(
                             Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(text = date, style = MaterialTheme.typography.h6)
                             Text(
-                                text = "${entry.count} ${entry.bevName} á ${(entry.price / entry.count) / 100} kr / ${entry.price / 100} kr",
-                                style = MaterialTheme.typography.h6, fontWeight = FontWeight.Normal
+                                text = "${entry.count} ${entry.bevName} á\n $price_pr kr / $price kr",
+                                style = MaterialTheme.typography.h6, fontWeight = FontWeight.Normal, textAlign = TextAlign.End
                             )
 
                         }
@@ -238,15 +243,16 @@ fun LogBeveragesEntry(entry: BeverageLogEntryObj, vm: LogbookViewModel) {
                     }
 
                     3 -> {
-
+                        val price_pr = (entry.price / entry.count) / 100f
+                        val price = entry.price /  100f
                         Row(
                             Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(text = date, style = MaterialTheme.typography.h6)
                             Text(
-                                text = "${entry.count} ${entry.bevName} á ${(entry.price / entry.count) / 100} kr / ${entry.price / 100} kr",
-                                style = MaterialTheme.typography.h6, fontWeight = FontWeight.Normal
+                                text = "${entry.count} ${entry.bevName} á\n $price_pr kr / $price kr",
+                                style = MaterialTheme.typography.h6, fontWeight = FontWeight.Normal, textAlign = TextAlign.End
                             )
 
                         }

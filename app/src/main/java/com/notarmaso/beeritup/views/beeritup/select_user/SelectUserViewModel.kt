@@ -46,7 +46,7 @@ class SelectUserViewModel(val s: Service, private val kitchenRepo: KitchenReposi
 
         when(s.currentPage){
             Pages.PAYMENTS -> s.observer.notifySubscribers(FuncToRun.GET_PAYMENTS)
-            Pages.LOGBOOKS -> s.observer.notifySubscribers(FuncToRun.GET_LOGS)
+            Pages.LOGBOOKS -> {s.observer.notifySubscribers(FuncToRun.GET_LOGS)}
             else -> println("else statement is run")
         }
 
