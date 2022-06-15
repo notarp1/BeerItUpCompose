@@ -9,11 +9,15 @@ android {
     compileSdk 32
 
     defaultConfig {
-        applicationId "com.notarmaso.beeritupcompose"
+        applicationId "com.notarmaso.beeritup"
         minSdk 26
         targetSdk 32
         versionCode 1
         versionName "1.0"
+
+        buildConfigField "int", "CONNECTION_ESTABLISH_TIMEOUT", "5"
+        buildConfigField "int", "CONNECTION_READ_TIMEOUT", "30"
+        buildConfigField "int", "CONNECTION_WRITE_TIMEOUT", "30"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

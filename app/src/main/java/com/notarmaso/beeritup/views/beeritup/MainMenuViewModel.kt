@@ -1,0 +1,59 @@
+package com.notarmaso.beeritup.views.beeritup
+
+import androidx.lifecycle.ViewModel
+import com.notarmaso.beeritup.*
+import com.notarmaso.beeritup.interfaces.Observable
+
+class MainMenuViewModel(val s: Service) : ViewModel(), Observable {
+
+
+    private var _loggedInAsKitchen: Boolean = false
+    val loggedInAsKitchen: Boolean get() = _loggedInAsKitchen
+
+    fun logInState(): StateHandler.AppMode {
+        return s.stateHandler.appMode
+    }
+
+    init {
+        s.observer.register(this)
+    }
+
+
+    fun isLoggedInAsKitchen(){
+        if(logInState().isSignedInAsKitchen()) {
+            s.observer.notifySubscribers(FuncToRun.GET_USERS)
+        }
+
+        _loggedInAsKitchen = logInState() is StateHandler.AppMode.SignedInAsKitchen
+    }
+
+
+    fun navigate(pages: Pages){
+        when(s.currentPage){
+            Pages.ADD_BEVERAGE_STAGE_1 -> s.observer.notifySubscribers(FuncToRun.GET_BEVERAGE_TYPES)
+            Pages.SELECT_BEVERAGE_STAGE_1 -> s.observer.notifySubscribers(FuncToRun.GET_BEVERAGES_IN_STOCK)
+            Pages.PAYMENTS -> {
+                //If Signed in as kitchen, run in SelectUserViewModel
+                if(s.stateHandler.appMode.isSignedInAsUser()) {
+                    s.observer.notifySubscribers(FuncToRun.GET_PAYMENTS)
+                }
+            }
+            else -> println("Doing something else")
+        }
+        s.navigate(pages)
+    }
+
+
+
+    fun logout(){
+        s.stateHandler.logOut()
+        s.navigate(Pages.START_MENU)
+    }
+
+    override fun update(funcToRun: FuncToRun) {
+        if(funcToRun == FuncToRun.GET_LOGIN_STATE_2){
+            isLoggedInAsKitchen()
+            s.observer.notifySubscribers(FuncToRun.FINISHED_LOADING)
+        }
+    }
+}

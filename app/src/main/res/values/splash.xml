@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
-    <style name="Theme.BeerItUpCompose.Starting" parent="Theme.SplashScreen">
+    <style name="Theme.BeerItUp.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
-        <item name="postSplashScreenTheme">@style/Theme.BeerItUpCompose</item>
+        <item name="postSplashScreenTheme">@style/Theme.BeerItUp</item>
     </style>
     
 </resources>

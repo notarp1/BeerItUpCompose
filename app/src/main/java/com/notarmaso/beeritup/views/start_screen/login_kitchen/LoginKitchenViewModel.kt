@@ -1,0 +1,54 @@
+package com.notarmaso.beeritup.views.start_screen.login_kitchen
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import com.notarmaso.beeritup.Service
+import com.notarmaso.beeritup.interfaces.Form
+
+class LoginKitchenViewModel(val s: Service) : ViewModel(), Form {
+
+
+
+    private var _name by mutableStateOf("ST-Lige")
+    val name: String get() = _name
+
+    private var _password by mutableStateOf("112233")
+    val password: String get() = _password
+
+
+    override fun setPass(newText: String, isPasswordConfirm: Boolean) {
+        _password = newText
+    }
+
+    override fun setName(newText: String, isEmail: Boolean) {
+        _name = newText
+    }
+
+    private fun resetTextFields(){
+        _name = ""
+        _password = ""
+    }
+
+    fun logInKitchen() {
+        s.logInKitchen(name, password)
+        resetTextFields()
+    }
+
+
+
+
+
+    override fun setPin(newText: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun setPhone(newText: String) {
+        TODO("Not yet implemented")
+    }
+
+
+
+
+}
