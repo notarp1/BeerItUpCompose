@@ -22,6 +22,8 @@ class LoginUserViewModel(val s: Service) : ViewModel(), Form {
     private var _email by mutableStateOf("slippen4@gmail.com")
     private val email: String get() = _email
 
+    private var _isLoading by mutableStateOf(false)
+    val isLoading: Boolean get() = _isLoading
 
     override fun setName(newText: String, isEmail: Boolean) {
         if(isEmail) _email = newText
@@ -49,8 +51,10 @@ class LoginUserViewModel(val s: Service) : ViewModel(), Form {
     }
 
     fun logInUser(){
+        _isLoading = true
         viewModelScope.launch() {
             s.logInUser(email, password)
+            _isLoading = false
         }
         resetTextFields()
     }

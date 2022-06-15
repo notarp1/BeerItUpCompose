@@ -2,15 +2,14 @@ package com.notarmaso.beeritup.ui.theme.components
 
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+
+
 
 @Composable
 fun CustomAlertDialog(isOpened: Boolean = false, onClose: () -> Unit, onConfirm: () -> Unit, title: String, text: String, onOpened: ()->Unit = {}) {
@@ -28,6 +27,7 @@ fun CustomAlertDialog(isOpened: Boolean = false, onClose: () -> Unit, onConfirm:
                 // onCloseRequest.
                 onClose()
             },
+
             title = {
                 Text(title, style = MaterialTheme.typography.h4, color = MaterialTheme.colors.primary)
             },
@@ -55,3 +55,30 @@ fun CustomAlertDialog(isOpened: Boolean = false, onClose: () -> Unit, onConfirm:
         )
     }
 }
+
+@Composable
+fun LoadingIndicator(isOpened: Boolean = false) {
+
+
+    if (isOpened) {
+
+        AlertDialog( modifier = Modifier.width(140.dp), shape = RoundedCornerShape(20.dp),
+            onDismissRequest = {
+            },
+
+            title = {
+                Text("Loading", style = MaterialTheme.typography.h4, color = MaterialTheme.colors.primary)
+            },
+            text = {
+              CircularProgressIndicator()
+            },
+            confirmButton = {
+
+            },
+            dismissButton = {
+
+            }
+        )
+    }
+}
+

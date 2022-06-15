@@ -17,6 +17,8 @@ import com.notarmaso.beeritup.ui.theme.components.SelectionHeader
 import com.notarmaso.beeritup.ui.theme.components.SubmitButton
 import com.notarmaso.beeritup.ui.theme.components.*
 import com.notarmaso.beeritup.R
+import kotlin.math.log
+
 @Composable
 fun LoginUser(loginUserViewModel: LoginUserViewModel) {
     val configuration = LocalConfiguration.current
@@ -74,6 +76,8 @@ fun LoginUser(loginUserViewModel: LoginUserViewModel) {
         }, loginUserViewModel,  width(0.66).dp, tfHeight)
 
 
+        LoadingIndicator(loginUserViewModel.isLoading)
+
 
 
 
@@ -81,7 +85,9 @@ fun LoginUser(loginUserViewModel: LoginUserViewModel) {
             bottom.linkTo(parent.bottom)
             start.linkTo(g1)
             end.linkTo(g2)
-        }, stringResource(R.string.signIn), height(0.15).dp) { loginUserViewModel.logInUser() }
+        }, stringResource(R.string.signIn), height(0.15).dp) {
+
+            loginUserViewModel.logInUser() }
 
     }
 
