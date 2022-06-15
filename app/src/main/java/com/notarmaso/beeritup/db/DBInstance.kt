@@ -18,18 +18,18 @@ class DBInstance(ctx: Context) {
 
 
     private val retrofit by lazy {
-      /*  Retrofit.Builder()
+        Retrofit.Builder()
             .baseUrl("https://beeritup-app.herokuapp.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(getHttpClient(ctx).build())
-            .build()*/
-
-
-        Retrofit.Builder()
-            .baseUrl("http://10.0.1.221:3000/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(getHttpClient(ctx).build())
             .build()
+
+
+        /*   Retrofit.Builder()
+               .baseUrl("http://10.0.1.221:3000/")
+               .addConverterFactory(GsonConverterFactory.create())
+               .client(getHttpClient(ctx).build())
+               .build()*/
 
         /*Retrofit.Builder()
             .baseUrl("http://172.20.10.7:3000/")
@@ -46,6 +46,7 @@ class DBInstance(ctx: Context) {
     val kitchenApi: IKitchenRepository by lazy {
         retrofit.create(IKitchenRepository::class.java)
     }
+
     private fun getHttpClient(ctx: Context): OkHttpClient.Builder {
 
         val httpClient = OkHttpClient.Builder()
@@ -61,50 +62,50 @@ class DBInstance(ctx: Context) {
         @Throws(IOException::class)
 
         override fun intercept(chain: Interceptor.Chain): Response {
-           val request = chain.request()
+            val request = chain.request()
             try {
-               if (!isConnected) {
-                   throw NoConnectivityException()
-                   // Throwing our custom exception 'NoConnectivityException'
-               }
-               val builder: Request.Builder = request.newBuilder()
-               return chain.proceed(request)
-           }catch (e: Exception){
+                if (!isConnected) {
+                    throw NoConnectivityException()
+                    // Throwing our custom exception 'NoConnectivityException'
+                }
+                val builder: Request.Builder = request.newBuilder()
+                return chain.proceed(request)
+            } catch (e: Exception) {
 
-               e.printStackTrace()
-               var msg = ""
+                e.printStackTrace()
+                var msg = ""
 
-               when (e) {
-                   is NoConnectivityException -> {
-                       msg = e.message
-                   }
-                   is SocketTimeoutException -> {
-                       msg = "Timeout - Please check your internet connection"
-                   }
-                   is UnknownHostException -> {
-                       msg = "Unable to make a connection. Please check your internet"
-                   }
-                   is ConnectionShutdownException -> {
-                       msg = "Connection shutdown. Please check your internet"
-                   }
-                   is IOException -> {
-                       msg = "Server is unreachable, please try again later."
-                   }
-                   is IllegalStateException -> {
-                       msg = "${e.message}"
-                   }
-                   else -> {
-                       msg = "${e.message}"
-                   }
-               }
+                when (e) {
+                    is NoConnectivityException -> {
+                        msg = e.message
+                    }
+                    is SocketTimeoutException -> {
+                        msg = "Timeout - Please check your internet connection"
+                    }
+                    is UnknownHostException -> {
+                        msg = "Unable to make a connection. Please check your internet"
+                    }
+                    is ConnectionShutdownException -> {
+                        msg = "Connection shutdown. Please check your internet"
+                    }
+                    is IOException -> {
+                        msg = "Server is unreachable, please try again later."
+                    }
+                    is IllegalStateException -> {
+                        msg = "${e.message}"
+                    }
+                    else -> {
+                        msg = "${e.message}"
+                    }
+                }
 
-               return Response.Builder()
-                   .request(request)
-                   .protocol(Protocol.HTTP_1_1)
-                   .code(500)
-                   .message(msg)
-                   .body(ResponseBody.create(null, "{${e}}")).build()
-           }
+                return Response.Builder()
+                    .request(request)
+                    .protocol(Protocol.HTTP_1_1)
+                    .code(500)
+                    .message(msg)
+                    .body(ResponseBody.create(null, "{${e}}")).build()
+            }
 
         }
 
